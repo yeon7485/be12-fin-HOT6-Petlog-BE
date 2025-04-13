@@ -1,7 +1,9 @@
 package com.hot6.backend.chat.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -49,4 +51,17 @@ public class ChatDto {
         public Long userIdx;
         public String createdAt;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public class ChatMessageDto {
+        private Long senderId;
+        private Long chatroomId;
+        private String type;        // "text", "image", "file" 등
+        private String text;        // 본문 내용 or Base64 or URL
+        private String timestamp;   // ISO String (정렬용, 표시용)
+    }
+
 }
