@@ -1,6 +1,7 @@
 package com.hot6.backend.chat;
 
 import com.hot6.backend.chat.model.ChatDto;
+import com.hot6.backend.user.model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +51,11 @@ class ChatWebSocketControllerTest {
                 .timestamp("2020-01-01T00:00:00.000")
                 .build();
         // when
-        controller.sendMessage(roomIdx, dto);
+        controller.sendMessage(roomIdx, dto, User.builder()
+                .idx(1L)
+                .email("test@test.com")
+                .password("qwer1234")
+                .build());
 
         // then
         verify(messagingTemplate).convertAndSend("/topic/" + roomIdx, dto);
