@@ -2,6 +2,7 @@ package com.hot6.backend.config.filter;
 
 import com.hot6.backend.user.model.User;
 import com.hot6.backend.utils.JwtUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -12,7 +13,7 @@ import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 
-
+@Slf4j
 @Component
 public class JwtChannelInterceptor implements ChannelInterceptor {
 
@@ -21,16 +22,26 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-            String token = accessor.getFirstNativeHeader("Authorization");
-            if (token != null && token.startsWith("Bearer ")) {
-                token = token.substring(7);
-                User users = JwtUtil.getUser(token);
+            log.info("🔌 WebSocket CONNECT 요청 들어옴");
+            log.info("Headers: {}", accessor.toNativeHeaderMap());
+            User user = (User) accessor.getSessionAttributes().get("user");
 
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                        new UsernamePasswordAuthenticationToken(users, null, users.getAuthorities());
-                usernamePasswordAuthenticationToken.setDetails(users);
+            if (user != null) {
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
-                accessor.setUser(usernamePasswordAuthenticationToken); // Principal 설정
+                accessor.setUser(auth); // Principal 설정
+            }
+        }
+
+
+        if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
+            String destination = accessor.getDestination();
+            log.info("📩 SUBSCRIBE 요청: {}", destination);
+
+            if (destination != null && destination.startsWith("/topic/chat/room/")) {
+                String roomId = destination.substring("/topic/chat/room/".length());
+                log.info("📌 구독된 roomId: {}", roomId);
             }
         }
 

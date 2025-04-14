@@ -91,7 +91,6 @@ public class ChatDto {
     @AllArgsConstructor
     @Builder
     public static class ChatMessageDto {
-        private Long senderId;
         private Long chatroomId;
         private String type;        // "text", "image", "file" 등
         private String text;        // 본문 내용 or Base64 or URL
