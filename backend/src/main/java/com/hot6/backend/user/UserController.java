@@ -1,5 +1,7 @@
 package com.hot6.backend.user;
 
+import com.hot6.backend.common.BaseResponse;
+import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.pet.model.PetDto;
 import com.hot6.backend.user.model.UserDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,14 +19,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user")
+@RequiredArgsConstructor
 @Tag(name = "User", description = "회원 기능 API")
 public class UserController {
+    private final UserService userService;
+
     @Operation(summary = "일반/관리자 회원가입", description = "이메일, 비밀번호, 닉네임, 프로필 이미지로 회원가입 (관리자는 role 필드에 ADMIN 전달)")
-    @PostMapping("/register")
-    public UserDto.RegisterResponse register(@RequestBody UserDto.UserRegisterRequest userRegisterRequest) {
-        return UserDto.RegisterResponse.builder()
-                .email("user01@gmail.com")
-                .build();
+    @PostMapping("/sign-up")
+    public ResponseEntity<BaseResponse<UserDto.CreateResponse>> register(@RequestBody UserDto.UserCreateRequest userCreateRequest) {
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, userService.signup(userCreateRequest)));
     }
 
     @Operation(summary = "소셜 회원가입", description = "카카오톡으로 회원가입 처리")
