@@ -11,7 +11,7 @@ public class UserDto {
 
     @Getter
     @Schema(description = "회원가입 요청 DTO")
-    public static class UserRegisterRequest {
+    public static class UserCreateRequest {
         @Schema(description = "이메일", example = "user@example.com")
         private String email;
 
@@ -26,13 +26,29 @@ public class UserDto {
 
         @Schema(description = "회원 역할 (USER or ADMIN)", example = "USER")
         private String role;
+
+        public User toEntity(String password) {
+            return User.builder()
+                    .email(email)
+                    .password(password)
+                    .nickname(nickname)
+                    .userType(UserType.valueOf(role))
+                    .userProfileImage(profileImageUrl)
+                    .build();
+        }
     }
 
     @Getter
     @Builder
-    public static class RegisterResponse {
+    public static class CreateResponse {
         @Schema(description = "회원가입된 이메일", example = "user@example.com")
         private String email;
+
+        public static CreateResponse from(User user) {
+            return CreateResponse.builder()
+                    .email(user.getEmail())
+                    .build();
+        }
     }
 
     @Getter
