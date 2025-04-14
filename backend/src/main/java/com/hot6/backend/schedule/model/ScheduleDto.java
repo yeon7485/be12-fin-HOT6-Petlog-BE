@@ -8,7 +8,6 @@ import java.util.List;
 
 
 public class ScheduleDto {
-
     @Getter
     @Builder
     @Schema(description = "월간 일정 응답 DTO")
@@ -40,6 +39,11 @@ public class ScheduleDto {
         private String time; // HH:mm
         @Schema(description = "일정 완료 여부", example = "false")
         private boolean isCompleted;
+        @Schema(description = "일정 반복 여부", example = "true")
+        private boolean isRepeat;
+
+        @Schema(description = "반복 주기", example = "weekly")
+        private String repeatCycle;
     }
 
     @Getter
@@ -67,7 +71,7 @@ public class ScheduleDto {
         private String endTime;
 
         @Schema(description = "반복 여부", example = "true")
-        private boolean isHaveReceive;
+        private boolean isRepeat;
 
         @Schema(description = "반복 주기", example = "일주일")
         private String repeatCycle;
@@ -98,31 +102,18 @@ public class ScheduleDto {
         private String endTime;
     }
 
+
+    @Schema(description = "일정 공유 요청 DTO")
     @Getter
-    public static class ScheduleCategoryCreateRequest {
-        private String categoryName;
-        private String description;
+    public static class ScheduleShareRequest {
+        @Schema(description = "공유할 일정 ID", example = "101")
+        private Long scheduleId;
+
+        @Schema(description = "공유 대상 타입 (user | group)", example = "user")
+        private String targetType;
+
+        @Schema(description = "공유 대상 ID (사용자 ID 또는 그룹 ID)", example = "55")
+        private Long targetId;
     }
 
-    @Getter
-    @Builder
-    public static class CategoryResponse{
-        private Long categoryIdx;
-        private String color;
-        private String categoryName;
-    }
-
-    public class RegisterDailyRecordRequest {
-        @Schema(description = "기록 제목", example = "산책 메모")
-        private String title;
-
-        @Schema(description = "기록 상세 메모", example = "30분 동안 공원 산책을 했어요.")
-        private String memo;
-
-        @Schema(description = "카테고리", example = "walk", allowableValues = {"walk", "hospital", "medication", "etc"})
-        private String category;
-
-        @Schema(description = "기록 날짜 (yyyy-MM-dd 형식)", example = "2025-04-02")
-        private String date;
-    }
 }
