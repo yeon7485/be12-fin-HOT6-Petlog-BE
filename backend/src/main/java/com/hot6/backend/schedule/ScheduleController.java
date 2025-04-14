@@ -67,25 +67,11 @@ public class ScheduleController {
                 .build());
     }
 
-    @Operation(summary = "일정 카테고리 목록 조회", description = "등록된 일정 카테고리 목록을 조회합니다.")
-    @GetMapping("/category")
-    public ResponseEntity<List<ScheduleDto.CategoryResponse>> getCategoryList() {
-        return ResponseEntity.ok(List.of(
-                ScheduleDto.CategoryResponse.builder()
-                        .categoryIdx(1L)
-                        .categoryName("병원")
-                        .build(),
-                ScheduleDto.CategoryResponse.builder()
-                        .categoryIdx(2L)
-                        .categoryName("산책")
-                        .build()
-        ));
-    }
 
     @Operation(summary = "일정 생성", description = "선택한 카테고리와 반려동물에 대해 일정을 생성합니다.")
     //category idx 는 url 로 전달하기 보다는 화면에 있는 컴포넌트를 통해서
     @PostMapping("/pet/{petIdx}")
-    public ResponseEntity<String> createSchedule(@RequestBody ScheduleDto.ScheduleCategoryCreateRequest categoryCreateRequest,
+    public ResponseEntity<String> createSchedule(@RequestBody ScheduleDto.ScheduleCreateRequest request,
                                                  @PathVariable Long petIdx) {
         return ResponseEntity.ok("ok");
     }
@@ -104,10 +90,10 @@ public class ScheduleController {
     }
 
 
-    @Operation(summary = "일일 기록 생성", description = "하루의 특정 반려 동물의 기록을 작성합니다.")
-    @PostMapping("/pet/{petIdx}/daily-record")
-    public ResponseEntity<String> createDailyRecord(@RequestBody ScheduleDto.RegisterDailyRecordRequest registerDailyRecordRequest,
-                                                    @PathVariable Long petIdx) {
-        return ResponseEntity.ok("ok");
+    @Operation(summary = "일정 공유", description = "사용자가 본인의 일정을 사용자나 그룹 채팅방에 공유합니다.")
+    @PostMapping("/share")
+    public ResponseEntity<String> shareSchedule(@RequestBody ScheduleDto.ScheduleShareRequest request) {
+        return ResponseEntity.ok("일정 공유 완료");
     }
+
 }
