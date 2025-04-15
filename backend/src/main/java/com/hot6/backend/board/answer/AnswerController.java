@@ -30,5 +30,22 @@ public class AnswerController {
         answerService.select(idx);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/update/{idx}")
+    public ResponseEntity<Void> update(@PathVariable Long idx, @RequestBody AnswerDto.AnswerRequest dto) {
+        answerService.update(idx, dto);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/read/{idx}")
+    public ResponseEntity<AnswerDto.AnswerResponse> read(@PathVariable Long idx) {
+        return ResponseEntity.ok(answerService.read(idx));
+    }
+
+    @DeleteMapping("/delete/{idx}")
+    public ResponseEntity<?> deleteAnswer(@PathVariable Long idx) {
+        answerService.delete(idx);
+        return ResponseEntity.ok().build();
+    }
 }
 
