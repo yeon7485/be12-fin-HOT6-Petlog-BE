@@ -1,12 +1,10 @@
 package com.hot6.backend.chat.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ChatDto {
     @Getter
@@ -36,11 +34,27 @@ public class ChatDto {
     @Builder
     @Schema(description = "채팅방 정보 응답 DTO")
     public static class ChatInfo {
+        @Schema(description = "채팅방 idx", example = "1")
+        public Long idx;
+
         @Schema(description = "채팅방 제목", example = "햄스터 친구 구해요")
         public String title;
 
         @Schema(description = "채팅방 해시태그", example = "[\"#햄스터\", \"#친구\"]")
         public List<String> hashtags;
+
+        @Schema(description = "채팅방 참여 인원수", example = "6")
+        public int participants;
+
+        public static ChatInfo from(ChatRoom chatRoom) {
+
+            return ChatInfo.builder()
+                    .idx(chatRoom.getIdx())
+                    .title(chatRoom.getCTitle())
+                    .participants(chatRoom.getParticipants().size())
+                    .hashtags(chatRoom.getHashtags().stream().map(ChatRoomHashtag::getCTag).collect(Collectors.toList()))
+                    .build();
+        }
     }
 
     @Getter
@@ -87,9 +101,10 @@ public class ChatDto {
     }
 
     @Getter
+    @Builder
+    @ToString
     @NoArgsConstructor
     @AllArgsConstructor
-    @Builder
     public static class ChatMessageDto {
         private Long chatroomId;
         private String type;        // "text", "image", "file" 등

@@ -1,8 +1,13 @@
 package com.hot6.backend.chat;
 
 import com.hot6.backend.chat.model.ChatDto;
+import com.hot6.backend.chat.service.ChatRoomHashtagService;
+import com.hot6.backend.chat.service.ChatRoomService;
+import com.hot6.backend.common.BaseResponse;
+import com.hot6.backend.common.BaseResponseStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
@@ -12,9 +17,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/chat")
+@RequiredArgsConstructor
 @Tag(name = "Chat", description = "그룹 채팅 기능 API")
 public class ChatController {
-
+    private final ChatRoomService chatRoomService;
     @Operation(summary = "그룹 채팅방 생성", description = "채팅방 제목과 해시태그를 포함하여 새로운 채팅방을 생성합니다.")
     @PostMapping("/")
     public ResponseEntity<String> createGroupChat(@RequestBody ChatDto.CreateChatRoomRequest request) {
@@ -46,17 +52,8 @@ public class ChatController {
 
     @Operation(summary = "전체 채팅방 목록 조회", description = "전체 그룹 채팅방 리스트를 조회합니다.")
     @GetMapping("/")
-    public ResponseEntity<List<ChatDto.ChatInfo>> getChatList() {
-        List<ChatDto.ChatInfo> list = new ArrayList<>();
-        list.add(ChatDto.ChatInfo.builder()
-                .title("Title01")
-                .hashtags(List.of("hash01", "hash02", "hash03"))
-                .build());
-        list.add(ChatDto.ChatInfo.builder()
-                .title("Title02")
-                .hashtags(List.of("hash03", "hash04", "hash05"))
-                .build());
-        return ResponseEntity.ok(list);
+    public ResponseEntity<BaseResponse<List<ChatDto.ChatInfo>>> getChatList() {
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, chatRoomService.getList()));
     }
 
     @Operation(summary = "참여 중인 채팅방 목록 조회", description = "사용자가 현재 참여 중인 채팅방 목록을 조회합니다.")
