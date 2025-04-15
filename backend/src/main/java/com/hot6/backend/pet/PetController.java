@@ -2,6 +2,8 @@ package com.hot6.backend.pet;
 
 import com.hot6.backend.pet.model.PetDto;
 import com.hot6.backend.schedule.model.ScheduleDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,12 +62,6 @@ public class PetController {
     @DeleteMapping("/{petId}")
     public ResponseEntity<String> deletePet(@PathVariable Long petId) {
         return ResponseEntity.ok("반려동물 카드가 삭제되었습니다.");
-    }
-
-    @Operation(summary = "반려동물 카드 공유", description = "게시판이나 채팅방에서 반려동물 카드를 공유합니다.")
-    @PostMapping("/share")
-    public ResponseEntity<String> sharePetCard(@RequestBody PetDto.PetCardShareRequest request) {
-        return ResponseEntity.ok("반려동물 카드가 공유되었습니다.");
     }
 
     // 반려동물 월간 일정 조회
