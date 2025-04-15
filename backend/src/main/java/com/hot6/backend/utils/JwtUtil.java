@@ -32,8 +32,10 @@ public class JwtUtil {
 
         } catch (ExpiredJwtException e) {
             System.out.println("토큰이 만료되었습니다!");
-            return null;
+        } catch (Exception e) {
+            System.out.println("토큰이 유효하지 않습니다!");
         }
+        return null;
     }
 
     public static String generateToken(User user) {

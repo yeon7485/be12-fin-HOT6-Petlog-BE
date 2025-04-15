@@ -2,7 +2,9 @@ package com.hot6.backend.user;
 
 import com.hot6.backend.user.model.User;
 import com.hot6.backend.user.model.UserDto;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -59,4 +61,14 @@ public class UserService implements UserDetailsService {
                 .build();
     }
 
+    public void logout(HttpServletResponse response) {
+        ResponseCookie deleteCookie = ResponseCookie.from("ATOKEN", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        response.setHeader("Set-Cookie", deleteCookie.toString());
+    }
 }
