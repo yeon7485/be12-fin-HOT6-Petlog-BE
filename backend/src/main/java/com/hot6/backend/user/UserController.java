@@ -26,7 +26,7 @@ public class UserController {
 
     @Operation(summary = "일반/관리자 회원가입", description = "이메일, 비밀번호, 닉네임, 프로필 이미지로 회원가입 (관리자는 role 필드에 ADMIN 전달)")
     @PostMapping("/sign-up")
-    public ResponseEntity<BaseResponse<UserDto.CreateResponse>> register(@RequestBody UserDto.UserCreateRequest userCreateRequest) {
+    public ResponseEntity<BaseResponse<UserDto.CreateResponse>> register(@RequestBody UserDto.CreateRequest userCreateRequest) {
         return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, userService.signup(userCreateRequest)));
     }
 
@@ -69,6 +69,14 @@ public class UserController {
         // TODO: UUID 검증 및 인증 처리
         return ResponseEntity.ok("이메일 인증 완료");
     }
+
+    @Operation(summary = "로그인 체크", description = "JWT 토큰으로 로그인 체크")
+    @GetMapping("/auth/check")
+    public ResponseEntity<BaseResponse<UserDto.LoginCheckResponse>> checkLogin() {
+        UserDto.LoginCheckResponse response = userService.checkLogin();
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, response));
+    }
+
 
     @Operation(summary = "회원 프로필 조회", description = "특정 회원의 프로필 정보 및 펫 카드 목록 조회")
     @GetMapping("/{idx}/profile")

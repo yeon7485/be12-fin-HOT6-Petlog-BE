@@ -15,13 +15,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.Duration;
-import java.util.List;
 
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
@@ -33,7 +31,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         UsernamePasswordAuthenticationToken authToken;
 
         try {
-            UserDto.UserCreateRequest userDto  = new ObjectMapper().readValue(request.getInputStream(), UserDto.UserCreateRequest.class);
+            UserDto.CreateRequest userDto  = new ObjectMapper().readValue(request.getInputStream(), UserDto.CreateRequest.class);
 
             authToken =
                     new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword(), null);
@@ -66,6 +64,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         PrintWriter out = response.getWriter();
         out.print("{");
         out.print("\"userId\": \"" + user.getNickname() + "\",");
+        out.print("\"email\": \"" + user.getEmail() + "\",");
         out.print("\"userType\": \"" + user.getUserType() + "\"");
         out.print("}");
         out.flush();
