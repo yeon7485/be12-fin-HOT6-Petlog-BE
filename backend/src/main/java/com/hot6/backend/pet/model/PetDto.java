@@ -61,6 +61,7 @@ public class PetDto {
 
         @Schema(description = "프로필 이미지 URL", example = "https://example.com/coco.jpg")
         private String profileImageUrl;
+        private Long userId;
     }
 
     @Getter
@@ -81,6 +82,7 @@ public class PetDto {
         @Schema(description = "프로필 이미지 URL", example = "https://example.com/coco-updated.jpg")
         private String profileImageUrl;
     }
+
 
     @Getter
     @Builder
@@ -103,16 +105,27 @@ public class PetDto {
 
         @Schema(description = "프로필 이미지 URL", example = "https://example.com/coco.jpg")
         private String profileImageUrl;
+        private boolean isNeutering;
+        private String specificInformation;
+//        private ScheduleDto.MonthlyScheduleResponse schedules;
 
-        @Schema(description = "월간 일정 응답 정보")
-        private ScheduleDto.MonthlyScheduleResponse schedules;
+        public static PetCardDetailResponse from(Pet pet) {
+            return PetCardDetailResponse.builder()
+                    .id(pet.getIdx())
+                    .name(pet.getName())
+                    .breed(pet.getBreed())
+                    .gender(pet.getGender())
+                    .birthDate(pet.getBirthDate())
+                    .profileImageUrl(pet.getProfileImageUrl())
+                    .isNeutering(pet.isNeutering())
+                    .specificInformation(pet.getSpecificInformation())
+//                    .schedules(ScheduleDto.MonthlyScheduleResponse.builder()
+//                            .schedule(List.of())
+//                            .build())
+                    .build();
+        }
     }
-
-    @Getter
-    @Schema(description = "반려동물 카드 공유 요청")
-    public static class PetCardShareRequest {
-        @Schema(description = "공유할 반려동물 ID", example = "1")
-        private Long petId;
+}
 
         @Schema(description = "공유 대상 타입 (chat | post)", example = "chat")
         private String targetType;
