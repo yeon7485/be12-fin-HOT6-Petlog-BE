@@ -4,6 +4,7 @@ import com.hot6.backend.user.model.User;
 import com.hot6.backend.utils.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -13,6 +14,7 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import java.util.Map;
 
+@Slf4j
 @Component
 public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 
@@ -28,6 +30,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
                         String token = cookie.getValue();
                         User user = JwtUtil.getUser(token);
                         attributes.put("user", user); // 여기에 넣어두고 나중에 사용
+                        log.info("✅ HandshakeInterceptor 유저 확인: {}", user.getIdx());
                     }
                 }
             }

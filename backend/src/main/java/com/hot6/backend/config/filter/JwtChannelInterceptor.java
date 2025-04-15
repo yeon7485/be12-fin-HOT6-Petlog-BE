@@ -20,16 +20,18 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-
-        if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-            log.info("🔌 WebSocket CONNECT 요청 들어옴");
+        StompCommand command = accessor.getCommand();
+        log.info("📡 STOMP Command: {}", command);
+        if (StompCommand.CONNECT.equals(command) || StompCommand.SEND.equals(command)) {
+            log.info("🔌 WebSocket {} 요청 들어옴",command);
             log.info("Headers: {}", accessor.toNativeHeaderMap());
             User user = (User) accessor.getSessionAttributes().get("user");
+
 
             if (user != null) {
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-
+                log.info("User: {},{}", user.getIdx(),command);
                 accessor.setUser(auth); // Principal 설정
             }
         }
@@ -44,6 +46,8 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
                 log.info("📌 구독된 roomId: {}", roomId);
             }
         }
+
+        log.info("✅ ChannelInterceptor 세션 유저 확인: {}", accessor.getSessionAttributes());
 
         return message;
     }
