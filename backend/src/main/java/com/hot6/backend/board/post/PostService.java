@@ -1,5 +1,6 @@
 package com.hot6.backend.board.post;
 
+import com.hot6.backend.board.post.model.BoardType;
 import com.hot6.backend.board.post.model.Post;
 import com.hot6.backend.board.post.model.PostDto;
 import lombok.RequiredArgsConstructor;
