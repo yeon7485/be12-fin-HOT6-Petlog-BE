@@ -1,12 +1,10 @@
 package com.hot6.backend.pet.model;
 
-import com.hot6.backend.schedule.model.ScheduleDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 
 public class PetDto {
-
     @Getter
     @Builder
     @Schema(description = "반려동물 카드 정보")
@@ -88,6 +86,7 @@ public class PetDto {
     @Builder
     @Schema(description = "반려동물 카드 상세 응답")
     public static class PetCardDetailResponse {
+
         @Schema(description = "반려동물 ID", example = "1")
         private Long id;
 
@@ -105,10 +104,12 @@ public class PetDto {
 
         @Schema(description = "프로필 이미지 URL", example = "https://example.com/coco.jpg")
         private String profileImageUrl;
-        private boolean isNeutering;
-        private String specificInformation;
-//        private ScheduleDto.MonthlyScheduleResponse schedules;
 
+        private boolean isNeutering;
+
+        private String specificInformation;
+
+        // `from` 메서드 추가
         public static PetCardDetailResponse from(Pet pet) {
             return PetCardDetailResponse.builder()
                     .id(pet.getIdx())
@@ -119,18 +120,7 @@ public class PetDto {
                     .profileImageUrl(pet.getProfileImageUrl())
                     .isNeutering(pet.isNeutering())
                     .specificInformation(pet.getSpecificInformation())
-//                    .schedules(ScheduleDto.MonthlyScheduleResponse.builder()
-//                            .schedule(List.of())
-//                            .build())
                     .build();
         }
-    }
-}
-
-        @Schema(description = "공유 대상 타입 (chat | post)", example = "chat")
-        private String targetType;
-
-        @Schema(description = "공유 대상 ID (채팅방 ID 또는 게시글 ID)", example = "123")
-        private Long targetId;
     }
 }
