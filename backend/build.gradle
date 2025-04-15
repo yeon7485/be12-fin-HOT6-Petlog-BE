@@ -21,15 +21,20 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-security' // security
 
+    // security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-oauth2-client'
+
+    // jpa, mariadb
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.mariadb.jdbc:mariadb-java-client' //jpa, mariadb
+    implementation 'org.mariadb.jdbc:mariadb-java-client'
 
-
+    // lombok
     compileOnly 'org.projectlombok:lombok:1.18.36'
     annotationProcessor('org.projectlombok:lombok')
 
+    // jwt
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5' // jwt
@@ -37,6 +42,7 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
 
+    // swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

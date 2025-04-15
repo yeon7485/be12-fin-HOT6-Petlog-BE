@@ -3,6 +3,9 @@ package com.hot6.backend.user;
 import com.hot6.backend.user.model.User;
 import com.hot6.backend.user.model.UserDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,7 +22,7 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public UserDto.CreateResponse signup(UserDto.UserCreateRequest dto) {
+    public UserDto.CreateResponse signup(UserDto.CreateRequest dto) {
         User user = userRepository.save(dto.toEntity(passwordEncoder.encode(dto.getPassword())));
         return UserDto.CreateResponse.from(user);
     }
@@ -36,4 +39,24 @@ public class UserService implements UserDetailsService {
 
         return null;
     }
+
+    @Transactional
+    public UserDto.LoginCheckResponse checkLogin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null &&
+                authentication.isAuthenticated() &&
+                !(authentication instanceof AnonymousAuthenticationToken)) {
+
+            User user = (User) authentication.getPrincipal();
+
+            return UserDto.LoginCheckResponse.from(user);
+        }
+
+        return UserDto.LoginCheckResponse.builder()
+                .isLogin(false)
+                .nickname(null)
+                .build();
+    }
+
 }

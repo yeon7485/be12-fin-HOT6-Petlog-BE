@@ -2,8 +2,10 @@ package com.hot6.backend.user.model;
 
 import com.hot6.backend.pet.model.PetDto;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -11,7 +13,7 @@ public class UserDto {
 
     @Getter
     @Schema(description = "회원가입 요청 DTO")
-    public static class UserCreateRequest {
+    public static class CreateRequest {
         @Schema(description = "이메일", example = "user@example.com")
         private String email;
 
@@ -124,4 +126,22 @@ public class UserDto {
         @Schema(description = "회원 비밀번호", example = "Password123!")
         private String password;
     }
+
+    @Getter
+    @Builder
+    public static class LoginCheckResponse {
+        @Schema(description = "로그인 여부", example = "true")
+        private boolean isLogin;
+
+        @Schema(description = "회원 닉네임", example = "user")
+        private String nickname;
+
+        public static LoginCheckResponse from(User user) {
+            return LoginCheckResponse.builder()
+                    .isLogin(true)
+                    .nickname(user.getNickname())
+                    .build();
+        }
+    }
+
 }
