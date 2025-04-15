@@ -54,10 +54,28 @@ public class PetService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    public void updatePetCard(PetDto.PetCardUpdateRequest request) {
+        // 기존 Pet 객체를 petId로 찾아옴
+        Pet pet = petRepository.findById(request.getIdx()) // 여기서 petId를 사용해야 함
+                .orElseThrow(() -> new IllegalArgumentException("해당 반려동물이 존재하지 않습니다. id=" + request.getIdx()));
+
+        // 기존 Pet 엔티티의 필드 값을 요청으로 받은 값으로 업데이트
+        pet.setName(request.getName());
+        pet.setGender(request.getGender());
+        pet.setBreed(request.getBreed());
+        pet.setBirthDate(request.getBirthDate());
+
+        // 변경된 Pet 객체를 DB에 저장
+        petRepository.save(pet);
+    }
+
     public PetDto.PetCardDetailResponse getPetDetailById(Long petId) {
+        // Pet ID로 해당 반려동물을 DB에서 조회
         Pet pet = petRepository.findById(petId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 반려동물이 존재하지 않습니다. id=" + petId));
 
+        // 조회된 Pet 객체를 PetCardDetailResponse로 변환하여 반환
         return PetDto.PetCardDetailResponse.from(pet);
     }
 }

@@ -66,6 +66,9 @@ public class PetDto {
     @Getter
     @Schema(description = "반려동물 카드 수정 요청")
     public static class PetCardUpdateRequest {
+        @Schema(description = "반려동물 ID", example = "1")
+        private Long idx;
+
         @Schema(description = "이름", example = "Coco")
         private String name;
 
