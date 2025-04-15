@@ -2,6 +2,7 @@ package com.hot6.backend.pet.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 
 public class PetDto {
@@ -28,7 +29,7 @@ public class PetDto {
         private String profileImageUrl;
 
         @Schema(description = "중성화 여부", example = "true")
-        private boolean isNeutering;
+        private Boolean isNeutering;
 
         @Schema(description = "특이사항", example = "치아가 안좋음")
         private String specificInformation;
@@ -36,7 +37,7 @@ public class PetDto {
         @Schema(description = "상태", example = "정상")
         private String status;
     }
-    @Getter
+    @Data
     @Schema(description = "반려동물 카드 생성 요청")
     public static class PetCardCreateRequest {
         @Schema(description = "이름", example = "Coco")
@@ -52,7 +53,7 @@ public class PetDto {
         private String birthDate;
 
         @Schema(description = "중성화 여부", example = "true")
-        private boolean isNeutering;
+        private Boolean isNeutering;
 
         @Schema(description = "특이사항", example = "겁이 많음")
         private String specificInformation;
@@ -105,7 +106,7 @@ public class PetDto {
         @Schema(description = "프로필 이미지 URL", example = "https://example.com/coco.jpg")
         private String profileImageUrl;
 
-        private boolean isNeutering;
+        private Boolean isNeutering;
 
         private String specificInformation;
 

@@ -24,7 +24,7 @@ public class PetService {
         pet.setGender(request.getGender());
         pet.setBreed(request.getBreed());
         pet.setBirthDate(request.getBirthDate());
-        pet.setNeutering(request.isNeutering());
+        pet.setNeutering(request.getIsNeutering());
         pet.setSpecificInformation(request.getSpecificInformation());
         pet.setProfileImageUrl(imagePath); // 이미지 경로 설정
         pet.setUserId(request.getUserId());
