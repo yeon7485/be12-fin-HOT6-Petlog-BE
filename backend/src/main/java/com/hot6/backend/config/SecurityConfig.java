@@ -3,6 +3,9 @@ package com.hot6.backend.config;
 
 import com.hot6.backend.config.filter.JwtFilter;
 import com.hot6.backend.config.filter.LoginFilter;
+import com.hot6.backend.user.CustomOAuth2UserService;
+import com.hot6.backend.user.OAuth2SuccessHandler;
+import com.hot6.backend.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +31,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
+    public CustomOAuth2UserService customOAuth2UserService(UserService userService) {
+        return new CustomOAuth2UserService(userService);
+    }
+
+    @Bean
+    public SecurityFilterChain configure(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.httpBasic(AbstractHttpConfigurer::disable);
         http.formLogin(AbstractHttpConfigurer::disable);
@@ -37,6 +45,12 @@ public class SecurityConfig {
                 (auth) -> auth
                         .anyRequest().permitAll()
         );
+        http.oauth2Login(config -> {
+            config.successHandler(new OAuth2SuccessHandler());
+            config.userInfoEndpoint(endpoint ->
+                    endpoint.userService(customOAuth2UserService)
+            );
+        });
 
         // 기존에 사용자한테 설정하도록 한 쿠키(JSESSIONID)를 사용하지 않도록 하는 설정
         http.sessionManagement(AbstractHttpConfigurer::disable);
@@ -46,4 +60,5 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 }
