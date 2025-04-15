@@ -20,6 +20,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         OAuth2User user = (OAuth2User) authentication.getPrincipal();
         String jwtToken = JwtUtil.generateToken(User.builder()
+                .idx(user.getAttribute("idx"))
                 .email(user.getAttribute("email"))
                 .nickname(user.getAttribute("nickname"))
                 .userType(UserType.valueOf("USER"))
@@ -35,6 +36,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .build();
 
         response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        response.setStatus(HttpServletResponse.SC_OK);
         response.sendRedirect("http://localhost:5173");
     }
 }

@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -109,5 +110,12 @@ public class UserController {
     public ResponseEntity<String> delete(@PathVariable Long idx,
                                          @RequestBody UserDto.UserDeleteRequest request) {
         return ResponseEntity.ok("ok");
+    }
+
+    @Operation(summary = "회원 로그아웃", description = "현재 로그인된 계정에서 로그아웃")
+    @PostMapping("/logout")
+    public ResponseEntity<BaseResponse<String>> logout(HttpServletResponse response) {
+        userService.logout(response);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, "로그아웃"));
     }
 }

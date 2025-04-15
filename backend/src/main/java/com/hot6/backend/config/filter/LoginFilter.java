@@ -31,7 +31,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         UsernamePasswordAuthenticationToken authToken;
 
         try {
-            UserDto.CreateRequest userDto  = new ObjectMapper().readValue(request.getInputStream(), UserDto.CreateRequest.class);
+            UserDto.LoginRequest userDto  = new ObjectMapper().readValue(request.getInputStream(), UserDto.LoginRequest.class);
 
             authToken =
                     new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword(), null);
