@@ -51,5 +51,26 @@ public class AnswerService {
     public void deleteByQuestionIdx(Long questionIdx) {
         answerRepository.deleteByQuestionIdx(questionIdx);
     }
+
+    @Transactional
+    public void update(Long idx, AnswerDto.AnswerRequest dto) {
+        Answer answer = answerRepository.findById(idx)
+                .orElseThrow(() -> new RuntimeException("답변이 존재하지 않습니다"));
+        answer.setContent(dto.getContent());
+        answerRepository.save(answer);
+    }
+
+    public AnswerDto.AnswerResponse read(Long id) {
+        Answer answer = answerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("해당 답변을 찾을 수 없습니다."));
+        return AnswerDto.AnswerResponse.from(answer);
+    }
+
+    @Transactional
+    public void delete(Long idx) {
+        Answer answer = answerRepository.findById(idx)
+                .orElseThrow(() -> new RuntimeException("답변이 존재하지 않습니다."));
+        answerRepository.delete(answer);
+    }
 }
 
