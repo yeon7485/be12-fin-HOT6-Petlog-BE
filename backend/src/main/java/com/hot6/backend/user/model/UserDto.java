@@ -12,6 +12,7 @@ import java.util.List;
 public class UserDto {
 
     @Getter
+    @Builder
     @Schema(description = "회원가입 요청 DTO")
     public static class CreateRequest {
         @Schema(description = "이메일", example = "user@example.com")
