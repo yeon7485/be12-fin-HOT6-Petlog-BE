@@ -54,7 +54,7 @@ public class PetController {
     @PutMapping("/{petId}")
     public ResponseEntity<String> updatePet(@PathVariable Long petId,
                                             @RequestBody PetDto.PetCardUpdateRequest request) {
-        // 수정 로직...
+        petService.updatePetCard(request);
         return ResponseEntity.ok("반려동물 카드가 수정되었습니다.");
     }
 
