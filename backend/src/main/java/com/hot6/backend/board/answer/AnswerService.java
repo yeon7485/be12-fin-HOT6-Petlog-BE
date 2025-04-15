@@ -4,6 +4,7 @@ import com.hot6.backend.board.answer.model.Answer;
 import com.hot6.backend.board.answer.model.AnswerDto;
 import com.hot6.backend.board.question.QuestionRepository;
 import com.hot6.backend.board.question.model.Question;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +45,11 @@ public class AnswerService {
         Question question = answer.getQuestion();
         question.setSelected(true);
         questionRepository.save(question);
+    }
+
+    @Transactional
+    public void deleteByQuestionIdx(Long questionIdx) {
+        answerRepository.deleteByQuestionIdx(questionIdx);
     }
 }
 

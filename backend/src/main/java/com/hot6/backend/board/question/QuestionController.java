@@ -36,4 +36,17 @@ public class    QuestionController {
         QuestionDto.QuestionResponse response = questionService.read(idx);
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/update/{idx}")
+    public ResponseEntity<Void> update(@PathVariable Long idx, @RequestBody QuestionDto.QuestionRequest dto) {
+        questionService.update(idx, dto);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/delete/{idx}")
+    public ResponseEntity<Void> delete(@PathVariable Long idx) {
+        questionService.delete(idx);
+        return ResponseEntity.ok().build();
+    }
+
 }

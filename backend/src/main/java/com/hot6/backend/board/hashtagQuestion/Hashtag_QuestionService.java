@@ -4,6 +4,7 @@ import com.hot6.backend.board.hashtagQuestion.model.Hashtag_Question;
 import com.hot6.backend.board.hashtagQuestion.model.Hashtag_QuestionDto;
 import com.hot6.backend.board.question.QuestionRepository;
 import com.hot6.backend.board.question.model.Question;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,11 @@ public class Hashtag_QuestionService {
                         entity.getTag(),
                         entity.getQuestion().getIdx()
                 )).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteByQuestionIdx(Long questionIdx) {
+        hashtagRepository.deleteByQuestionIdx(questionIdx);
     }
 
 }
