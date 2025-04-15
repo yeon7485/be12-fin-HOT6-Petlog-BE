@@ -1,5 +1,6 @@
 package com.hot6.backend.board.post;
 
+import com.hot6.backend.board.post.model.BoardType;
 import com.hot6.backend.board.post.model.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
