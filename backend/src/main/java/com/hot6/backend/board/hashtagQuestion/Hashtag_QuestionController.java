@@ -8,7 +8,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/hashtag")
+@RequestMapping("/hashtag")
 public class Hashtag_QuestionController {
 
     private final Hashtag_QuestionService service;
