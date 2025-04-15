@@ -35,3 +35,7 @@ spring:
 jwt:
   secret: ${JWT_SECRET}
   expired: ${JWT_EXPIRED}
+
+project:
+  upload:
+    path: C:/Users/Playdata/Desktop/pdh

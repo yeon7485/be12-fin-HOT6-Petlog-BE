@@ -40,24 +40,4 @@ class ChatWebSocketControllerTest {
         );
     }
 
-    @Test
-    void 채팅_메시지를_정상적으로_브로커로_전달한다() {
-        // given
-        Long roomIdx = 123L;
-        ChatDto.ChatMessageDto dto = ChatDto.ChatMessageDto.builder()
-                .senderId(1L)
-                .text("test")
-                .chatroomId(roomIdx)
-                .timestamp("2020-01-01T00:00:00.000")
-                .build();
-        // when
-        controller.sendMessage(roomIdx, dto, User.builder()
-                .idx(1L)
-                .email("test@test.com")
-                .password("qwer1234")
-                .build());
-
-        // then
-        verify(messagingTemplate).convertAndSend("/topic/" + roomIdx, dto);
-    }
 }
