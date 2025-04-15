@@ -1,13 +1,16 @@
 package com.hot6.backend.user.model;
 
+import com.hot6.backend.chat.model.ChatRoomParticipant;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 
 @AllArgsConstructor
@@ -26,6 +29,9 @@ public class User implements UserDetails {
     private String nickname;
     private String userProfileImage;
     private UserType userType;
+
+    @OneToMany(mappedBy = "user")
+    private List<ChatRoomParticipant> chatParticipations = new ArrayList<>();
 
     @Override
     public boolean isAccountNonExpired() {
