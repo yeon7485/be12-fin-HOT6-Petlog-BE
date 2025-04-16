@@ -3,7 +3,6 @@ package com.hot6.backend.chat.service;
 import com.hot6.backend.chat.model.ChatDto;
 import com.hot6.backend.chat.model.ChatRoom;
 import com.hot6.backend.chat.model.ChatRoomHashtag;
-import com.hot6.backend.chat.repository.ChatRoomParticipantRepository;
 import com.hot6.backend.chat.repository.ChatRoomRepository;
 import com.hot6.backend.user.UserService;
 import com.hot6.backend.user.model.User;

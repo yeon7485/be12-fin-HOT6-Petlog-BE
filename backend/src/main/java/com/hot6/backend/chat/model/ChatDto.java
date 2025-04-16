@@ -1,5 +1,8 @@
 package com.hot6.backend.chat.model;
 
+import com.hot6.backend.user.model.User;
+import com.hot6.backend.user.model.UserDto;
+import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -109,4 +112,22 @@ public class ChatDto {
         private String timestamp;   // ISO String (정렬용, 표시용)
     }
 
+    @Getter
+    public static class ChatUserInfo {
+        @Schema(description = "채팅방 idx", example = "1")
+        public Long idx;
+
+        @Schema(description = "채팅방에 참여한 유저 닉네임", example = "User1")
+        public String userName;
+
+        @Schema(description = "채팅방에 참여한 유저의 imageUrl", example = "User1")
+        public String imageUrl;
+
+        @QueryProjection
+        public ChatUserInfo(Long idx, String userName, String imageUrl) {
+            this.idx = idx;
+            this.userName = userName;
+            this.imageUrl = imageUrl;
+        }
+    }
 }

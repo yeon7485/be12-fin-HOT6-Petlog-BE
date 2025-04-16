@@ -1,7 +1,7 @@
 package com.hot6.backend.chat;
 
 import com.hot6.backend.chat.model.ChatDto;
-import com.hot6.backend.chat.service.ChatRoomHashtagService;
+import com.hot6.backend.chat.service.ChatRoomParticipantService;
 import com.hot6.backend.chat.service.ChatRoomService;
 import com.hot6.backend.common.BaseResponse;
 import com.hot6.backend.common.BaseResponseStatus;
@@ -10,8 +10,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +25,8 @@ import java.util.List;
 @Tag(name = "Chat", description = "그룹 채팅 기능 API")
 public class ChatController {
     private final ChatRoomService chatRoomService;
+    private final ChatRoomParticipantService chatRoomParticipantService;
+
     @Operation(summary = "그룹 채팅방 생성", description = "채팅방 제목과 해시태그를 포함하여 새로운 채팅방을 생성합니다.")
     @PostMapping
     public ResponseEntity<String> createGroupChat(@RequestBody ChatDto.CreateChatRoomRequest request, @AuthenticationPrincipal User user) {
@@ -83,19 +85,15 @@ public class ChatController {
         return ResponseEntity.ok(list);
     }
 
-    @MessageMapping("/chat.sendMessage")
-    public void sendMessage(ChatDto.CreateChatRequest request) {
-        // 2. 실시간 브로드캐스트
-        String destination = "/topic/chatroom/" + request.getChatRoomIdx();
-//        messagingTemplate.convertAndSend(destination, request);
-    }
-
-    @Operation(summary = "채팅 메시지 전송", description = "채팅방에 메시지를 전송합니다.")
-    @PostMapping("/chatroom/{chatRoomIdx}/chat")
-    public ResponseEntity<String> createChat(
+    @Operation(summary = "채팅방 일정", description = "채팅방의 정보(채팅방 이름,해시 태그, 대화 상대)를 조회 합니다..")
+    @GetMapping("/chatroom/{chatRoomIdx}/users")
+    public ResponseEntity<BaseResponse<Slice<ChatDto.ChatUserInfo>>> getChatRoomUsers(
             @PathVariable Long chatRoomIdx,
-            @RequestBody ChatDto.CreateChatRequest request) {
-        return ResponseEntity.ok("채팅 메시지 전송 완료");
+            @RequestParam(required = false) Long lastUserId,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        Slice<ChatDto.ChatUserInfo> users = chatRoomParticipantService.getChatRoomInUsers(chatRoomIdx, lastUserId, size);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS,users));
     }
 
     @Operation(summary = "채팅 메시지 조회", description = "지정된 채팅방의 이전 메시지를 조회합니다.")
