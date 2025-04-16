@@ -61,9 +61,9 @@ public class QuestionService {
     }
 
     public void delete(Long idx) {
-        hashtagService.deleteByQuestionIdx(idx);     // 해시태그 삭제
-        answerService.deleteByQuestionIdx(idx);      // 답변 삭제
-        questionRepository.deleteById(idx);          // 질문 삭제
+        hashtagService.deleteByQuestionIdx(idx);
+        answerService.deleteByQuestionIdx(idx);
+        questionRepository.deleteById(idx);
     }
 
 
