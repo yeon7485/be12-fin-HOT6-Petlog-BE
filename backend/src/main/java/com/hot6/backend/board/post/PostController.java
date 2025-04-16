@@ -39,4 +39,17 @@ public class PostController {
     ) {
         return ResponseEntity.ok(postService.search(boardName, category, keyword));
     }
+
+    @DeleteMapping("/delete/{idx}")
+    public ResponseEntity<Void> delete(@PathVariable Long idx) {
+        postService.delete(idx);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/update/{idx}")
+    public ResponseEntity<Void> update(@PathVariable Long idx, @RequestBody PostDto.PostRequest dto) {
+        postService.update(idx, dto);
+        return ResponseEntity.ok().build();
+    }
+
 }
