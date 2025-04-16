@@ -39,11 +39,11 @@ public class PetService {
 
     public void updatePetCard(PetDto.PetCardUpdateRequest request) {
         // DTO를 엔티티로 변환
-        Pet pet = request.toEntity(request);
+        Pet pet = request.toEntity();
 
         // userId가 null인 경우 기본값 설정
         if (pet.getUserId() == null) {
-            pet.setUserId(1L);  // 예시로 기본값 1L을 설정
+            pet.setUserId(1L);
         }
 
         // 저장 또는 업데이트

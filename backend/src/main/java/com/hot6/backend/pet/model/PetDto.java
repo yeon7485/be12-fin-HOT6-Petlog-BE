@@ -91,6 +91,8 @@ public class PetDto {
             pet.setProfileImageUrl(imagePath);  // 이미지 경로 설정
             pet.setUserId(this.userId);
 
+            
+
             return pet;
         }
     }
@@ -120,14 +122,14 @@ public class PetDto {
         private String specificInformation;
 
         @Schema(description = "상태", example = "정상")
-        private String status;
+        private String status;  // String 타입
 
         // ProfileImageUrl 필드를 주석 처리
         // @Schema(description = "프로필 이미지 URL", example = "https://example.com/coco-updated.jpg")
         // private String profileImageUrl;
 
         // Pet 엔티티로 변환하는 메소드
-        public Pet toEntity(PetCardUpdateRequest petCardUpdateRequest) {
+        public Pet toEntity() {
             Pet pet = new Pet();
             pet.setIdx(this.id);
             pet.setName(this.name);
@@ -136,7 +138,9 @@ public class PetDto {
             pet.setBirthDate(this.birthDate);
             pet.setNeutering(this.isNeutering);
             pet.setSpecificInformation(this.specificInformation);
-            pet.setStatus(PetStatus.valueOf(this.status));
+
+            // String 타입을 Enum 타입으로 변환
+            pet.setStatus(PetStatus.valueOf(this.status));  // Enum 변환
             // profileImageUrl 설정 제거
             // pet.setProfileImageUrl(this.profileImageUrl);
             return pet;
@@ -171,6 +175,9 @@ public class PetDto {
 
         private String specificInformation;
 
+        @Schema(description = "상태", example = "정상")
+        private PetStatus status;
+
         // `from` 메서드 추가
         public static PetCardDetailResponse from(Pet pet) {
             return PetCardDetailResponse.builder()
@@ -182,6 +189,7 @@ public class PetDto {
                     .profileImageUrl(pet.getProfileImageUrl())
                     .isNeutering(pet.isNeutering())
                     .specificInformation(pet.getSpecificInformation())
+                    .status(pet.getStatus())
                     .build();
         }
     }
