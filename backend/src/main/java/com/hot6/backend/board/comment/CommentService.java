@@ -1,9 +1,12 @@
 package com.hot6.backend.board.comment;
 
+import com.hot6.backend.board.answer.model.Answer;
+import com.hot6.backend.board.answer.model.AnswerDto;
 import com.hot6.backend.board.comment.model.Comment;
 import com.hot6.backend.board.comment.model.CommentDto;
 import com.hot6.backend.board.post.PostRepository;
 import com.hot6.backend.board.post.model.Post;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -38,5 +41,25 @@ public class CommentService {
         return commentRepository.findByPost(post).stream()
                 .map(CommentDto.CommentResponse::from)
                 .toList();
+    }
+
+    @Transactional
+    public void deleteByPostIdx(Long PostIdx) {
+        commentRepository.deleteByPostIdx(PostIdx);
+    }
+
+    @Transactional
+    public void delete(Long idx) {
+        Comment comment = commentRepository.findById(idx)
+                .orElseThrow(() -> new RuntimeException("댓글이 존재하지 않습니다."));
+        commentRepository.delete(comment);
+    }
+
+    @Transactional
+    public void update(Long idx, CommentDto.CommentRequest dto) {
+        Comment comment = commentRepository.findById(idx)
+                .orElseThrow(() -> new RuntimeException("댓글이 존재하지 않습니다"));
+        comment.setContent(dto.getContent());
+        commentRepository.save(comment);
     }
 }
