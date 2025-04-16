@@ -17,15 +17,8 @@ public class PetService {
     private final ImageService imageService;
 
     public void createPetCard(PetDto.PetCardCreateRequest request, String imagePath) {
-        Pet pet = new Pet();
-        pet.setName(request.getName());
-        pet.setGender(request.getGender());
-        pet.setBreed(request.getBreed());
-        pet.setBirthDate(request.getBirthDate());
-        pet.setNeutering(request.getIsNeutering());
-        pet.setSpecificInformation(request.getSpecificInformation());
-        pet.setProfileImageUrl(imagePath); // 이미지 경로 설정
-        pet.setUserId(request.getUserId());
+        // DTO에서 데이터를 받아서 엔티티 생성
+        Pet pet = request.toEntity(imagePath);
 
         petRepository.save(pet);  // DB에 저장
     }
@@ -40,16 +33,7 @@ public class PetService {
         List<Pet> pets = petRepository.findByUserId(userId);
 
         return pets.stream()
-                .map(pet -> PetDto.PetCard.builder()
-                        .idx(pet.getIdx())
-                        .name(pet.getName())
-                        .breed(pet.getBreed())
-                        .gender(pet.getGender())
-                        .birthDate(pet.getBirthDate())
-                        .profileImageUrl(pet.getProfileImageUrl())
-                        .isNeutering(pet.isNeutering())
-                        .specificInformation(pet.getSpecificInformation())
-                        .build())
+                .map(PetDto.PetCard::fromEntity)
                 .collect(Collectors.toList());
     }
 
