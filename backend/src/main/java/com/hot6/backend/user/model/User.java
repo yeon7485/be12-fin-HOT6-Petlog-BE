@@ -76,4 +76,9 @@ public class User implements UserDetails {
     public void userVerify() {
         this.enabled = true;
     }
+
+    public boolean getEnabled() {
+        return this.enabled;
+    }
+
 }

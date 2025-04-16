@@ -133,10 +133,12 @@ public class UserService implements UserDetailsService {
             User user = (User) authentication.getPrincipal();
 
             return UserDto.LoginCheckResponse.from(user);
+
         }
 
         return UserDto.LoginCheckResponse.builder()
                 .isLogin(false)
+                .enabled(false)
                 .nickname(null)
                 .build();
     }

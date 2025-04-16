@@ -1,6 +1,9 @@
 package com.hot6.backend.config.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hot6.backend.common.BaseResponse;
+import com.hot6.backend.common.BaseResponseStatus;
+import com.hot6.backend.common.exception.BaseException;
 import com.hot6.backend.user.model.User;
 import com.hot6.backend.user.model.UserDto;
 import com.hot6.backend.utils.JwtUtil;
@@ -46,6 +49,20 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         User user = (User) authResult.getPrincipal();
+
+        // ✅ 이메일 인증 안 된 유저는 로그인 실패 처리
+        if (!user.getEnabled()) {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
+            PrintWriter out = response.getWriter();
+            out.print(new ObjectMapper().writeValueAsString(
+                    new BaseResponse<>(BaseResponseStatus.EMAIL_VERIFY_FAIL)
+            ));
+            out.flush();
+            return;
+        }
+
         String jwtToken = JwtUtil.generateToken(user);
 
         ResponseCookie cookie = ResponseCookie
@@ -66,6 +83,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         out.print("\"userId\": \"" + user.getNickname() + "\",");
         out.print("\"email\": \"" + user.getEmail() + "\",");
         out.print("\"userType\": \"" + user.getUserType() + "\"");
+        out.print("\"enabled\": \"" + user.isEnabled() + "\"");
         out.print("}");
         out.flush();
     }

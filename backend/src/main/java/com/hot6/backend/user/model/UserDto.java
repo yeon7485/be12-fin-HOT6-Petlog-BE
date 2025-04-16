@@ -137,8 +137,19 @@ public class UserDto {
         @Schema(description = "회원 닉네임", example = "user")
         private String nickname;
 
+        @Schema(description = "이메일 인증 여부", example = "false")
+        private boolean enabled;
+
+        @Schema(description = "회원 역할 (USER or ADMIN)", example = "USER")
+        private String role;
+
         public static LoginCheckResponse from(User user) {
-            return LoginCheckResponse.builder().isLogin(true).nickname(user.getNickname()).build();
+            return LoginCheckResponse.builder()
+                    .isLogin(true)
+                    .nickname(user.getNickname())
+                    .enabled(user.isEnabled())
+                    .role(String.valueOf(user.getUserType()))
+                    .build();
         }
     }
 

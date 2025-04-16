@@ -42,6 +42,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(auth);
+            } else if (user != null && !user.isEnabled()) {
+                System.out.println("이메일 인증이 완료되지 않은 사용자");
+                SecurityContextHolder.clearContext();
             } else {
                 // 유저 객체가 없으면 인증 제거
                 SecurityContextHolder.clearContext();
