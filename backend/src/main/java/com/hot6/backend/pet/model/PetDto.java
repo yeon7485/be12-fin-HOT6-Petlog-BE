@@ -35,8 +35,24 @@ public class PetDto {
         private String specificInformation;
 
         @Schema(description = "상태", example = "정상")
-        private String status;
+        private PetStatus status;
+
+        // Pet 엔티티를 받아 DTO로 변환하는 메소드 추가
+        public static PetCard fromEntity(Pet pet) {
+            return PetCard.builder()
+                    .idx(pet.getIdx())
+                    .name(pet.getName())
+                    .breed(pet.getBreed())
+                    .gender(pet.getGender())
+                    .birthDate(pet.getBirthDate())
+                    .profileImageUrl(pet.getProfileImageUrl())
+                    .isNeutering(pet.isNeutering())
+                    .specificInformation(pet.getSpecificInformation())
+                    .status(pet.getStatus())
+                    .build();
+        }
     }
+
     @Data
     @Schema(description = "반려동물 카드 생성 요청")
     public static class PetCardCreateRequest {
@@ -60,7 +76,23 @@ public class PetDto {
 
         @Schema(description = "프로필 이미지 URL", example = "https://example.com/coco.jpg")
         private String profileImageUrl;
+
         private Long userId;
+
+        // DTO -> 엔티티로 변환하는 메소드 추가
+        public Pet toEntity(String imagePath) {
+            Pet pet = new Pet();
+            pet.setName(this.name);
+            pet.setGender(this.gender);
+            pet.setBreed(this.breed);
+            pet.setBirthDate(this.birthDate);
+            pet.setNeutering(this.isNeutering);
+            pet.setSpecificInformation(this.specificInformation);
+            pet.setProfileImageUrl(imagePath);  // 이미지 경로 설정
+            pet.setUserId(this.userId);
+
+            return pet;
+        }
     }
 
     @Getter
