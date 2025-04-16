@@ -1,10 +1,12 @@
 package com.hot6.backend.pet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hot6.backend.pet.model.PetDto;
 import com.hot6.backend.schedule.model.ScheduleDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,15 +51,23 @@ public class PetController {
         return ResponseEntity.ok("반려동물 카드가 생성되었습니다.");
     }
 
-    // 반려동물 카드 수정
-    @Operation(summary = "반려동물 카드 수정", description = "기존 반려동물 카드 정보를 수정합니다.")
     @PutMapping("/{petId}")
-    public ResponseEntity<String> updatePet(@PathVariable Long petId,
-                                            @RequestBody PetDto.PetCardUpdateRequest request) {
-        petService.updatePetCard(request);
-        return ResponseEntity.ok("반려동물 카드가 수정되었습니다.");
-    }
+    public ResponseEntity<String> updatePet(
+            @PathVariable("petId") Long petId,
+            @RequestPart("pet") PetDto.PetCardUpdateRequest petCardUpdateRequest) {
+        try {
+            // 이미지 처리 부분은 주석 처리
+            // String profileImageUrl = saveProfileImage(profileImage);  // 이미지 저장 후 URL 반환
+            // petCardUpdateRequest.setProfileImageUrl(profileImageUrl);  // 이미지 URL 설정
 
+            // DTO를 엔티티로 변환 후 DB에 저장
+            petService.updatePetCard(petCardUpdateRequest);
+
+            return ResponseEntity.ok("반려동물 카드가 수정되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("반려동물 카드 수정 실패");
+        }
+    }
     @Operation(summary = "반려동물 카드 삭제", description = "사용자의 반려동물 카드를 삭제합니다.")
     @DeleteMapping("/{petId}")
     public ResponseEntity<String> deletePet(@PathVariable Long petId) {

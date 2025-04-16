@@ -23,6 +23,8 @@ public class Pet {
     private String profileImageUrl;
     private boolean isNeutering;
     private String specificInformation;
+    @Enumerated(EnumType.STRING)
+    private PetStatus status;
 
     @Column(nullable = false)
     private Long userId;
