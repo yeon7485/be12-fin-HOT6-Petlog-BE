@@ -63,13 +63,11 @@ public class ChatController {
     }
 
     @Operation(summary = "참여 중인 채팅방 목록 조회", description = "사용자가 현재 참여 중인 채팅방 목록을 조회합니다.")
-    @GetMapping("/user/{userIdx}/chatrooms")
-    public ResponseEntity<List<ChatDto.ChatInfo>> getUserChatRooms(
-            @PathVariable Long userIdx) {
-        List<ChatDto.ChatInfo> list = new ArrayList<>();
-        list.add(ChatDto.ChatInfo.builder().title("내 채팅방 1").hashtags(List.of("#강아지", "#서울")).build());
-        list.add(ChatDto.ChatInfo.builder().title("내 채팅방 2").hashtags(List.of("#친구", "#햄스터")).build());
-        return ResponseEntity.ok(list);
+    @GetMapping("/chatrooms/me")
+    public ResponseEntity<BaseResponse<List<ChatDto.ChatInfo>>> getUserChatRooms(
+            @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, chatRoomService.getChatRoomByUserIdx(user.getIdx())));
+//        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, chatRoomService.findMyChatRooms(user.getIdx())));
     }
 
     @Operation(summary = "채팅방 검색", description = "채팅방 제목 또는 해시태그로 검색합니다.")

@@ -24,11 +24,11 @@ public class ChatRoomParticipant extends BaseEntity {
     private Long idx;
     private Boolean isAdmin;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_idx")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_idx")
     private ChatRoom chatRoom;
 

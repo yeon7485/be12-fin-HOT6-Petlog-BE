@@ -46,4 +46,9 @@ public class ChatRoomService {
         User findUser = userService.findUserByIdx(userIdx);
         chatRoomParticipantService.save(findUser, chatRoom);
     }
+
+    public List<ChatDto.ChatInfo> getChatRoomByUserIdx(Long userIdx) {
+        List<ChatRoom> allByParticipants = chatRoomRepository.findAllByParticipants(userIdx);
+        return allByParticipants.stream().map(ChatDto.ChatInfo::from).collect(Collectors.toList());
+    }
 }

@@ -7,9 +7,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Entity
@@ -25,8 +26,8 @@ public class ChatRoom extends BaseEntity {
 
 
     @OneToMany(mappedBy = "chatRoom")
-    private List<ChatRoomParticipant> participants = new ArrayList<>();
+    private Set<ChatRoomParticipant> participants = new HashSet<>();
 
     @OneToMany(mappedBy = "chatRoom")
-    private List<ChatRoomHashtag> hashtags = new ArrayList<>();
+    private Set<ChatRoomHashtag> hashtags = new HashSet<>();
 }
