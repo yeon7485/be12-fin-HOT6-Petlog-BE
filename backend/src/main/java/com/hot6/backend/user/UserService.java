@@ -153,4 +153,8 @@ public class UserService implements UserDetailsService {
 
         response.setHeader("Set-Cookie", deleteCookie.toString());
     }
+    public User findUserByIdx(Long idx) {
+        return userRepository.findByIdx(idx).orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NOT_FOUND));
+    }
+
 }

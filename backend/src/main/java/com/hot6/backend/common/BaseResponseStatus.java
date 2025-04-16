@@ -22,7 +22,8 @@ public enum BaseResponseStatus {
     //-- 1200 : 계정 정보 수정
     ACCOUNT_UPDATE_FAILED(false, 1200, "계정 정보 수정에 실패했습니다."),
     INVALID_USER_INFO(false, 1201, "잘못된 사용자 정보입니다."),
-
+    //-- 1300 : 유저 정보 조회
+    USER_NOT_FOUND(false, 1300, "찾을 수 없는 사용자입니다."),
 
     /* 2000 ~ 2999 : 식당 관련 에러 */
     //-- 2000 : 식당 조회 에러

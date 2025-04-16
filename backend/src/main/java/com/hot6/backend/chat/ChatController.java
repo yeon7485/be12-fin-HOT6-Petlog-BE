@@ -1,29 +1,37 @@
 package com.hot6.backend.chat;
 
 import com.hot6.backend.chat.model.ChatDto;
-import com.hot6.backend.chat.service.ChatRoomHashtagService;
+import com.hot6.backend.chat.service.ChatRoomParticipantService;
 import com.hot6.backend.chat.service.ChatRoomService;
 import com.hot6.backend.common.BaseResponse;
 import com.hot6.backend.common.BaseResponseStatus;
+import com.hot6.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/chat")
 @RequiredArgsConstructor
 @Tag(name = "Chat", description = "그룹 채팅 기능 API")
 public class ChatController {
     private final ChatRoomService chatRoomService;
+    private final ChatRoomParticipantService chatRoomParticipantService;
+
     @Operation(summary = "그룹 채팅방 생성", description = "채팅방 제목과 해시태그를 포함하여 새로운 채팅방을 생성합니다.")
-    @PostMapping("/")
-    public ResponseEntity<String> createGroupChat(@RequestBody ChatDto.CreateChatRoomRequest request) {
+    @PostMapping
+    public ResponseEntity<String> createGroupChat(@RequestBody ChatDto.CreateChatRoomRequest request, @AuthenticationPrincipal User user) {
+        log.info("user info {}", user.getIdx());
+        chatRoomService.createChatRoom(request, user.getIdx());
         return ResponseEntity.ok("채팅방 생성 완료");
     }
 
@@ -57,13 +65,11 @@ public class ChatController {
     }
 
     @Operation(summary = "참여 중인 채팅방 목록 조회", description = "사용자가 현재 참여 중인 채팅방 목록을 조회합니다.")
-    @GetMapping("/user/{userIdx}/chatrooms")
-    public ResponseEntity<List<ChatDto.ChatInfo>> getUserChatRooms(
-            @PathVariable Long userIdx) {
-        List<ChatDto.ChatInfo> list = new ArrayList<>();
-        list.add(ChatDto.ChatInfo.builder().title("내 채팅방 1").hashtags(List.of("#강아지", "#서울")).build());
-        list.add(ChatDto.ChatInfo.builder().title("내 채팅방 2").hashtags(List.of("#친구", "#햄스터")).build());
-        return ResponseEntity.ok(list);
+    @GetMapping("/chatrooms/me")
+    public ResponseEntity<BaseResponse<List<ChatDto.ChatInfo>>> getUserChatRooms(
+            @AuthenticationPrincipal User user) {
+//        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, chatRoomService.getChatRoomByUserIdx(user.getIdx())));
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, chatRoomService.findMyChatRooms(user.getIdx())));
     }
 
     @Operation(summary = "채팅방 검색", description = "채팅방 제목 또는 해시태그로 검색합니다.")
@@ -79,19 +85,15 @@ public class ChatController {
         return ResponseEntity.ok(list);
     }
 
-    @MessageMapping("/chat.sendMessage")
-    public void sendMessage(ChatDto.CreateChatRequest request) {
-        // 2. 실시간 브로드캐스트
-        String destination = "/topic/chatroom/" + request.getChatRoomIdx();
-//        messagingTemplate.convertAndSend(destination, request);
-    }
-
-    @Operation(summary = "채팅 메시지 전송", description = "채팅방에 메시지를 전송합니다.")
-    @PostMapping("/chatroom/{chatRoomIdx}/chat")
-    public ResponseEntity<String> createChat(
+    @Operation(summary = "채팅방 일정", description = "채팅방의 정보(채팅방 이름,해시 태그, 대화 상대)를 조회 합니다..")
+    @GetMapping("/chatroom/{chatRoomIdx}/users")
+    public ResponseEntity<BaseResponse<Slice<ChatDto.ChatUserInfo>>> getChatRoomUsers(
             @PathVariable Long chatRoomIdx,
-            @RequestBody ChatDto.CreateChatRequest request) {
-        return ResponseEntity.ok("채팅 메시지 전송 완료");
+            @RequestParam(required = false) Long lastUserId,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        Slice<ChatDto.ChatUserInfo> users = chatRoomParticipantService.getChatRoomInUsers(chatRoomIdx, lastUserId, size);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS,users));
     }
 
     @Operation(summary = "채팅 메시지 조회", description = "지정된 채팅방의 이전 메시지를 조회합니다.")

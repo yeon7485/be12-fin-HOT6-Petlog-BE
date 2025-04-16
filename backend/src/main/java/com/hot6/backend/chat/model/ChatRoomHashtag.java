@@ -21,7 +21,7 @@ public class ChatRoomHashtag extends BaseEntity {
 
     private String cTag;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_idx")
     private ChatRoom chatRoom;
 }
