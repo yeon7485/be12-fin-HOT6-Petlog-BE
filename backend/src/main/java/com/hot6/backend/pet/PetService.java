@@ -56,17 +56,15 @@ public class PetService {
     }
 
     public void updatePetCard(PetDto.PetCardUpdateRequest request) {
-        // 기존 Pet 객체를 petId로 찾아옴
-        Pet pet = petRepository.findById(request.getIdx()) // 여기서 petId를 사용해야 함
-                .orElseThrow(() -> new IllegalArgumentException("해당 반려동물이 존재하지 않습니다. id=" + request.getIdx()));
+        // DTO를 엔티티로 변환
+        Pet pet = request.toEntity(request);
 
-        // 기존 Pet 엔티티의 필드 값을 요청으로 받은 값으로 업데이트
-        pet.setName(request.getName());
-        pet.setGender(request.getGender());
-        pet.setBreed(request.getBreed());
-        pet.setBirthDate(request.getBirthDate());
+        // userId가 null인 경우 기본값 설정
+        if (pet.getUserId() == null) {
+            pet.setUserId(1L);  // 예시로 기본값 1L을 설정
+        }
 
-        // 변경된 Pet 객체를 DB에 저장
+        // 저장 또는 업데이트
         petRepository.save(pet);
     }
 
