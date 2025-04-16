@@ -31,13 +31,6 @@ public class UserController {
         return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, userService.signup(userCreateRequest)));
     }
 
-    @Operation(summary = "소셜 회원가입", description = "카카오톡으로 회원가입 처리")
-    @PostMapping("/social/register")
-    public ResponseEntity<String> socialRegister(@RequestBody UserDto.SocialRegisterRequest request) {
-        // TODO: 카카오에서 전달받은 정보로 회원가입 처리
-        return ResponseEntity.ok("소셜 회원가입 성공");
-    }
-
     @Operation(summary = "일반/관리자 로그인", description = "이메일, 비밀번호로 로그인")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그인 성공",
@@ -50,25 +43,11 @@ public class UserController {
                 .build();
     }
 
-    @Operation(summary = "소셜 로그인", description = "카카오톡 소셜 로그인")
-    @PostMapping("/social/login")
-    public ResponseEntity<String> socialLogin(@RequestParam String accessToken) {
-        // TODO: 액세스 토큰으로 사용자 정보 확인 후 로그인 처리
-        return ResponseEntity.ok("소셜 로그인 성공");
-    }
-
-    @Operation(summary = "이메일 인증 요청", description = "회원가입 시 인증 링크를 이메일로 전송")
-    @PostMapping("/verify-email")
-    public ResponseEntity<String> requestEmailVerification(@RequestParam String email) {
-        // TODO: UUID 생성 후 이메일 전송
-        return ResponseEntity.ok("이메일 인증 링크 전송됨");
-    }
-
     @Operation(summary = "이메일 인증 완료", description = "UUID를 통해 이메일 인증 처리")
-    @GetMapping("/verify-email/{uuid}")
-    public ResponseEntity<String> verifyEmail(@PathVariable String uuid) {
-        // TODO: UUID 검증 및 인증 처리
-        return ResponseEntity.ok("이메일 인증 완료");
+    @GetMapping("/verify-email")
+    public ResponseEntity<BaseResponse<String>> verifyEmail(@RequestParam String uuid, HttpServletResponse response) {
+        userService.verify(uuid, response);
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS));
     }
 
     @Operation(summary = "로그인 체크", description = "JWT 토큰으로 로그인 체크")

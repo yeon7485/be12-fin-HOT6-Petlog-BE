@@ -28,6 +28,7 @@ public class JwtUtil {
                     .nickname(claims.get("nickname", String.class))
                     .idx(claims.get("idx", Long.class))
                     .userType(UserType.valueOf(claims.get("userType", String.class)))
+                    .enabled(claims.get("enabled", Boolean.class))
                     .build();
 
         } catch (ExpiredJwtException e) {
@@ -41,6 +42,8 @@ public class JwtUtil {
     public static String generateToken(User user) {
         Claims claims = Jwts.claims();
         claims.put("nickname", user.getNickname());
+        claims.put("email", user.getEmail());
+        claims.put("enabled", user.isEnabled());
         claims.put("idx", user.getIdx());
         claims.put("userType", user.getUserType());
         String token = Jwts.builder()
