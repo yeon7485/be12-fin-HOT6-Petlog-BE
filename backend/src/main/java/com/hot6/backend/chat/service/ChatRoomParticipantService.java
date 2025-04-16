@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -23,5 +25,9 @@ public class ChatRoomParticipantService {
                         .chatRoom(chatRoom)
                         .build()
         );
+    }
+
+    public List<Long> findChatRoomIdsByUserId(Long userId) {
+        return chatRoomParticipantRepository.findChatRoomIdsByUserId(userId);
     }
 }
