@@ -16,8 +16,6 @@ public class PetService {
     private final PetRepository petRepository;
     private final ImageService imageService;
 
-
-    // 파일 업로드 처리 및 Pet 카드 생성
     public void createPetCard(PetDto.PetCardCreateRequest request, String imagePath) {
         Pet pet = new Pet();
         pet.setName(request.getName());
@@ -76,4 +74,14 @@ public class PetService {
         // 조회된 Pet 객체를 PetCardDetailResponse로 변환하여 반환
         return PetDto.PetCardDetailResponse.from(pet);
     }
+    // 반려동물 삭제
+    public void deletePet(Long petId) {
+        // 반려동물 ID로 조회
+        Pet pet = petRepository.findById(petId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 반려동물이 존재하지 않습니다. id=" + petId));
+
+        // 삭제 처리
+        petRepository.delete(pet);
+    }
 }
+

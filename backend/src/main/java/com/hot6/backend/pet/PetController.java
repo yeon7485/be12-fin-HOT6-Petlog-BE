@@ -71,7 +71,15 @@ public class PetController {
     @Operation(summary = "반려동물 카드 삭제", description = "사용자의 반려동물 카드를 삭제합니다.")
     @DeleteMapping("/{petId}")
     public ResponseEntity<String> deletePet(@PathVariable Long petId) {
-        return ResponseEntity.ok("반려동물 카드가 삭제되었습니다.");
+        try {
+            // 서비스에서 반려동물 삭제
+            petService.deletePet(petId);
+
+            return ResponseEntity.ok("반려동물 카드가 삭제되었습니다.");
+        } catch (IllegalArgumentException e) {
+            // 반려동물 존재하지 않는 경우
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     // 반려동물 월간 일정 조회
