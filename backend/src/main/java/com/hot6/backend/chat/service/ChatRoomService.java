@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,5 +51,15 @@ public class ChatRoomService {
     public List<ChatDto.ChatInfo> getChatRoomByUserIdx(Long userIdx) {
         List<ChatRoom> allByParticipants = chatRoomRepository.findAllByParticipants(userIdx);
         return allByParticipants.stream().map(ChatDto.ChatInfo::from).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChatDto.ChatInfo> findMyChatRooms(Long userId) {
+        List<Long> roomIds = chatRoomParticipantService.findChatRoomIdsByUserId(userId);
+        if (roomIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return chatRoomRepository.findChatRoomsWithDetailsByIds(roomIds).stream().map(ChatDto.ChatInfo::from).collect(Collectors.toList());
     }
 }
