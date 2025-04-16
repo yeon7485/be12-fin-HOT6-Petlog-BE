@@ -5,16 +5,20 @@ import com.hot6.backend.chat.service.ChatRoomHashtagService;
 import com.hot6.backend.chat.service.ChatRoomService;
 import com.hot6.backend.common.BaseResponse;
 import com.hot6.backend.common.BaseResponseStatus;
+import com.hot6.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/chat")
 @RequiredArgsConstructor
@@ -22,8 +26,10 @@ import java.util.List;
 public class ChatController {
     private final ChatRoomService chatRoomService;
     @Operation(summary = "그룹 채팅방 생성", description = "채팅방 제목과 해시태그를 포함하여 새로운 채팅방을 생성합니다.")
-    @PostMapping("/")
-    public ResponseEntity<String> createGroupChat(@RequestBody ChatDto.CreateChatRoomRequest request) {
+    @PostMapping
+    public ResponseEntity<String> createGroupChat(@RequestBody ChatDto.CreateChatRoomRequest request, @AuthenticationPrincipal User user) {
+        log.info("user info {}", user.getIdx());
+        chatRoomService.createChatRoom(request, user.getIdx());
         return ResponseEntity.ok("채팅방 생성 완료");
     }
 

@@ -1,5 +1,7 @@
 package com.hot6.backend.user;
 
+import com.hot6.backend.common.BaseResponseStatus;
+import com.hot6.backend.common.exception.BaseException;
 import com.hot6.backend.user.model.User;
 import com.hot6.backend.user.model.UserDto;
 import jakarta.servlet.http.HttpServletResponse;
@@ -71,4 +73,8 @@ public class UserService implements UserDetailsService {
 
         response.setHeader("Set-Cookie", deleteCookie.toString());
     }
+    public User findUserByIdx(Long idx) {
+        return userRepository.findByIdx(idx).orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NOT_FOUND));
+    }
+
 }
