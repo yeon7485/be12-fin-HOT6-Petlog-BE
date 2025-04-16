@@ -15,9 +15,6 @@ public class ChatDto {
 
         @Schema(description = "채팅방 해시태그 목록", example = "[\"#햄스터\", \"#김포\", \"#친구\"]")
         private List<String> hashtags;
-
-        @Schema(description = "참여자 사용자 ID 목록", example = "[1, 2, 3]")
-        private List<Long> userIds;
     }
 
     @Getter
