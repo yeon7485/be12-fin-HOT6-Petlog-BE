@@ -29,6 +29,7 @@ public class User implements UserDetails {
     private String nickname;
     private String userProfileImage;
     private UserType userType;
+    private boolean enabled;
 
     @OneToMany(mappedBy = "user")
     private List<ChatRoomParticipant> chatParticipations = new ArrayList<>();
@@ -70,5 +71,9 @@ public class User implements UserDetails {
     @Override
     public String getUsername() {
         return nickname;
+    }
+
+    public void userVerify() {
+        this.enabled = true;
     }
 }

@@ -2,10 +2,8 @@ package com.hot6.backend.user.model;
 
 import com.hot6.backend.pet.model.PetDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -30,6 +28,9 @@ public class UserDto {
         @Schema(description = "회원 역할 (USER or ADMIN)", example = "USER")
         private String role;
 
+        @Schema(description = "이메일 인증 여부", example = "false")
+        private boolean enabled;
+
         public User toEntity(String password) {
             return User.builder()
                     .email(email)
@@ -37,6 +38,7 @@ public class UserDto {
                     .nickname(nickname)
                     .userType(UserType.valueOf(role))
                     .userProfileImage(profileImageUrl)
+                    .enabled(false)
                     .build();
         }
     }
@@ -48,9 +50,7 @@ public class UserDto {
         private String email;
 
         public static CreateResponse from(User user) {
-            return CreateResponse.builder()
-                    .email(user.getEmail())
-                    .build();
+            return CreateResponse.builder().email(user.getEmail()).build();
         }
     }
 
@@ -138,10 +138,7 @@ public class UserDto {
         private String nickname;
 
         public static LoginCheckResponse from(User user) {
-            return LoginCheckResponse.builder()
-                    .isLogin(true)
-                    .nickname(user.getNickname())
-                    .build();
+            return LoginCheckResponse.builder().isLogin(true).nickname(user.getNickname()).build();
         }
     }
 

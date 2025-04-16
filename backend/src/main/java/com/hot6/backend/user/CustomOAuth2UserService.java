@@ -45,6 +45,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     .nickname(nickname)
                     .profileImageUrl(profileImage)
                     .role("USER")
+                    .enabled(true)
                     .build());
         }
 
