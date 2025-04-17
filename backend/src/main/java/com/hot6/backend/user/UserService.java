@@ -2,6 +2,7 @@ package com.hot6.backend.user;
 
 import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.common.exception.BaseException;
+import com.hot6.backend.pet.model.PetDto;
 import com.hot6.backend.user.model.EmailVerify;
 import com.hot6.backend.user.model.User;
 import com.hot6.backend.user.model.UserDto;
@@ -24,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -159,5 +162,21 @@ public class UserService implements UserDetailsService {
     public User findUserByIdx(Long idx) {
         return userRepository.findByIdx(idx).orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NOT_FOUND));
     }
+    // 유저 프로필 조회
+    public UserDto.UserProfileResponse getProfile(Long idx) {
+        User user = userRepository.findById(idx)
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
 
+        // 펫 카드 목록 (현재는 비어있지만 추후 구현 가능)
+        List<PetDto.PetCard> petCards = new ArrayList<>();
+
+        System.out.println("Returning user email: " + user.getEmail());
+        // DB에서 가져온 정보를 UserProfileResponse로 반환
+        return UserDto.UserProfileResponse.builder()
+                .email(user.getEmail())  // DB에서 가져온 이메일
+                .nickname(user.getNickname())  // DB에서 가져온 닉네임
+//                .profileImageUrl(user.getProfileImageUrl())  // DB에서 가져온 프로필 이미지 URL
+                .petCards(petCards)  // 펫 카드 목록
+                .build();
+    }
 }

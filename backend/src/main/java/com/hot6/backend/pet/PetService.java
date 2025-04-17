@@ -2,6 +2,7 @@ package com.hot6.backend.pet;
 
 import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.pet.model.PetDto;
+import com.hot6.backend.pet.model.PetStatus;
 import com.hot6.backend.schedule.model.ScheduleDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.hot6.backend.pet.model.QPet.pet;
 
 @RequiredArgsConstructor
 @Service
@@ -37,16 +40,21 @@ public class PetService {
                 .collect(Collectors.toList());
     }
 
-    public void updatePetCard(PetDto.PetCardUpdateRequest request) {
-        // DTO를 엔티티로 변환
-        Pet pet = request.toEntity();
+    public void updatePetCard(PetDto.PetCardUpdateRequest petCardUpdateRequest, Long petId) {
+        // Pet ID로 해당 반려동물을 DB에서 조회
+        Pet pet = petRepository.findById(petId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 반려동물이 존재하지 않습니다. id=" + petId));
 
-        // userId가 null인 경우 기본값 설정
-        if (pet.getUserId() == null) {
-            pet.setUserId(1L);
-        }
+        // DTO를 엔티티로 변환하여 해당 반려동물 정보를 갱신
+        pet.setName(petCardUpdateRequest.getName());
+        pet.setBreed(petCardUpdateRequest.getBreed());
+        pet.setGender(petCardUpdateRequest.getGender());
+        pet.setBirthDate(petCardUpdateRequest.getBirthDate());
+        pet.setNeutering(petCardUpdateRequest.isNeutering());
+        pet.setSpecificInformation(petCardUpdateRequest.getSpecificInformation());
+        pet.setStatus(PetStatus.valueOf(petCardUpdateRequest.getStatus())); // String -> Enum 변환
 
-        // 저장 또는 업데이트
+        // DB에 저장 (업데이트)
         petRepository.save(pet);
     }
 
@@ -58,6 +66,7 @@ public class PetService {
         // 조회된 Pet 객체를 PetCardDetailResponse로 변환하여 반환
         return PetDto.PetCardDetailResponse.from(pet);
     }
+
     // 반려동물 삭제
     public void deletePet(Long petId) {
         // 반려동물 ID로 조회

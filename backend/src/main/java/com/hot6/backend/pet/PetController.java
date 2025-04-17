@@ -53,19 +53,17 @@ public class PetController {
     public ResponseEntity<String> updatePet(
             @PathVariable("petId") Long petId,
             @RequestPart("pet") PetDto.PetCardUpdateRequest petCardUpdateRequest) {
-        try {
-            // 이미지 처리 부분은 주석 처리
-            // String profileImageUrl = saveProfileImage(profileImage);  // 이미지 저장 후 URL 반환
-            // petCardUpdateRequest.setProfileImageUrl(profileImageUrl);  // 이미지 URL 설정
 
-            // DTO를 엔티티로 변환 후 DB에 저장
-            petService.updatePetCard(petCardUpdateRequest);
+        try {
+            // 서비스에서 실제 반려동물 카드 수정 로직 처리
+            petService.updatePetCard(petCardUpdateRequest, petId);
 
             return ResponseEntity.ok("반려동물 카드가 수정되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("반려동물 카드 수정 실패");
         }
     }
+
     @Operation(summary = "반려동물 카드 삭제", description = "사용자의 반려동물 카드를 삭제합니다.")
     @DeleteMapping("/{petId}")
     public ResponseEntity<String> deletePet(@PathVariable Long petId) {

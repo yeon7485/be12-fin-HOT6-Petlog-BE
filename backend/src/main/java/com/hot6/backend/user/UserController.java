@@ -3,6 +3,7 @@ package com.hot6.backend.user;
 import com.hot6.backend.common.BaseResponse;
 import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.pet.model.PetDto;
+import com.hot6.backend.user.model.User;
 import com.hot6.backend.user.model.UserDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,8 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 @RestController
 @RequestMapping("/user")
@@ -59,42 +59,37 @@ public class UserController {
 
 
     @Operation(summary = "회원 프로필 조회", description = "특정 회원의 프로필 정보 및 펫 카드 목록 조회")
-    @GetMapping("/{idx}/profile")
-    UserDto.UserProfileResponse getProfile(@PathVariable Long idx) {
-        List<PetDto.PetCard> petCards = new ArrayList<>();
-        return UserDto.UserProfileResponse.builder()
-                .email("user" + idx + "@gmail.com")
-                .nickname("User" + idx)
-                .profileImageUrl("test")
-                .petCards(petCards)
-                .build();
+    @GetMapping( "/{idx}/profile")
+    public UserDto.UserProfileResponse getProfile(@PathVariable Long idx) {
+        // UserService의 getProfile 메서드를 호출하여 유저 정보를 반환
+        return userService.getProfile(idx);
     }
 
-    @Operation(summary = "프로필 이미지 수정", description = "회원의 프로필 이미지를 수정")
-    @PostMapping("/{idx}/profile")
-    public ResponseEntity<String> updateProfile(@PathVariable Long idx,
-                                                @RequestBody UserDto.UserProfileImageUpdateRequest request) {
-        return ResponseEntity.ok("ok");
-    }
+@Operation(summary = "프로필 이미지 수정", description = "회원의 프로필 이미지를 수정")
+@PostMapping("/{idx}/profile")
+public ResponseEntity<String> updateProfile(@PathVariable Long idx,
+                                            @RequestBody UserDto.UserProfileImageUpdateRequest request) {
+    return ResponseEntity.ok("ok");
+}
 
-    @Operation(summary = "비밀번호 수정", description = "회원이 현재 비밀번호를 입력하고 새 비밀번호로 변경")
-    @PostMapping("/{idx}/password")
-    public ResponseEntity<String> updatePassword(@PathVariable Long idx,
-                                                 @RequestBody UserDto.PasswordUpdateRequest request) {
-        return ResponseEntity.ok("ok");
-    }
+@Operation(summary = "비밀번호 수정", description = "회원이 현재 비밀번호를 입력하고 새 비밀번호로 변경")
+@PostMapping("/{idx}/password")
+public ResponseEntity<String> updatePassword(@PathVariable Long idx,
+                                             @RequestBody UserDto.PasswordUpdateRequest request) {
+    return ResponseEntity.ok("ok");
+}
 
-    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 처리 (소셜 회원은 비밀번호 불필요)")
-    @DeleteMapping("/{idx}")
-    public ResponseEntity<String> delete(@PathVariable Long idx,
-                                         @RequestBody UserDto.UserDeleteRequest request) {
-        return ResponseEntity.ok("ok");
-    }
+@Operation(summary = "회원 탈퇴", description = "회원 탈퇴 처리 (소셜 회원은 비밀번호 불필요)")
+@DeleteMapping("/{idx}")
+public ResponseEntity<String> delete(@PathVariable Long idx,
+                                     @RequestBody UserDto.UserDeleteRequest request) {
+    return ResponseEntity.ok("ok");
+}
 
-    @Operation(summary = "회원 로그아웃", description = "현재 로그인된 계정에서 로그아웃")
-    @PostMapping("/logout")
-    public ResponseEntity<BaseResponse<String>> logout(HttpServletResponse response) {
-        userService.logout(response);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, "로그아웃"));
-    }
+@Operation(summary = "회원 로그아웃", description = "현재 로그인된 계정에서 로그아웃")
+@PostMapping("/logout")
+public ResponseEntity<BaseResponse<String>> logout(HttpServletResponse response) {
+    userService.logout(response);
+    return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, "로그아웃"));
+}
 }
