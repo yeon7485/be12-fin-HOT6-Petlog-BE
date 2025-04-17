@@ -22,7 +22,8 @@ public class CustomOAuth2User implements OAuth2User {
         return Map.of(
                 "email", user.getEmail(),
                 "nickname", user.getNickname(),
-                "userType", user.getUserType()
+                "userType", user.getUserType(),
+                "idx", user.getIdx()
         );
     }
 

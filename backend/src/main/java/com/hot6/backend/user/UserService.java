@@ -139,6 +139,7 @@ public class UserService implements UserDetailsService {
         }
 
         return UserDto.LoginCheckResponse.builder()
+                .idx(0L)
                 .isLogin(false)
                 .enabled(false)
                 .nickname(null)

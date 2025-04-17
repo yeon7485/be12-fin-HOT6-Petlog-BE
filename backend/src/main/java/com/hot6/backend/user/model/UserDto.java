@@ -131,6 +131,9 @@ public class UserDto {
     @Getter
     @Builder
     public static class LoginCheckResponse {
+        @Schema(description = "회원 idx", example = "1")
+        private Long idx;
+
         @Schema(description = "로그인 여부", example = "true")
         private boolean isLogin;
 
@@ -145,6 +148,7 @@ public class UserDto {
 
         public static LoginCheckResponse from(User user) {
             return LoginCheckResponse.builder()
+                    .idx(user.getIdx())
                     .isLogin(true)
                     .nickname(user.getNickname())
                     .enabled(user.isEnabled())
