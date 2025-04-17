@@ -44,4 +44,16 @@ public class ChatRoomParticipantService {
         return chatRoomParticipantRepository.findByUserIdxAndChatRoomIdx(userIdx, chatRoomIdx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_ACCESS_DENIED));
     }
+
+
+    @Transactional(readOnly = false)
+    public void leaveChatRoom(Long chatRoomIdx, Long idx) {
+        ChatRoomParticipant chatRoomParticipant = chatRoomParticipantRepository.findByUserIdAndChatRoomIdSimple(idx, chatRoomIdx)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_ACCESS_DENIED));
+        System.out.println("🔍 before delete");
+
+        chatRoomParticipantRepository.delete(chatRoomParticipant);
+
+        System.out.println("🔍 after delete");
+    }
 }
