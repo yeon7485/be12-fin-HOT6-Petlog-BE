@@ -49,11 +49,12 @@ public class ChatController {
     }
 
     @Operation(summary = "채팅방 나가기", description = "사용자가 채팅방에서 나갑니다.")
-    @DeleteMapping("/{chatRoomIdx}/user/{userIdx}")
-    public ResponseEntity<String> leaveChatRoom(
+    @DeleteMapping("/chatroom/{chatRoomIdx}/leave")
+    public ResponseEntity<BaseResponse<String>> leaveChatRoom(
             @PathVariable Long chatRoomIdx,
-            @PathVariable Long userIdx) {
-        return ResponseEntity.ok("채팅방 나가기 완료");
+            @AuthenticationPrincipal User user) {
+        chatRoomParticipantService.leaveChatRoom(chatRoomIdx,user.getIdx());
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS,"성공적으로 나가졌습니다."));
     }
 
     @Operation(summary = "전체 채팅방 목록 조회", description = "전체 그룹 채팅방 리스트를 조회합니다.")
@@ -83,7 +84,15 @@ public class ChatController {
         return ResponseEntity.ok(list);
     }
 
-    @Operation(summary = "채팅방 일정", description = "채팅방의 정보(채팅방 이름,해시 태그, 대화 상대)를 조회 합니다..")
+    @Operation(summary = "단일 채팅방의 정보 조회", description = "단일 채팅방의 정보를 조회합니다.(채팅방 이름, 해시 태그)")
+    @GetMapping("/chatroom/{chatRoomIdx}")
+    public ResponseEntity<BaseResponse<ChatDto.ChatInfo>> getChatRoomInfo(
+            @PathVariable Long chatRoomIdx
+    ) {
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS,chatRoomService.getChatRoomInfo(chatRoomIdx)));
+    }
+
+    @Operation(summary = "채팅방 정보 조회 - 현재 참여한 유저", description = "현재 채팅방에 참여하고 있는 유저의 목록을 조회합니다.")
     @GetMapping("/chatroom/{chatRoomIdx}/users")
     public ResponseEntity<BaseResponse<Slice<ChatDto.ChatUserInfo>>> getChatRoomUsers(
             @PathVariable Long chatRoomIdx,
