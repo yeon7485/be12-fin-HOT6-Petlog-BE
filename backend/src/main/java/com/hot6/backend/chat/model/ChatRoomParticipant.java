@@ -5,7 +5,10 @@ import com.hot6.backend.user.model.User;
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DialectOverride;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.Where;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +18,10 @@ import java.util.List;
 @Entity
 @Builder
 @NoArgsConstructor
+@Where(clause = "is_deleted = false")
+@SQLDelete(sql = "UPDATE chat_room_participant SET is_deleted = true WHERE idx = ?")
 @AllArgsConstructor
-@Table(name = "Chat_Room_Participant")
+@Table(name = "chat_room_participant")
 public class ChatRoomParticipant extends BaseEntity {
 
     @Id
@@ -38,4 +43,6 @@ public class ChatRoomParticipant extends BaseEntity {
     @Type(JsonType.class)
     @Column(name = "meta_data", columnDefinition = "json")
     private ChatRoomUserMetaData metaData;
+
+    private boolean isDeleted = false;
 }
