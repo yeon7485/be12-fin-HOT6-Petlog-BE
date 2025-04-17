@@ -38,7 +38,7 @@ public class UserDto {
                     .nickname(nickname)
                     .userType(UserType.valueOf(role))
                     .userProfileImage(profileImageUrl)
-                    .enabled(false)
+                    .enabled(enabled)
                     .build();
         }
     }
