@@ -4,7 +4,10 @@ import com.hot6.backend.board.answer.AnswerService;
 import com.hot6.backend.board.hashtagQuestion.Hashtag_QuestionService;
 import com.hot6.backend.board.question.model.Question;
 import com.hot6.backend.board.question.model.QuestionDto;
+import com.hot6.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,7 +22,14 @@ public class QuestionService {
     private final Hashtag_QuestionService hashtagService;
 
     public void create(QuestionDto.QuestionRequest dto) {
-        Question question = questionRepository.save(dto.toEntity());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) auth.getPrincipal();
+
+        Question question = dto.toEntity();
+        question.setUser(currentUser); // 로그인한 유저 설정
+
+        questionRepository.save(question);
+
         if (dto.getTags() != null && !dto.getTags().isEmpty()) {
             hashtagService.saveTags(dto.getTags(), question.getIdx());
         }
@@ -33,7 +43,7 @@ public class QuestionService {
 
     public List<QuestionDto.QuestionResponse> search(String keyword) {
         List<Question> result = questionRepository
-                .findByqTitleContainingIgnoreCaseOrWriterContainingIgnoreCaseOrContentContainingIgnoreCaseOrHashtagsListTagContainingIgnoreCase(
+                .findByqTitleContainingIgnoreCaseOrUserNicknameContainingIgnoreCaseOrContentContainingIgnoreCaseOrHashtagsListTagContainingIgnoreCase(
                         keyword, keyword, keyword, keyword);
         return result.stream().map(QuestionDto.QuestionResponse::from).toList();
     }

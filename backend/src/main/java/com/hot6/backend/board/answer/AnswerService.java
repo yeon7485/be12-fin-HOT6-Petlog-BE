@@ -4,6 +4,7 @@ import com.hot6.backend.board.answer.model.Answer;
 import com.hot6.backend.board.answer.model.AnswerDto;
 import com.hot6.backend.board.question.QuestionRepository;
 import com.hot6.backend.board.question.model.Question;
+import com.hot6.backend.user.model.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class AnswerService {
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
 
-    public void create(AnswerDto.AnswerRequest dto) {
+    public void create(AnswerDto.AnswerRequest dto, User currentUser) {
         Question question = questionRepository.findById(dto.getQuestionIdx())
                 .orElseThrow(() -> new RuntimeException("질문이 존재하지 않습니다"));
 
@@ -25,6 +26,7 @@ public class AnswerService {
                 .content(dto.getContent())
                 .selected(false)
                 .question(question)
+                .user(currentUser)
                 .build();
 
         answerRepository.save(answer);
@@ -73,4 +75,3 @@ public class AnswerService {
         answerRepository.delete(answer);
     }
 }
-

@@ -1,5 +1,7 @@
 package com.hot6.backend.user.model;
 
+import com.hot6.backend.board.answer.model.Answer;
+import com.hot6.backend.board.question.model.Question;
 import com.hot6.backend.chat.model.ChatRoomParticipant;
 import jakarta.persistence.*;
 import lombok.*;
@@ -80,5 +82,12 @@ public class User implements UserDetails {
     public boolean getEnabled() {
         return this.enabled;
     }
+
+
+    @OneToMany(mappedBy = "user")
+    private List<Question> questionList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Answer> answerList = new ArrayList<>();
 
 }

@@ -1,6 +1,7 @@
 package com.hot6.backend.board.comment.model;
 
 import com.hot6.backend.board.post.model.Post;
+import com.hot6.backend.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,4 +35,8 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_idx")
     private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_idx", nullable = false)
+    private User user;
 }

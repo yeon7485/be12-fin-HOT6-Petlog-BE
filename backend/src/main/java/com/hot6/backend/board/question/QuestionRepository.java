@@ -8,7 +8,10 @@ import java.util.List;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    List<Question> findByqTitleContainingIgnoreCaseOrWriterContainingIgnoreCaseOrContentContainingIgnoreCaseOrHashtagsListTagContainingIgnoreCase(
-            String title, String writer, String contents, String tag);
+
+    List<Question> findByqTitleContainingIgnoreCaseOrUserNicknameContainingIgnoreCaseOrContentContainingIgnoreCaseOrHashtagsListTagContainingIgnoreCase(
+            String title, String nickname, String content, String tag
+    );
+
 }
 

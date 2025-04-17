@@ -19,6 +19,7 @@ public class AnswerDto {
         private String content;
         private boolean selected;
         private String created_at;
+        private String writer;
 
         public static AnswerResponse from(Answer answer) {
             return AnswerResponse.builder()
@@ -26,6 +27,7 @@ public class AnswerDto {
                     .content(answer.getContent())
                     .selected(answer.isSelected())
                     .created_at(answer.getCreated_at().toString())
+                    .writer(answer.getUser().getNickname())
                     .build();
         }
     }

@@ -6,11 +6,14 @@ import com.hot6.backend.board.comment.model.Comment;
 import com.hot6.backend.board.comment.model.CommentDto;
 import com.hot6.backend.board.post.PostRepository;
 import com.hot6.backend.board.post.model.Post;
+import com.hot6.backend.user.UserRepository;
+import com.hot6.backend.user.model.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -19,16 +22,22 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RequiredArgsConstructor
 public class CommentService {
 
+    private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
 
     public void create(CommentDto.CommentRequest dto) {
         Post post = postRepository.findById(dto.getPostIdx())
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "게시글 없음"));
+                .orElseThrow(() -> new RuntimeException("게시글 없음"));
+
+        User user = userRepository.findById(dto.getUserIdx())
+                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+
         Comment comment = Comment.builder()
-                .writer(dto.getWriter())
                 .content(dto.getContent())
                 .post(post)
+                .user(user)
+                .created_at(LocalDate.now())
                 .build();
 
         commentRepository.save(comment);

@@ -34,7 +34,7 @@ public class PostDto {
         public static PostResponse from(Post post) {
             return PostResponse.builder()
                     .idx(post.getIdx())
-                    .writer(post.getWriter())
+                    .writer(post.getUser().getNickname())
                     .title(post.getTitle())
                     .content(post.getContent())
                     .image(post.getImage())

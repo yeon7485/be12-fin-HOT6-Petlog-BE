@@ -1,6 +1,7 @@
 package com.hot6.backend.board.question.model;
 
 import com.hot6.backend.board.hashtagQuestion.model.Hashtag_Question;
+import com.hot6.backend.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,7 +18,7 @@ public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
-    private String writer;
+//    private String writer;
     private String qTitle;
     private String content;
     private boolean selected;
@@ -38,8 +39,7 @@ public class Question {
     @OneToMany(mappedBy = "question")
     private List<Hashtag_Question> hashtagsList;
 
-
-//    @ManyToOne
-//    @JoinColumn(name="user_idx")
-//    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_idx", nullable = false)
+    private User user;
 }
