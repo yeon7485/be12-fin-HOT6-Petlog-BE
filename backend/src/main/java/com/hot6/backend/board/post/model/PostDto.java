@@ -28,7 +28,7 @@ public class PostDto {
         private String content;
         private String image;
         private String category;
-        private LocalDate created_at;
+        private LocalDate createdAt;
         private String boardType;
 
         public static PostResponse from(Post post) {
@@ -39,7 +39,7 @@ public class PostDto {
                     .content(post.getContent())
                     .image(post.getImage())
                     .category(post.getCategory())
-                    .created_at(post.getCreated_at())
+                    .createdAt(LocalDate.from(post.getCreatedAt()))
                     .boardType(post.getBoardType().getBoardName())
                     .build();
         }

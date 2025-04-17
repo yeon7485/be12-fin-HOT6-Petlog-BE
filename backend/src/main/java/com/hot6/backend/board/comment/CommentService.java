@@ -1,7 +1,5 @@
 package com.hot6.backend.board.comment;
 
-import com.hot6.backend.board.answer.model.Answer;
-import com.hot6.backend.board.answer.model.AnswerDto;
 import com.hot6.backend.board.comment.model.Comment;
 import com.hot6.backend.board.comment.model.CommentDto;
 import com.hot6.backend.board.post.PostRepository;
@@ -13,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -37,7 +34,6 @@ public class CommentService {
                 .content(dto.getContent())
                 .post(post)
                 .user(user)
-                .created_at(LocalDate.now())
                 .build();
 
         commentRepository.save(comment);

@@ -1,5 +1,7 @@
 package com.hot6.backend.board.comment.model;
 
+
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,10 +23,10 @@ public class CommentDto {
     public static class CommentResponse {
         private Long idx;
         private String writer;
-        private Long userIdx; //
+        private Long userIdx;
         private String content;
-        private LocalDate created_at;
         private Long postIdx;
+        private LocalDate createdAt;
 
         public static CommentResponse from(Comment comment) {
             return CommentResponse.builder()
@@ -32,9 +34,10 @@ public class CommentDto {
                     .writer(comment.getUser().getNickname())
                     .userIdx(comment.getUser().getIdx())
                     .content(comment.getContent())
-                    .created_at(comment.getCreated_at())
                     .postIdx(comment.getPost().getIdx())
+                    .createdAt(LocalDate.from(comment.getCreatedAt()))
                     .build();
         }
+
     }
 }
