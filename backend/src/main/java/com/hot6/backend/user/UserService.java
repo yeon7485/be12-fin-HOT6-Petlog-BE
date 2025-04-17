@@ -101,11 +101,13 @@ public class UserService implements UserDetailsService {
         String uuid = UUID.randomUUID().toString();
         User user = userRepository.save(dto.toEntity(passwordEncoder.encode(dto.getPassword())));
 
-        emailVerifyRepository.save(EmailVerify.builder()
-                .user(user)
-                .uuid(uuid)
-                .build());
-        sendEmail(uuid, dto.getEmail());
+        if(!user.getEnabled()) {
+            emailVerifyRepository.save(EmailVerify.builder()
+                    .user(user)
+                    .uuid(uuid)
+                    .build());
+            sendEmail(uuid, dto.getEmail());
+        }
         return UserDto.CreateResponse.from(user);
     }
 
