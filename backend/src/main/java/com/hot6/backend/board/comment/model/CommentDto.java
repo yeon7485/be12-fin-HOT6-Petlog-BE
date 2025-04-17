@@ -12,8 +12,8 @@ public class CommentDto {
     @Setter
     public static class CommentRequest {
         private Long postIdx;
-        private String writer;
         private String content;
+        private Long userIdx;
     }
 
     @Getter
@@ -28,7 +28,7 @@ public class CommentDto {
         public static CommentResponse from(Comment comment) {
             return CommentResponse.builder()
                     .idx(comment.getIdx())
-                    .writer(comment.getWriter())
+                    .writer(comment.getUser().getNickname())
                     .content(comment.getContent())
                     .created_at(comment.getCreated_at())
                     .postIdx(comment.getPost().getIdx())

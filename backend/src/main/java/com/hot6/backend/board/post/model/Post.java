@@ -1,5 +1,6 @@
 package com.hot6.backend.board.post.model;
 
+import com.hot6.backend.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,8 +17,6 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
-
-    private String writer;
     private String title;
     private String content;
     private String image;
@@ -41,4 +40,8 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_type_idx")
     private BoardType boardType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_idx", nullable = false)
+    private User user;
 }

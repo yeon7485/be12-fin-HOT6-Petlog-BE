@@ -1,11 +1,14 @@
 package com.hot6.backend.board.answer;
 
 import com.hot6.backend.board.answer.model.AnswerDto;
+import com.hot6.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/answer")
@@ -15,8 +18,9 @@ public class AnswerController {
     private final AnswerService answerService;
 
     @PostMapping("/create")
-    public ResponseEntity<Void> create(@RequestBody AnswerDto.AnswerRequest dto) {
-        answerService.create(dto);
+    public ResponseEntity<Void> create(@RequestBody AnswerDto.AnswerRequest dto,
+                                       @AuthenticationPrincipal User currentUser) {
+        answerService.create(dto, currentUser);
         return ResponseEntity.ok().build();
     }
 
@@ -32,7 +36,8 @@ public class AnswerController {
     }
 
     @PutMapping("/update/{idx}")
-    public ResponseEntity<Void> update(@PathVariable Long idx, @RequestBody AnswerDto.AnswerRequest dto) {
+    public ResponseEntity<Void> update(@PathVariable Long idx,
+                                       @RequestBody AnswerDto.AnswerRequest dto) {
         answerService.update(idx, dto);
         return ResponseEntity.ok().build();
     }
@@ -43,9 +48,8 @@ public class AnswerController {
     }
 
     @DeleteMapping("/delete/{idx}")
-    public ResponseEntity<?> deleteAnswer(@PathVariable Long idx) {
+    public ResponseEntity<Void> deleteAnswer(@PathVariable Long idx) {
         answerService.delete(idx);
         return ResponseEntity.ok().build();
     }
 }
-

@@ -4,11 +4,15 @@ import com.hot6.backend.board.comment.CommentService;
 import com.hot6.backend.board.post.model.BoardType;
 import com.hot6.backend.board.post.model.Post;
 import com.hot6.backend.board.post.model.PostDto;
+import com.hot6.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -24,8 +28,11 @@ public class PostService {
         BoardType boardType = boardTypeRepoistory.findByBoardName(dto.getBoardType())
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "게시판 종류 없음"));
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+
         Post post = Post.builder()
-                .writer(dto.getWriter())
+                .user(user)
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .image(dto.getImage())
@@ -35,6 +42,7 @@ public class PostService {
 
         postRepository.save(post);
     }
+
 
     public List<PostDto.PostResponse> list(String boardName) {
         BoardType boardType = boardTypeRepoistory.findByBoardName(boardName)
@@ -55,7 +63,14 @@ public class PostService {
         List<Post> results;
 
         if (keyword != null && !keyword.isBlank()) {
-            results = postRepository.findByBoardTypeAndCategoryAndTitleContainingIgnoreCase(boardType, category, keyword);
+            // 제목 + 작성자 검색으로 확장
+            List<Post> byTitle = postRepository.findByBoardTypeAndCategoryAndTitleContainingIgnoreCase(boardType, category, keyword);
+            List<Post> byWriter = postRepository.findByBoardTypeAndCategoryAndUser_NicknameContainingIgnoreCase(boardType, category, keyword);
+
+            // 두 리스트 합치되 중복 제거
+            results = Stream.concat(byTitle.stream(), byWriter.stream())
+                    .distinct()
+                    .toList();
         } else {
             results = postRepository.findByBoardTypeAndCategory(boardType, category);
         }
@@ -64,6 +79,7 @@ public class PostService {
                 .map(PostDto.PostResponse::from)
                 .toList();
     }
+
 
     public void delete(Long idx) {
         Post post = postRepository.findById(idx)

@@ -12,7 +12,7 @@ public class QuestionDto {
 
     @Getter
     public static class QuestionRequest {
-        private String writer;
+        // writer 제거됨
 
         @JsonProperty("qTitle")
         private String qTitle;
@@ -23,7 +23,6 @@ public class QuestionDto {
 
         public Question toEntity() {
             return Question.builder()
-                    .writer(writer)
                     .qTitle(qTitle)
                     .content(content)
                     .selected(selected)
@@ -48,7 +47,7 @@ public class QuestionDto {
         public static QuestionResponse from(Question question) {
             return QuestionResponse.builder()
                     .idx(question.getIdx())
-                    .writer(question.getWriter())
+                    .writer(question.getUser() != null ? question.getUser().getNickname() : null)
                     .qTitle(question.getQTitle())
                     .content(question.getContent())
                     .selected(question.isSelected())
@@ -58,7 +57,7 @@ public class QuestionDto {
                             .getHashtagsList().stream()
                             .map(Hashtag_Question::getTag)
                             .toList() : List.of())
-                            .build();
+                    .build();
         }
     }
 }
