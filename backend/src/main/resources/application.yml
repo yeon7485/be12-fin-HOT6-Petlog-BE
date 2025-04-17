@@ -20,7 +20,7 @@ spring:
       region:
         static: ${AWS_REGION} # AWS_REGION 환경 변수 사용
       s3:
-        bucket: gyuho-s3
+        bucket: ${S3_BUCKET_NAME}
   sql:
     init:
       mode: always
