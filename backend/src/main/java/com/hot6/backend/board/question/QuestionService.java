@@ -35,7 +35,6 @@ public class QuestionService {
         }
     }
 
-    // ✅ 전체 질문 목록 조회 (답변 수 포함)
     public List<QuestionDto.QuestionResponse> list() {
         return questionRepository.findAll().stream()
                 .map(q -> {
@@ -45,7 +44,6 @@ public class QuestionService {
                 .toList();
     }
 
-    // ✅ 검색 결과 목록 조회 (답변 수 포함)
     public List<QuestionDto.QuestionResponse> search(String keyword) {
         List<Question> result = questionRepository
                 .findByqTitleContainingIgnoreCaseOrUserNicknameContainingIgnoreCaseOrContentContainingIgnoreCaseOrHashtagsListTagContainingIgnoreCase(
@@ -58,7 +56,6 @@ public class QuestionService {
                 .toList();
     }
 
-    // ✅ 단건 조회 (답변 수 포함)
     public QuestionDto.QuestionResponse read(Long idx) {
         Optional<Question> result = questionRepository.findById(idx);
         return result.map(q -> {

@@ -12,8 +12,6 @@ public class QuestionDto {
 
     @Getter
     public static class QuestionRequest {
-        // writer 제거됨
-
         @JsonProperty("qTitle")
         private String qTitle;
         private String content;
@@ -35,17 +33,15 @@ public class QuestionDto {
     public static class QuestionResponse {
         private Long idx;
         private String writer;
-
         @JsonProperty("qTitle")
         private String qTitle;
         private String content;
         private boolean selected;
         private String image;
-        private LocalDate created_at;
+        private LocalDate createdAt;
         private List<String> tags;
         private int answerCount;
 
-        // 기존 from 제거, answerCount 포함하는 버전만 유지
         public static QuestionResponse from(Question question, int answerCount) {
             return QuestionResponse.builder()
                     .idx(question.getIdx())
@@ -54,7 +50,7 @@ public class QuestionDto {
                     .content(question.getContent())
                     .selected(question.isSelected())
                     .image(question.getImage())
-                    .created_at(question.getCreated_at())
+                    .createdAt(LocalDate.from(question.getCreatedAt()))
                     .tags(question.getHashtagsList() != null
                             ? question.getHashtagsList().stream()
                             .map(Hashtag_Question::getTag)
