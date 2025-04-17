@@ -74,7 +74,7 @@ public class PetDto {
         @Schema(description = "특이사항", example = "겁이 많음")
         private String specificInformation;
 
-        @Schema(description = "프로필 이미지 URL", example = "https://example.com/coco.jpg")
+        // S3에서 업로드된 프로필 이미지 URL을 설정하기 위한 필드
         private String profileImageUrl;
 
         private Long userId;
@@ -90,8 +90,6 @@ public class PetDto {
             pet.setSpecificInformation(this.specificInformation);
             pet.setProfileImageUrl(imagePath);  // 이미지 경로 설정
             pet.setUserId(this.userId);
-
-            
 
             return pet;
         }
