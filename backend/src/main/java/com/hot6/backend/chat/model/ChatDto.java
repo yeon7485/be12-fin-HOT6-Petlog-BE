@@ -61,6 +61,9 @@ public class ChatDto {
     @Builder
     @Schema(description = "채팅 메시지 응답 DTO")
     public static class ChatElement {
+        @Schema(description = "채팅 고유 idx", example = "1")
+        public Long idx;
+
         @Schema(description = "채팅 메시지 내용", example = "안녕하세요~")
         public String message;
 
@@ -76,6 +79,7 @@ public class ChatDto {
 
         public static ChatElement from(Chat chat) {
             return ChatElement.builder()
+                    .idx(chat.getIdx())
                     .senderIdx(chat.getChatRoomParticipant().getUser().getIdx())
                     .nickname(chat.getChatRoomParticipant().getUser().getNickname())
                     .createdAt(chat.getCreatedAt().toString())

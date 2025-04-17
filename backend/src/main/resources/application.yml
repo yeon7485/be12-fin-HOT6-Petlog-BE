@@ -12,7 +12,15 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+      region:
+        static: ${AWS_REGION} # AWS_REGION 환경 변수 사용
+      s3:
+        bucket: gyuho-s3
   sql:
     init:
       mode: always
@@ -59,3 +67,8 @@ jwt:
 project:
   upload:
     path: C:/Users/Playdata/Desktop/pdh
+
+logging:
+  level:
+    org.hibernate.SQL: debug         # 실제 SQL 출력
+    org.hibernate.type.descriptor.sql.BasicBinder: trace  # ? 파라미터 값 출력
