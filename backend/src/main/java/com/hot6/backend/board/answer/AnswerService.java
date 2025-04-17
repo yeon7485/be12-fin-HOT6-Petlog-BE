@@ -75,7 +75,6 @@ public class AnswerService {
         answerRepository.delete(answer);
     }
 
-    // ✅ 추가: 특정 질문에 대한 답변 수 반환
     public int countByQuestionIdx(Long questionId) {
         return answerRepository.countByQuestionIdx(questionId);
     }
