@@ -43,8 +43,10 @@ public class QuestionDto {
         private String image;
         private LocalDate created_at;
         private List<String> tags;
+        private int answerCount;
 
-        public static QuestionResponse from(Question question) {
+        // 기존 from 제거, answerCount 포함하는 버전만 유지
+        public static QuestionResponse from(Question question, int answerCount) {
             return QuestionResponse.builder()
                     .idx(question.getIdx())
                     .writer(question.getUser() != null ? question.getUser().getNickname() : null)
@@ -53,10 +55,12 @@ public class QuestionDto {
                     .selected(question.isSelected())
                     .image(question.getImage())
                     .created_at(question.getCreated_at())
-                    .tags(question.getHashtagsList() != null ? question
-                            .getHashtagsList().stream()
+                    .tags(question.getHashtagsList() != null
+                            ? question.getHashtagsList().stream()
                             .map(Hashtag_Question::getTag)
-                            .toList() : List.of())
+                            .toList()
+                            : List.of())
+                    .answerCount(answerCount)
                     .build();
         }
     }

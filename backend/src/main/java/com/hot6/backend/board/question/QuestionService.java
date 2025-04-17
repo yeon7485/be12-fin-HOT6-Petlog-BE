@@ -35,22 +35,36 @@ public class QuestionService {
         }
     }
 
+    // ✅ 전체 질문 목록 조회 (답변 수 포함)
     public List<QuestionDto.QuestionResponse> list() {
         return questionRepository.findAll().stream()
-                .map(QuestionDto.QuestionResponse::from)
+                .map(q -> {
+                    int answerCount = answerService.countByQuestionIdx(q.getIdx());
+                    return QuestionDto.QuestionResponse.from(q, answerCount);
+                })
                 .toList();
     }
 
+    // ✅ 검색 결과 목록 조회 (답변 수 포함)
     public List<QuestionDto.QuestionResponse> search(String keyword) {
         List<Question> result = questionRepository
                 .findByqTitleContainingIgnoreCaseOrUserNicknameContainingIgnoreCaseOrContentContainingIgnoreCaseOrHashtagsListTagContainingIgnoreCase(
                         keyword, keyword, keyword, keyword);
-        return result.stream().map(QuestionDto.QuestionResponse::from).toList();
+        return result.stream()
+                .map(q -> {
+                    int answerCount = answerService.countByQuestionIdx(q.getIdx());
+                    return QuestionDto.QuestionResponse.from(q, answerCount);
+                })
+                .toList();
     }
 
+    // ✅ 단건 조회 (답변 수 포함)
     public QuestionDto.QuestionResponse read(Long idx) {
         Optional<Question> result = questionRepository.findById(idx);
-        return result.map(QuestionDto.QuestionResponse::from).orElse(null);
+        return result.map(q -> {
+            int answerCount = answerService.countByQuestionIdx(q.getIdx());
+            return QuestionDto.QuestionResponse.from(q, answerCount);
+        }).orElse(null);
     }
 
     public void update(Long idx, QuestionDto.QuestionRequest dto) {
@@ -75,6 +89,4 @@ public class QuestionService {
         answerService.deleteByQuestionIdx(idx);
         questionRepository.deleteById(idx);
     }
-
-
 }
