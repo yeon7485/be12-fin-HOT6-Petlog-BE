@@ -14,4 +14,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
     @Modifying
     @Transactional
     void deleteByQuestionIdx(Long questionIdx);
+
+    int countByQuestionIdx(Long questionId);
 }
