@@ -4,6 +4,8 @@ import com.hot6.backend.chat.model.ChatDto;
 import com.hot6.backend.chat.model.ChatRoom;
 import com.hot6.backend.chat.model.ChatRoomParticipant;
 import com.hot6.backend.chat.repository.ChatRoomParticipantRepository;
+import com.hot6.backend.common.BaseResponseStatus;
+import com.hot6.backend.common.exception.BaseException;
 import com.hot6.backend.user.model.User;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class ChatRoomParticipantService {
         chatRoomParticipantRepository.save(
                 ChatRoomParticipant.builder()
                         .user(user)
+                        .isAdmin(true)
                         .chatRoom(chatRoom)
                         .build()
         );
@@ -35,5 +38,10 @@ public class ChatRoomParticipantService {
 
     public Slice<ChatDto.ChatUserInfo> getChatRoomInUsers(Long chatRoomIdx, Long lastUserId, int size) {
         return chatRoomParticipantRepository.findUsersInChatRoom(chatRoomIdx, lastUserId, size);
+    }
+
+    public ChatRoomParticipant findChatRoomParticipantOrThrow(Long chatRoomIdx,Long userIdx) {
+        return chatRoomParticipantRepository.findByUserIdxAndChatRoomIdx(userIdx, chatRoomIdx)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_ACCESS_DENIED));
     }
 }
