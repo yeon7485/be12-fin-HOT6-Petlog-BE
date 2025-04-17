@@ -5,6 +5,8 @@ import com.hot6.backend.chat.model.ChatRoom;
 import com.hot6.backend.chat.model.ChatRoomHashtag;
 import com.hot6.backend.chat.model.ChatRoomParticipant;
 import com.hot6.backend.chat.repository.ChatRoomRepository;
+import com.hot6.backend.common.BaseResponseStatus;
+import com.hot6.backend.common.exception.BaseException;
 import com.hot6.backend.user.UserService;
 import com.hot6.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
@@ -67,5 +69,12 @@ public class ChatRoomService {
     public List<ChatDto.ChatElement> getChatMessages(Long chatRoomIdx, Long userIdx) {
         ChatRoomParticipant chatRoomParticipant = chatRoomParticipantService.findChatRoomParticipantOrThrow(chatRoomIdx, userIdx);
         return chatMessageService.findChatMessages(chatRoomParticipant);
+    }
+
+    public ChatDto.ChatInfo getChatRoomInfo(Long chatRoomIdx) {
+        ChatRoom chatRoom = chatRoomRepository.findWithParticipantsAndHashtagsById(chatRoomIdx)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
+
+        return ChatDto.ChatInfo.from(chatRoom);
     }
 }
