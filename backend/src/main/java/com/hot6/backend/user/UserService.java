@@ -2,6 +2,7 @@ package com.hot6.backend.user;
 
 import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.common.exception.BaseException;
+import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.pet.model.PetDto;
 import com.hot6.backend.user.model.EmailVerify;
 import com.hot6.backend.user.model.User;
@@ -23,6 +24,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 import java.util.ArrayList;
