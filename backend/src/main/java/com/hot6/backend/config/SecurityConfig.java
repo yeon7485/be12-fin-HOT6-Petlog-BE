@@ -43,8 +43,10 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(
                 (auth) -> auth
+                        .requestMatchers("/schedule").hasAuthority("USER")
                         .anyRequest().permitAll()
         );
+
         http.oauth2Login(config -> {
             config.successHandler(new OAuth2SuccessHandler());
             config.userInfoEndpoint(endpoint ->

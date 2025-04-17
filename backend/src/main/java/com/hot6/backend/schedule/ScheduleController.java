@@ -1,57 +1,41 @@
 package com.hot6.backend.schedule;
 
+import com.hot6.backend.common.BaseResponse;
+import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.schedule.model.ScheduleDto;
+import com.hot6.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/schedule")
 @Tag(name = "Schedule", description = "일정 관리 API")
 public class ScheduleController {
+    private final ScheduleService scheduleService;
 
     @Operation(summary = "사용자의 전체 월간 일정 조회", description = "사용자의 모든 반려동물 월간 일정을 조회합니다.")
     @GetMapping("/pet")
-    public ResponseEntity<ScheduleDto.MonthlyScheduleResponse> getSchedules() {
-        List<ScheduleDto.Info> list = new ArrayList<>();
-        list.add(ScheduleDto.Info.builder()
-                .title("병원")
-                .day(15)
-                .build());
+    public ResponseEntity<BaseResponse<List<ScheduleDto.SimpleSchedule>>> getSchedules(@AuthenticationPrincipal User user) {
+        List<ScheduleDto.SimpleSchedule> list = scheduleService.getAllSchedule(user.getIdx());
 
-        list.add(ScheduleDto.Info.builder()
-                .title("병원")
-                .day(16)
-                .build());
-
-        return ResponseEntity.ok(ScheduleDto.MonthlyScheduleResponse.builder()
-                .schedule(list)
-                .build());
+        return ResponseEntity.ok(new BaseResponse<>(list));
     }
 
     @Operation(summary = "반려동물별 월간 일정 조회", description = "특정 반려동물의 월간 일정을 조회합니다.")
     @GetMapping("/pet/{petIdx}")
-    public ResponseEntity<ScheduleDto.MonthlyScheduleResponse> getSchedule(@PathVariable Long petIdx,
+    public ResponseEntity<String> getSchedule(@PathVariable Long petIdx,
                                                                            @RequestParam int month) {
-        List<ScheduleDto.Info> list = new ArrayList<>();
-        list.add(ScheduleDto.Info.builder()
-                .title("병원")
-                .day(15)
-                .build());
 
-        list.add(ScheduleDto.Info.builder()
-                .title("병원")
-                .day(16)
-                .build());
-
-        return ResponseEntity.ok(ScheduleDto.MonthlyScheduleResponse.builder()
-                .schedule(list)
-                .build());
+        return ResponseEntity.ok("");
     }
 
     @Operation(summary = "일정 상세 조회", description = "반려동물의 하루의 상세 일정을 조회합니다.")
@@ -71,9 +55,11 @@ public class ScheduleController {
     @Operation(summary = "일정 생성", description = "선택한 카테고리와 반려동물에 대해 일정을 생성합니다.")
     //category idx 는 url 로 전달하기 보다는 화면에 있는 컴포넌트를 통해서
     @PostMapping("/pet/{petIdx}")
-    public ResponseEntity<String> createSchedule(@RequestBody ScheduleDto.ScheduleCreateRequest request,
-                                                 @PathVariable Long petIdx) {
-        return ResponseEntity.ok("ok");
+    public ResponseEntity<BaseResponse<String>> createSchedule(@RequestBody ScheduleDto.ScheduleCreateRequest request,
+                                                       @PathVariable Long petIdx,
+                                                       @AuthenticationPrincipal User user) {
+        scheduleService.createSchedule(user, petIdx, request);
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS));
     }
 
     @Operation(summary = "일정 수정", description = "선택한 카테고리와 반려동물의 일정을 수정합니다.")

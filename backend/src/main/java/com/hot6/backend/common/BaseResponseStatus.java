@@ -56,15 +56,13 @@ public enum BaseResponseStatus {
     CHAT_UNEXPECTED_ERROR(false, 2400, "알 수 없는 채팅 오류가 발생했습니다."),
     CHAT_FEATURE_NOT_IMPLEMENTED(false, 2401, "아직 구현되지 않은 채팅 기능입니다."),
 
-    /* 3000~ 3999 : 상품 관련 에러 */
-    //-- 3000 : 상품 조회
-    PRODUCT_NOT_FOUND(false, 3000, "상품 조회에 실패했습니다."),
-    //-- 3100 : 상품 검색
-    PRODUCT_SEARCH_FAILED(false, 3100, "상품 검색에 실패했습니다."),
-    //-- 3200 : 상품 등록
-    PRODUCT_REGIST_FAILED(false, 3200, "상품 등록에 실패했습니다."),
-    //-- 3300 : 상품 정보 수정
-    PRODUCT_UPDATE_FAILED(false, 3300, "상품 정보 수정에 실패했습니다."),
+    /* 3000~ 3999 : 일정 관련 에러 */
+    //-- 3000 : 일정 조회
+    SCHEDULE_NOT_FOUND(false, 3000, "일정 조회에 실패했습니다."),
+    //-- 3100 : 일정 등록
+    SCHEDULE_CREATE_FAILED(false, 3100, "일정 등록에 실패했습니다."),
+    //-- 3200 : 일정 수정
+    SCHEDULE_UPDATE_FAILED(false, 3200, "일정 수정에 실패했습니다."),
 
 
     /* 4000 ~ 4999 : 주문 관련 에러 */

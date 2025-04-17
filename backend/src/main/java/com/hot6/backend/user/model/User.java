@@ -3,6 +3,7 @@ package com.hot6.backend.user.model;
 import com.hot6.backend.board.answer.model.Answer;
 import com.hot6.backend.board.question.model.Question;
 import com.hot6.backend.chat.model.ChatRoomParticipant;
+import com.hot6.backend.schedule.model.Schedule;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -89,5 +90,8 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user")
     private List<Answer> answerList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Schedule> scheduleList = new ArrayList<>();
 
 }

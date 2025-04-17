@@ -1,6 +1,5 @@
 package com.hot6.backend.pet;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hot6.backend.pet.model.PetDto;
 import com.hot6.backend.schedule.model.ScheduleDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
@@ -88,9 +86,9 @@ public class PetController {
                                                                                 @RequestParam int month,
                                                                                 @RequestParam int year) {
         ScheduleDto.MonthlyScheduleResponse monthlySchedule = ScheduleDto.MonthlyScheduleResponse.builder()
-                .schedule(List.of( ScheduleDto.Info.builder()
+                .schedule(List.of( ScheduleDto.SimpleSchedule.builder()
                         .title("미용 예약")
-                        .build(),ScheduleDto.Info.builder()
+                        .build(), ScheduleDto.SimpleSchedule.builder()
                         .title("병원 예약")
                         .build())).build();
 
