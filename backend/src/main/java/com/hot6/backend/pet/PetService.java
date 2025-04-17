@@ -20,9 +20,14 @@ public class PetService {
     private final ImageService imageService;
 
     public void createPetCard(PetDto.PetCardCreateRequest request, String imagePath) {
-        // DTO에서 데이터를 받아서 엔티티 생성
-        Pet pet = request.toEntity(imagePath);
+        // 이미지 URL이 있을 경우, 해당 URL을 사용
+        String profileImageUrl = null;
+        if (imagePath != null) {
+            profileImageUrl = imagePath; // S3에서 반환된 URL
+        }
 
+        Pet pet = request.toEntity(imagePath);
+        pet.setProfileImageUrl(profileImageUrl);  // 프로필 이미지 URL 설정
         petRepository.save(pet);  // DB에 저장
     }
 

@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
@@ -18,6 +20,7 @@ import java.util.List;
 @Tag(name = "Pet", description = "반려동물 기능 API")
 public class PetController {
     private final PetService petService;
+    private final S3Service s3Service;
 
     // 반려동물 목록 조회 (해당 사용자 ID 기준)
     @Operation(summary = "사용자의 반려동물 카드 목록 조회", description = "사용자가 등록한 반려동물 카드 목록을 조회합니다.")
@@ -40,14 +43,26 @@ public class PetController {
     public ResponseEntity<String> createPetCard(
             @RequestPart("pet") PetDto.PetCardCreateRequest request,
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage) {
+
         String imagePath = null;
+
+        // 프로필 이미지가 있을 경우 S3에 업로드
         if (profileImage != null && !profileImage.isEmpty()) {
-            imagePath = petService.saveProfileImage(profileImage);
+            try {
+                // 프로필 이미지를 S3에 업로드하고 경로를 반환받기
+                imagePath = s3Service.upload(profileImage, "pets/" + System.currentTimeMillis() + profileImage.getOriginalFilename());
+            } catch (IOException e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이미지 업로드 실패");
+            }
         }
 
+        // petService를 통해 반려동물 카드 생성
         petService.createPetCard(request, imagePath);
+
         return ResponseEntity.ok("반려동물 카드가 생성되었습니다.");
     }
+
+
 
     @PutMapping("/{petId}")
     public ResponseEntity<String> updatePet(
