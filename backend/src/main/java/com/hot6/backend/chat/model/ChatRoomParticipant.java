@@ -2,16 +2,16 @@ package com.hot6.backend.chat.model;
 
 import com.hot6.backend.common.BaseEntity;
 import com.hot6.backend.user.model.User;
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.Type;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Setter
 @Entity
 @Builder
 @NoArgsConstructor
@@ -34,4 +34,8 @@ public class ChatRoomParticipant extends BaseEntity {
 
     @OneToMany(mappedBy = "chatRoomParticipant")
     private List<Chat> chats = new ArrayList<>();
+
+    @Type(JsonType.class)
+    @Column(name = "meta_data", columnDefinition = "json")
+    private ChatRoomUserMetaData metaData;
 }

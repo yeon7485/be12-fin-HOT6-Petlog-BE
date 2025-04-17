@@ -3,6 +3,7 @@ package com.hot6.backend.chat.service;
 import com.hot6.backend.chat.model.ChatDto;
 import com.hot6.backend.chat.model.ChatRoom;
 import com.hot6.backend.chat.model.ChatRoomHashtag;
+import com.hot6.backend.chat.model.ChatRoomParticipant;
 import com.hot6.backend.chat.repository.ChatRoomRepository;
 import com.hot6.backend.user.UserService;
 import com.hot6.backend.user.model.User;
@@ -23,6 +24,7 @@ public class ChatRoomService {
     private final ChatRoomParticipantService chatRoomParticipantService;
     private final ChatRoomHashtagService chatRoomHashtagService;
     private final UserService userService;
+    private final ChatMessageService chatMessageService;
 
     public List<ChatDto.ChatInfo> getList() {
         return chatRoomRepository.findAll().stream().map(ChatDto.ChatInfo::from).collect(Collectors.toList());
@@ -60,5 +62,10 @@ public class ChatRoomService {
         }
 
         return chatRoomRepository.findChatRoomsWithDetailsByIds(roomIds).stream().map(ChatDto.ChatInfo::from).collect(Collectors.toList());
+    }
+
+    public List<ChatDto.ChatElement> getChatMessages(Long chatRoomIdx, Long userIdx) {
+        ChatRoomParticipant chatRoomParticipant = chatRoomParticipantService.findChatRoomParticipantOrThrow(chatRoomIdx, userIdx);
+        return chatMessageService.findChatMessages(chatRoomParticipant);
     }
 }

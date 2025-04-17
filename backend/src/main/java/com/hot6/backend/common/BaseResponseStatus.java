@@ -25,16 +25,36 @@ public enum BaseResponseStatus {
     //-- 1300 : 유저 정보 조회
     USER_NOT_FOUND(false, 1300, "찾을 수 없는 사용자입니다."),
 
-    /* 2000 ~ 2999 : 식당 관련 에러 */
-    //-- 2000 : 식당 조회 에러
-    STORE_NOT_FOUND(false, 2001, "식당을 찾을 수 없습니다."),
-    //-- 2100 : 식당 검색 에러
-    STORE_SEARCH_FAILED(false, 2100, "식당 검색에 실패했습니다."),
-    //-- 2200 : 식당 등록 에러
-    STORE_REGIST_FAILED(false, 2200, "식당 등록에 실패했습니다."),
-    //-- 2300 : 식당 정보 수정 에러
-    STORE_UPDATE_FAILED(false, 2300, "식당 정보 수정에 실패했습니다."),
+    /* 2000 ~ 2999 : 채팅 관련 에러 */
 
+    //-- 2000 : 채팅방 접근 / 참여 관련
+    CHAT_ROOM_NOT_FOUND(false, 2000, "존재하지 않는 채팅방입니다."),
+    CHAT_ROOM_ACCESS_DENIED(false, 2001, "해당 채팅방에 접근할 수 없습니다."),
+    CHAT_ROOM_PARTICIPANT_NOT_FOUND(false, 2002, "채팅방 참여자가 아닙니다."),
+    CHAT_ROOM_ALREADY_PARTICIPATED(false, 2003, "이미 참여 중인 채팅방입니다."),
+    CHAT_ROOM_JOIN_FAILED(false, 2004, "채팅방 참여에 실패했습니다."),
+    CHAT_ROOM_LEAVE_FAILED(false, 2005, "채팅방 나가기에 실패했습니다."),
+
+    //-- 2100 : 채팅방 생성/수정 관련
+    CHAT_ROOM_CREATION_FAILED(false, 2100, "채팅방 생성에 실패했습니다."),
+    CHAT_ROOM_UPDATE_FAILED(false, 2101, "채팅방 수정에 실패했습니다."),
+    CHAT_ROOM_DELETE_FAILED(false, 2102, "채팅방 삭제에 실패했습니다."),
+    CHAT_ROOM_HASHTAG_FORMAT_INVALID(false, 2103, "해시태그 형식이 잘못되었습니다."),
+
+    //-- 2200 : 채팅 메시지 관련
+    CHAT_MESSAGE_SEND_FAILED(false, 2200, "채팅 메시지 전송에 실패했습니다."),
+    CHAT_MESSAGE_NOT_FOUND(false, 2201, "존재하지 않는 채팅 메시지입니다."),
+    CHAT_MESSAGE_ACCESS_DENIED(false, 2202, "해당 메시지에 접근할 수 없습니다."),
+    CHAT_MESSAGE_READ_UPDATE_FAILED(false, 2203, "메시지 읽음 처리에 실패했습니다."),
+
+    //-- 2300 : WebSocket 관련
+    CHAT_WEBSOCKET_CONNECT_FAILED(false, 2300, "웹소켓 연결에 실패했습니다."),
+    CHAT_WEBSOCKET_UNAUTHORIZED(false, 2301, "웹소켓 인증에 실패했습니다."),
+    CHAT_WEBSOCKET_INVALID_HEADER(false, 2302, "웹소켓 헤더 정보가 유효하지 않습니다."),
+
+    //-- 2400 : 기타 채팅 도메인 에러
+    CHAT_UNEXPECTED_ERROR(false, 2400, "알 수 없는 채팅 오류가 발생했습니다."),
+    CHAT_FEATURE_NOT_IMPLEMENTED(false, 2401, "아직 구현되지 않은 채팅 기능입니다."),
 
     /* 3000~ 3999 : 상품 관련 에러 */
     //-- 3000 : 상품 조회

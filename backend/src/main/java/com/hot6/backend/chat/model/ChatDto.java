@@ -64,14 +64,24 @@ public class ChatDto {
         @Schema(description = "채팅 메시지 내용", example = "안녕하세요~")
         public String message;
 
+        @Schema(description = "보낸 사용자 idx", example = "1")
+        public Long senderIdx;
+
         @Schema(description = "보낸 사용자 닉네임", example = "hamster_lover")
         public String nickname;
 
-        @Schema(description = "보낸 사용자 ID", example = "1")
-        public Long userIdx;
-
         @Schema(description = "보낸 시간", example = "2025-04-07T12:34:56")
         public String createdAt;
+
+
+        public static ChatElement from(Chat chat) {
+            return ChatElement.builder()
+                    .senderIdx(chat.getChatRoomParticipant().getUser().getIdx())
+                    .nickname(chat.getChatRoomParticipant().getUser().getNickname())
+                    .createdAt(chat.getCreatedAt().toString())
+                    .message(chat.getMessage())
+                    .build();
+        }
     }
 
     @Getter

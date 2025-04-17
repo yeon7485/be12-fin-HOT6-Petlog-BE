@@ -14,8 +14,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -98,22 +96,10 @@ public class ChatController {
 
     @Operation(summary = "채팅 메시지 조회", description = "지정된 채팅방의 이전 메시지를 조회합니다.")
     @GetMapping("/chatroom/{chatRoomIdx}/chat")
-    public ResponseEntity<List<ChatDto.ChatElement>> getChatMessages(
+    public ResponseEntity<BaseResponse<List<ChatDto.ChatElement>>> getChatMessages(
+            @AuthenticationPrincipal User user,
             @PathVariable Long chatRoomIdx) {
-        List<ChatDto.ChatElement> list = new ArrayList<>();
-        list.add(ChatDto.ChatElement.builder()
-                .createdAt("2025-03-31")
-                .message("test_message_01")
-                .nickname("test01")
-                .userIdx(1L)
-                .build());
-        list.add(ChatDto.ChatElement.builder()
-                .createdAt("2025-03-31")
-                .message("test_message_02")
-                .nickname("test02")
-                .userIdx(1L)
-                .build());
-        return ResponseEntity.ok(list);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS,chatRoomService.getChatMessages(chatRoomIdx,user.getIdx())));
     }
 
     @Operation(
