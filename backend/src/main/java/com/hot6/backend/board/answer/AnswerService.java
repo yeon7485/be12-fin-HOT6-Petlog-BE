@@ -74,4 +74,9 @@ public class AnswerService {
                 .orElseThrow(() -> new RuntimeException("답변이 존재하지 않습니다."));
         answerRepository.delete(answer);
     }
+
+    // ✅ 추가: 특정 질문에 대한 답변 수 반환
+    public int countByQuestionIdx(Long questionId) {
+        return answerRepository.countByQuestionIdx(questionId);
+    }
 }
