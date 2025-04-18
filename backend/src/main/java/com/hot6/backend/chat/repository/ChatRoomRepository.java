@@ -9,6 +9,7 @@ import java.util.Optional;
 
 
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long>,ChatRoomRepositoryCustom  {
+    Optional<ChatRoom> findByIdx(Long idx);
 
     @Query("SELECT DISTINCT r FROM ChatRoom r " +
             "LEFT JOIN FETCH r.participants p " +

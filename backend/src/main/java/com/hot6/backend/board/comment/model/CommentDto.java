@@ -15,7 +15,6 @@ public class CommentDto {
     public static class CommentRequest {
         private Long postIdx;
         private String content;
-        private Long userIdx;
     }
 
     @Getter

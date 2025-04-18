@@ -1,6 +1,7 @@
 package com.hot6.backend.board.answer;
 
 import com.hot6.backend.board.answer.model.Answer;
+import com.hot6.backend.board.question.model.Question;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,4 +17,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
     void deleteByQuestionIdx(Long questionIdx);
 
     int countByQuestionIdx(Long questionId);
+  
+    List<Answer> findByUser_IdxOrderByCreatedAtDesc(Long userIdx);
 }

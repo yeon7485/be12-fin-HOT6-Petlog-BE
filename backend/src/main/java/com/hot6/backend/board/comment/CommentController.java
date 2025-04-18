@@ -2,8 +2,10 @@ package com.hot6.backend.board.comment;
 
 import com.hot6.backend.board.answer.model.AnswerDto;
 import com.hot6.backend.board.comment.model.CommentDto;
+import com.hot6.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,8 +18,9 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/create")
-    public ResponseEntity<Void> create(@RequestBody CommentDto.CommentRequest dto) {
-        commentService.create(dto);
+    public ResponseEntity<Void> create(@RequestBody CommentDto.CommentRequest dto,
+                                       @AuthenticationPrincipal User currentUser) {
+        commentService.create(dto,currentUser);
         return ResponseEntity.ok().build();
     }
 

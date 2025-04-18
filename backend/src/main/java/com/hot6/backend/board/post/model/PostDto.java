@@ -1,10 +1,12 @@
 package com.hot6.backend.board.post.model;
 
+import com.hot6.backend.user.model.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class PostDto {
 
@@ -41,6 +43,26 @@ public class PostDto {
                     .category(post.getCategory())
                     .createdAt(LocalDate.from(post.getCreatedAt()))
                     .boardType(post.getBoardType().getBoardName())
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
+    public static class UserPostResponse {
+        private Long idx;
+        private String writer;
+        private String title;
+        private String boardType;
+        private LocalDateTime createdAt;
+
+        public static UserPostResponse from(Post post) {
+            return UserPostResponse.builder()
+                    .idx(post.getIdx())
+                    .writer(post.getUser().getNickname())
+                    .title(post.getTitle())
+                    .boardType(post.getBoardType().getBoardName())
+                    .createdAt(post.getCreatedAt())
                     .build();
         }
     }

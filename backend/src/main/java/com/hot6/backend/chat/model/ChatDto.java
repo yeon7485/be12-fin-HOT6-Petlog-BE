@@ -73,6 +73,9 @@ public class ChatDto {
         @Schema(description = "보낸 사용자 닉네임", example = "hamster_lover")
         public String nickname;
 
+        @Schema(description = "메시지 타입", example = "text")
+        private ChatMessageType type;
+
         @Schema(description = "보낸 시간", example = "2025-04-07T12:34:56")
         public String createdAt;
 
@@ -84,6 +87,7 @@ public class ChatDto {
                     .nickname(chat.getChatRoomParticipant().getUser().getNickname())
                     .createdAt(chat.getCreatedAt().toString())
                     .message(chat.getMessage())
+                    .type(chat.getType())
                     .build();
         }
     }

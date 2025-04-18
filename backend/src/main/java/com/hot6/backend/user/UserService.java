@@ -178,8 +178,14 @@ public class UserService implements UserDetailsService {
         return UserDto.UserProfileResponse.builder()
                 .email(user.getEmail())  // DB에서 가져온 이메일
                 .nickname(user.getNickname())  // DB에서 가져온 닉네임
-//                .profileImageUrl(user.getProfileImageUrl())  // DB에서 가져온 프로필 이미지 URL
+                .profileImageUrl(user.getUserProfileImage())  // DB에서 가져온 프로필 이미지 URL
                 .petCards(petCards)  // 펫 카드 목록
                 .build();
+    }
+    public void updateProfileImage(Long userId, String imageUrl) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        user.setUserProfileImage(imageUrl);
+        userRepository.save(user);
     }
 }

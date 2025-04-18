@@ -34,4 +34,8 @@ public class ChatMessageService {
                 .map(ChatDto.ChatElement::from)
                 .toList();
     }
+
+    public ChatDto.ChatElement saveChatMessage(Chat chat) {
+        return ChatDto.ChatElement.from(chatMessageRepository.save(chat));
+    }
 }

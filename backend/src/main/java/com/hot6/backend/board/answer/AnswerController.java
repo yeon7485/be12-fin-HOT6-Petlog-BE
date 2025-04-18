@@ -3,10 +3,13 @@ package com.hot6.backend.board.answer;
 import com.hot6.backend.board.answer.model.AnswerDto;
 import com.hot6.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -17,12 +20,15 @@ public class AnswerController {
 
     private final AnswerService answerService;
 
-    @PostMapping("/create")
-    public ResponseEntity<Void> create(@RequestBody AnswerDto.AnswerRequest dto,
-                                       @AuthenticationPrincipal User currentUser) {
-        answerService.create(dto, currentUser);
-        return ResponseEntity.ok().build();
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> create(
+            @RequestPart("answer") AnswerDto.AnswerRequest request,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
+
+        answerService.create(request, images);
+        return ResponseEntity.ok("답변 등록 성공");
     }
+
 
     @GetMapping("/list/{questionIdx}")
     public ResponseEntity<List<AnswerDto.AnswerResponse>> list(@PathVariable Long questionIdx) {
@@ -51,5 +57,9 @@ public class AnswerController {
     public ResponseEntity<Void> deleteAnswer(@PathVariable Long idx) {
         answerService.delete(idx);
         return ResponseEntity.ok().build();
+    }
+    @GetMapping("/list/user/{userId}")
+    public ResponseEntity<List<AnswerDto.AnswerResponse>> listByUserId(@PathVariable Long userId) {
+        return ResponseEntity.ok(answerService.readByAnswer(userId));
     }
 }
