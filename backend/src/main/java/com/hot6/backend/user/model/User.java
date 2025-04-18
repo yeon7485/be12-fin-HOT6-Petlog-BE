@@ -34,6 +34,9 @@ public class User implements UserDetails {
     private UserType userType;
     private boolean enabled;
 
+    private String provider;
+    private Long providerId;
+
     @OneToMany(mappedBy = "user")
     private List<ChatRoomParticipant> chatParticipations = new ArrayList<>();
 
