@@ -40,5 +40,9 @@ public class CommentController {
         commentService.update(idx, dto);
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/list/user/{userId}")
+    public ResponseEntity<List<CommentDto.CommentResponse>> listByUserId(@PathVariable Long userId) {
+        return ResponseEntity.ok(commentService.readByAnswer(userId));
+    }
 }
 

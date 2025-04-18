@@ -1,5 +1,6 @@
 package com.hot6.backend.board.comment;
 
+import com.hot6.backend.board.answer.model.AnswerDto;
 import com.hot6.backend.board.comment.model.Comment;
 import com.hot6.backend.board.comment.model.CommentDto;
 import com.hot6.backend.board.post.PostRepository;
@@ -63,5 +64,12 @@ public class CommentService {
                 .orElseThrow(() -> new RuntimeException("댓글이 존재하지 않습니다"));
         comment.setContent(dto.getContent());
         commentRepository.save(comment);
+    }
+
+    public List<CommentDto.CommentResponse> readByAnswer(Long userId) {
+        return commentRepository.findByUser_IdxOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(CommentDto.CommentResponse::from)
+                .toList();
     }
 }

@@ -2,6 +2,7 @@ package com.hot6.backend.board.comment.model;
 
 
 
+import com.hot6.backend.board.post.model.BoardType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +26,7 @@ public class CommentDto {
         private Long userIdx;
         private String content;
         private Long postIdx;
+        private String boardName; 
         private LocalDate createdAt;
 
         public static CommentResponse from(Comment comment) {
@@ -34,9 +36,9 @@ public class CommentDto {
                     .userIdx(comment.getUser().getIdx())
                     .content(comment.getContent())
                     .postIdx(comment.getPost().getIdx())
+                    .boardName(comment.getPost().getBoardType().getBoardName())
                     .createdAt(LocalDate.from(comment.getCreatedAt()))
                     .build();
         }
-
     }
 }
