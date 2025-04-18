@@ -1,11 +1,14 @@
 package com.hot6.backend.board.answer.model;
 
+import com.hot6.backend.board.question.model.Question;
+import com.hot6.backend.board.question.model.QuestionDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class AnswerDto {
     @Getter
@@ -18,6 +21,7 @@ public class AnswerDto {
     @Getter
     @Builder
     public static class AnswerResponse {
+        private Long questionIdx;
         private Long idx;
         private String content;
         private boolean selected;
@@ -26,6 +30,7 @@ public class AnswerDto {
 
         public static AnswerResponse from(Answer answer) {
             return AnswerResponse.builder()
+                    .questionIdx(answer.getQuestion().getIdx())
                     .idx(answer.getIdx())
                     .content(answer.getContent())
                     .selected(answer.isSelected())

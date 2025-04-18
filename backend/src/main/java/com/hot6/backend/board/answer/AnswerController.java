@@ -52,4 +52,8 @@ public class AnswerController {
         answerService.delete(idx);
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/list/user/{userId}")
+    public ResponseEntity<List<AnswerDto.AnswerResponse>> listByUserId(@PathVariable Long userId) {
+        return ResponseEntity.ok(answerService.readByAnswer(userId));
+    }
 }
