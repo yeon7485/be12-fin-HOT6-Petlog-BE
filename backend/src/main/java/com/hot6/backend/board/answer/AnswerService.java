@@ -1,14 +1,18 @@
 package com.hot6.backend.board.answer;
 
+import com.hot6.backend.board.answer.images.AnswerImageService;
 import com.hot6.backend.board.answer.model.Answer;
 import com.hot6.backend.board.answer.model.AnswerDto;
 import com.hot6.backend.board.question.QuestionRepository;
 import com.hot6.backend.board.question.model.Question;
+import com.hot6.backend.user.UserRepository;
 import com.hot6.backend.user.model.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -17,19 +21,29 @@ public class AnswerService {
 
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
+    private final UserRepository userRepository;
+    private final AnswerImageService answerImageService;
 
-    public void create(AnswerDto.AnswerRequest dto, User currentUser) {
-        Question question = questionRepository.findById(dto.getQuestionIdx())
-                .orElseThrow(() -> new RuntimeException("질문이 존재하지 않습니다"));
+    public void create(AnswerDto.AnswerRequest request, List<MultipartFile> images) throws IOException {
+        Question question = questionRepository.findById(request.getQuestionIdx())
+                .orElseThrow(() -> new IllegalArgumentException("해당 질문이 존재하지 않습니다."));
+
+        User user = userRepository.findById(1L) // TODO: 인증 사용자로 대체 예정
+                .orElseThrow(() -> new IllegalArgumentException("사용자 정보 없음"));
 
         Answer answer = Answer.builder()
-                .content(dto.getContent())
-                .selected(false)
                 .question(question)
-                .user(currentUser)
+                .user(user)
+                .content(request.getContent())
+                .selected(false)
                 .build();
 
-        answerRepository.save(answer);
+        Answer saved = answerRepository.save(answer);
+
+        // ✅ 이미지 저장
+        if (images != null && !images.isEmpty()) {
+            answerImageService.saveImages(images, saved);
+        }
     }
 
     public List<AnswerDto.AnswerResponse> listByQuestion(Long questionIdx) {

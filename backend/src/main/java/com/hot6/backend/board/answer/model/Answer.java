@@ -1,5 +1,7 @@
 package com.hot6.backend.board.answer.model;
 
+import com.hot6.backend.board.answer.images.AnswerImage;
+import com.hot6.backend.board.question.images.QuestionImage;
 import com.hot6.backend.board.question.model.Question;
 import com.hot6.backend.common.BaseEntity;
 import com.hot6.backend.user.model.User;
@@ -7,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -29,6 +32,10 @@ public class Answer extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_idx", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "answer")
+    private List<AnswerImage> answerImageList;
+
 }
 
 

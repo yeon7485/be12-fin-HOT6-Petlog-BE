@@ -5,21 +5,36 @@ import com.hot6.backend.board.question.model.QuestionDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/question")
-public class    QuestionController {
+public class QuestionController {
 
     private final QuestionService questionService;
 
-    @PostMapping("/create")
-    public ResponseEntity<String> create(@RequestBody QuestionDto.QuestionRequest dto) {
-        questionService.create(dto);
-        return ResponseEntity.ok("성공");
+    @PostMapping(value = "/create", consumes = {"multipart/form-data"})
+    public ResponseEntity<String> create(
+            @RequestPart("question") QuestionDto.QuestionRequest dto,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images
+    ) throws IOException {
+        questionService.create(dto, images);
+        return ResponseEntity.ok("질문 등록 성공");
+    }
+
+    @PutMapping(value = "/update/{idx}", consumes = {"multipart/form-data"})
+    public ResponseEntity<Void> update(
+            @PathVariable Long idx,
+            @RequestPart("question") QuestionDto.QuestionRequest dto,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images
+    ) throws IOException {
+        questionService.update(idx, dto, images);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/list")
@@ -36,12 +51,6 @@ public class    QuestionController {
     public ResponseEntity<QuestionDto.QuestionResponse> read(@PathVariable Long idx) {
         QuestionDto.QuestionResponse response = questionService.read(idx);
         return ResponseEntity.ok(response);
-    }
-
-    @PutMapping("/update/{idx}")
-    public ResponseEntity<Void> update(@PathVariable Long idx, @RequestBody QuestionDto.QuestionRequest dto) {
-        questionService.update(idx, dto);
-        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/delete/{idx}")
