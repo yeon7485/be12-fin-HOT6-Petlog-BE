@@ -10,7 +10,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -59,34 +61,38 @@ public class ChatController {
 
     @Operation(summary = "전체 채팅방 목록 조회", description = "전체 그룹 채팅방 리스트를 조회합니다.")
     @GetMapping("/")
-    public ResponseEntity<BaseResponse<List<ChatDto.ChatInfo>>> getChatList() {
-        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, chatRoomService.getList()));
+    public ResponseEntity<BaseResponse<Slice<ChatDto.ChatRoomListDto>>> getChatList(
+            @AuthenticationPrincipal User user,
+            @PageableDefault(size = 10) Pageable pageable
+    ) {
+        Long userIdx = (user != null) ? user.getIdx() : null;
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, chatRoomService.getList(userIdx,pageable)));
     }
 
     @Operation(summary = "참여 중인 채팅방 목록 조회", description = "사용자가 현재 참여 중인 채팅방 목록을 조회합니다.")
     @GetMapping("/chatrooms/me")
-    public ResponseEntity<BaseResponse<List<ChatDto.ChatInfo>>> getUserChatRooms(
-            @AuthenticationPrincipal User user) {
+    public ResponseEntity<BaseResponse<Slice<ChatDto.MyChatRoomListDto>>> getUserChatRooms(
+            @AuthenticationPrincipal User user,
+            @PageableDefault(size = 10) Pageable pageable) {
 //        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, chatRoomService.getChatRoomByUserIdx(user.getIdx())));
-        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, chatRoomService.findMyChatRooms(user.getIdx())));
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, chatRoomService.findMyChatRooms(user.getIdx(),pageable)));
     }
 
     @Operation(summary = "채팅방 검색", description = "채팅방 제목 또는 해시태그로 검색합니다.")
     @GetMapping("/search")
-    public ResponseEntity<List<ChatDto.ChatInfo>> searchChat(
+    public ResponseEntity<List<ChatDto.ChatRoomListDto>> searchChat(
             @RequestParam(required = false) String query,
             @RequestParam(required = false) List<String> hashtags) {
 
-        List<ChatDto.ChatInfo> list = List.of(
-                ChatDto.ChatInfo.builder().title("Title01").hashtags(List.of("#햄스터", "#서울")).build(),
-                ChatDto.ChatInfo.builder().title("Title02").hashtags(List.of("#친구", "#펫")).build()
+        List<ChatDto.ChatRoomListDto> list = List.of(
+
         );
         return ResponseEntity.ok(list);
     }
 
     @Operation(summary = "단일 채팅방의 정보 조회", description = "단일 채팅방의 정보를 조회합니다.(채팅방 이름, 해시 태그)")
     @GetMapping("/chatroom/{chatRoomIdx}")
-    public ResponseEntity<BaseResponse<ChatDto.ChatInfo>> getChatRoomInfo(
+    public ResponseEntity<BaseResponse<ChatDto.ChatRoomDetailInfo>> getChatRoomInfo(
             @PathVariable Long chatRoomIdx
     ) {
         return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS,chatRoomService.getChatRoomInfo(chatRoomIdx)));

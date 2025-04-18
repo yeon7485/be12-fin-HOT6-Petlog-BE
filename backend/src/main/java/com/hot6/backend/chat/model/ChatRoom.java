@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +26,11 @@ public class ChatRoom extends BaseEntity {
     private String cTitle;
 
 
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "chatRoom")
     private Set<ChatRoomParticipant> participants = new HashSet<>();
 
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "chatRoom")
     private Set<ChatRoomHashtag> hashtags = new HashSet<>();
 }

@@ -1,7 +1,5 @@
 package com.hot6.backend.chat.model;
 
-import com.hot6.backend.user.model.User;
-import com.hot6.backend.user.model.UserDto;
 import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -33,7 +31,7 @@ public class ChatDto {
     @Getter
     @Builder
     @Schema(description = "채팅방 정보 응답 DTO")
-    public static class ChatInfo {
+    public static class ChatRoomListDto {
         @Schema(description = "채팅방 idx", example = "1")
         public Long idx;
 
@@ -46,9 +44,70 @@ public class ChatDto {
         @Schema(description = "채팅방 참여 인원수", example = "6")
         public int participants;
 
-        public static ChatInfo from(ChatRoom chatRoom) {
+        @Schema(description = "참여 여부", example = "true")
+        public Boolean isParticipating;
 
-            return ChatInfo.builder()
+        public static ChatRoomListDto from(ChatRoom chatRoom, Long userIdx) {
+            return ChatRoomListDto.builder()
+                    .idx(chatRoom.getIdx())
+                    .title(chatRoom.getCTitle())
+                    .participants(chatRoom.getParticipants().size())
+                    .hashtags(chatRoom.getHashtags().stream().map(ChatRoomHashtag::getCTag).collect(Collectors.toList()))
+                    .isParticipating(
+                            userIdx != null && chatRoom.getParticipants().stream()
+                            .anyMatch(participant -> participant.getUser().getIdx().equals(userIdx)))
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
+    @Schema(description = "채팅방 정보 응답 DTO")
+    public static class MyChatRoomListDto {
+        @Schema(description = "채팅방 idx", example = "1")
+        public Long idx;
+
+        @Schema(description = "채팅방 제목", example = "햄스터 친구 구해요")
+        public String title;
+
+        @Schema(description = "채팅방 해시태그", example = "[\"#햄스터\", \"#친구\"]")
+        public List<String> hashtags;
+
+        @Schema(description = "채팅방 참여 인원수", example = "6")
+        public int participants;
+
+        @Schema(description = "참여 여부", example = "true")
+        public Boolean isParticipating;
+
+        public static MyChatRoomListDto from(ChatRoom chatRoom) {
+            return MyChatRoomListDto.builder()
+                    .idx(chatRoom.getIdx())
+                    .title(chatRoom.getCTitle())
+                    .participants(chatRoom.getParticipants().size())
+                    .hashtags(chatRoom.getHashtags().stream().map(ChatRoomHashtag::getCTag).collect(Collectors.toList()))
+                    .isParticipating(true)
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
+    @Schema(description = "채팅방 정보 응답 DTO")
+    public static class ChatRoomDetailInfo {
+        @Schema(description = "채팅방 idx", example = "1")
+        public Long idx;
+
+        @Schema(description = "채팅방 제목", example = "햄스터 친구 구해요")
+        public String title;
+
+        @Schema(description = "채팅방 해시태그", example = "[\"#햄스터\", \"#친구\"]")
+        public List<String> hashtags;
+
+        @Schema(description = "채팅방 참여 인원수", example = "6")
+        public int participants;
+
+        public static ChatRoomDetailInfo from(ChatRoom chatRoom) {
+            return ChatRoomDetailInfo.builder()
                     .idx(chatRoom.getIdx())
                     .title(chatRoom.getCTitle())
                     .participants(chatRoom.getParticipants().size())
