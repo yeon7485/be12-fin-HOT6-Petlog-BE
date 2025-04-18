@@ -51,5 +51,8 @@ public class PostController {
         postService.update(idx, dto);
         return ResponseEntity.ok().build();
     }
-
+    @GetMapping("/list/user/{userId}")
+    public ResponseEntity<List<PostDto.UserPostResponse>> getUserPosts(@PathVariable Long userId) {
+        return ResponseEntity.ok(postService.findUserPosts(userId));
+    }
 }

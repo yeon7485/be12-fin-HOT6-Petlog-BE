@@ -13,5 +13,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByBoardTypeAndCategory(BoardType boardType, String category);
     List<Post> findByBoardTypeAndCategoryAndTitleContainingIgnoreCase(BoardType boardType, String category, String keyword);
     List<Post> findByBoardTypeAndCategoryAndUser_NicknameContainingIgnoreCase(BoardType boardType, String category, String keyword);
-
+    List<Post> findByUserIdxAndIsDeletedFalseOrderByCreatedAtDesc(Long userIdx);
 }

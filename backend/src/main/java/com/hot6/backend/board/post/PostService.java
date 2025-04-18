@@ -104,5 +104,10 @@ public class PostService {
 
         postRepository.save(post);
     }
-
+    public List<PostDto.UserPostResponse> findUserPosts(Long userId) {
+        return postRepository.findByUserIdxAndIsDeletedFalseOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(PostDto.UserPostResponse::from)
+                .toList();
+    }
 }
