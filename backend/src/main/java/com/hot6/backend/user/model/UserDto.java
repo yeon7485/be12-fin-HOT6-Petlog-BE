@@ -31,6 +31,13 @@ public class UserDto {
         @Schema(description = "이메일 인증 여부", example = "false")
         private boolean enabled;
 
+        @Schema(description = "로그인 구분", example = "null")
+        private String provider;
+
+        @Schema(description = "소셜 id", example = "1234")
+        private Long providerId;
+
+
         public User toEntity(String password) {
             return User.builder()
                     .email(email)
@@ -39,6 +46,8 @@ public class UserDto {
                     .userType(UserType.valueOf(role))
                     .userProfileImage(profileImageUrl)
                     .enabled(enabled)
+                    .provider(provider)
+                    .providerId(providerId)
                     .build();
         }
     }

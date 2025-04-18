@@ -26,7 +26,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // 회원 정보 가져오기
         OAuth2User oAuth2User = defaultOAuth2UserService.loadUser(userRequest);
         Map<String, Object> attributes = oAuth2User.getAttributes();
-
+        Long providerId = (Long) attributes.get("id");
         // kakao_account 안에 email 있음
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
 
@@ -41,11 +41,13 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         if (userService.loadUserByUsername(email) == null) {
             userService.signup(UserDto.CreateRequest.builder()
                     .email(email)
-                    .password("oauth2-temp-password")
+                    .password("kakao")
                     .nickname(nickname)
                     .profileImageUrl(profileImage)
                     .role("USER")
                     .enabled(true)
+                    .provider("kakao")
+                    .providerId(providerId)
                     .build());
         }
 
