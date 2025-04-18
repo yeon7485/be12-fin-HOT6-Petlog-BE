@@ -1,6 +1,7 @@
 package com.hot6.backend.chat;
 
 import com.hot6.backend.chat.model.ChatDto;
+import com.hot6.backend.chat.service.ChatRoomService;
 import com.hot6.backend.user.model.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class ChatWebSocketController {
     private final SimpMessagingTemplate simp;
+    private final ChatRoomService chatRoomService;
 
     @MessageMapping("/chat/{roomIdx}")
     public void sendMessage(@DestinationVariable Long roomIdx,
@@ -32,6 +34,7 @@ public class ChatWebSocketController {
         log.info("📌 roomIdx: {}", roomIdx);
         log.info("👤 sender: {} (user idx: {})", user.getNickname(), user.getIdx());
         log.info("✉️ payload: {}", dto);
-        simp.convertAndSend("/topic/chat/" + roomIdx, dto);
+
+        simp.convertAndSend("/topic/chat/" + roomIdx, chatRoomService.saveSendMessage(roomIdx, user.getIdx(), dto));
     }
 }

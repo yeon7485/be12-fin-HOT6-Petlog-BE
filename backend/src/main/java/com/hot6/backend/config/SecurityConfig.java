@@ -41,9 +41,26 @@ public class SecurityConfig {
         http.httpBasic(AbstractHttpConfigurer::disable);
         http.formLogin(AbstractHttpConfigurer::disable);
 
-        http.authorizeHttpRequests(
-                (auth) -> auth
-                        .anyRequest().permitAll()
+        http.authorizeHttpRequests(auth -> auth
+                // 인증 없이 접근 가능한 엔드포인트들
+                .requestMatchers(
+                        "/chat/",
+                        "/chat/search",
+                        "/chat/chatroom/{chatRoomIdx:[0-9]+}",
+                        "/chat/chatroom/ws-doc"
+                ).permitAll()
+
+                // 인증이 필요한 채팅 관련 API
+                .requestMatchers(
+                        "/chat/chatrooms/me",
+                        "/chat/chatroom/{chatRoomIdx:[0-9]+}/chat",
+                        "/chat/chatroom/{chatRoomIdx:[0-9]+}/users",
+                        "/chat/chatroom/{chatRoomIdx:[0-9]+}/leave",
+                        "/chat/**"
+                ).authenticated()
+
+                // 기타 모든 요청 허용
+                .anyRequest().permitAll()
         );
         http.oauth2Login(config -> {
             config.successHandler(new OAuth2SuccessHandler());
