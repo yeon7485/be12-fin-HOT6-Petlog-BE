@@ -78,4 +78,11 @@ public class AnswerService {
     public int countByQuestionIdx(Long questionId) {
         return answerRepository.countByQuestionIdx(questionId);
     }
+
+    public List<AnswerDto.AnswerResponse> readByAnswer(Long userId) {
+        return answerRepository.findByUser_IdxOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(AnswerDto.AnswerResponse::from)
+                .toList();
+    }
 }
