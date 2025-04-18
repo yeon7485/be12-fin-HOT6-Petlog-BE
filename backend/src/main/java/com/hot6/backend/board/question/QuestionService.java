@@ -104,6 +104,7 @@ public class QuestionService {
         questionImageService.deleteImagesByQuestion(idx);
         questionRepository.deleteById(idx);
     }
+  
     public List<QuestionDto.UserQuestionResponse> findUserQuestions(Long userId) {
         return questionRepository.findByUser_IdxOrderByCreatedAtDesc(userId)
                 .stream()

@@ -22,6 +22,7 @@ public class CommentDto {
     public static class CommentResponse {
         private Long idx;
         private String writer;
+        private Long userIdx;
         private String content;
         private Long postIdx;
         private LocalDate createdAt;
@@ -30,6 +31,7 @@ public class CommentDto {
             return CommentResponse.builder()
                     .idx(comment.getIdx())
                     .writer(comment.getUser().getNickname())
+                    .userIdx(comment.getUser().getIdx())
                     .content(comment.getContent())
                     .postIdx(comment.getPost().getIdx())
                     .createdAt(LocalDate.from(comment.getCreatedAt()))

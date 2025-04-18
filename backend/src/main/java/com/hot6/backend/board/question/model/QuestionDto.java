@@ -37,7 +37,6 @@ public class QuestionDto {
     public static class QuestionResponse {
         private Long idx;
         private String writer;
-
         @JsonProperty("qTitle")
         private String qTitle;
 

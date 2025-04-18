@@ -58,10 +58,13 @@ public class SecurityConfig {
                         "/chat/chatroom/{chatRoomIdx:[0-9]+}/leave",
                         "/chat/**"
                 ).authenticated()
+                                   
+                .requestMatchers("/schedule").hasAuthority("USER")
 
                 // 기타 모든 요청 허용
                 .anyRequest().permitAll()
         );
+
         http.oauth2Login(config -> {
             config.successHandler(new OAuth2SuccessHandler());
             config.userInfoEndpoint(endpoint ->

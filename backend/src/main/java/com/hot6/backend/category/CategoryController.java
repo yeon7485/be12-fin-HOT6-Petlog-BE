@@ -14,9 +14,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/category")
-@Tag(name = "Category", description = "카테고리(일정,기록) 관리 API")
+@Tag(name = "Category", description = "카테고리 관리 API")
 public class CategoryController {
-    @Operation(summary = "카테고리 목록 조회", description = "기록 또는 일정 카테고리를 조회합니다.")
+    @Operation(summary = "카테고리 목록 조회", description = "카테고리 목록을 조회합니다.")
     @GetMapping("/list")
     public ResponseEntity<List<CategoryDto.CategoryResponse>> getCategoryList(
             @RequestParam CategoryType categoryType
