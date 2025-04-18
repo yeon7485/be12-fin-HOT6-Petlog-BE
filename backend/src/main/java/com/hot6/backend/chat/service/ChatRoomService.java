@@ -1,9 +1,7 @@
 package com.hot6.backend.chat.service;
 
-import com.hot6.backend.chat.model.ChatDto;
-import com.hot6.backend.chat.model.ChatRoom;
-import com.hot6.backend.chat.model.ChatRoomHashtag;
-import com.hot6.backend.chat.model.ChatRoomParticipant;
+import com.hot6.backend.chat.model.*;
+import com.hot6.backend.chat.repository.ChatMessageRepository;
 import com.hot6.backend.chat.repository.ChatRoomRepository;
 import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.common.exception.BaseException;
@@ -13,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -76,5 +75,20 @@ public class ChatRoomService {
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
 
         return ChatDto.ChatInfo.from(chatRoom);
+    }
+
+    @Transactional
+    public ChatDto.ChatElement saveSendMessage(Long roomIdx, Long sender, ChatDto.ChatMessageDto chatMessageDto) {
+        ChatRoom chatRoom = chatRoomRepository.findByIdx(roomIdx)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
+        ChatRoomParticipant chatRoomParticipant = chatRoomParticipantService.findChatRoomParticipantOrThrow(chatRoom.getIdx(), sender);
+
+        Chat chat = Chat.builder()
+                .chatRoomParticipant(chatRoomParticipant)
+                .type(ChatMessageType.from(chatMessageDto.getType()))
+                .message(chatMessageDto.getText()) // 또는 dto.getMessage() 등
+                .build();
+
+        return chatMessageService.saveChatMessage(chat);
     }
 }
