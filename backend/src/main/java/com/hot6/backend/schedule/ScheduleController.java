@@ -27,7 +27,7 @@ public class ScheduleController {
     public ResponseEntity<BaseResponse<List<ScheduleDto.SimpleSchedule>>> getSchedules(@AuthenticationPrincipal User user) {
         List<ScheduleDto.SimpleSchedule> list = scheduleService.getAllSchedule(user.getIdx());
 
-        return ResponseEntity.ok(new BaseResponse<>(list));
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, list));
     }
 
     @Operation(summary = "반려동물별 월간 일정 조회", description = "특정 반려동물의 월간 일정을 조회합니다.")

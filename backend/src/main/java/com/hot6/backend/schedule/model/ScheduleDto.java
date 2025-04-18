@@ -119,6 +119,7 @@ public class ScheduleDto {
                     .placeId(placeId)
                     .repeatCount(repeatCount)
                     .repeatEndAt(repeatEndAt)
+                    .user(user)
                     .build();
         }
 
