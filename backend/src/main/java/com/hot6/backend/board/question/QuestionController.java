@@ -1,5 +1,6 @@
 package com.hot6.backend.board.question;
 
+import com.hot6.backend.board.post.model.PostDto;
 import com.hot6.backend.board.question.model.QuestionDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -49,4 +50,8 @@ public class    QuestionController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/list/user/{userId}")
+    public ResponseEntity<List<QuestionDto.UserQuestionResponse>> getUserQuestions(@PathVariable Long userId) {
+        return ResponseEntity.ok(questionService.findUserQuestions(userId));
+    }
 }

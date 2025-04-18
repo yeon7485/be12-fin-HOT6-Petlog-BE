@@ -2,13 +2,17 @@ package com.hot6.backend.board.question;
 
 import com.hot6.backend.board.answer.AnswerService;
 import com.hot6.backend.board.hashtagQuestion.Hashtag_QuestionService;
+import com.hot6.backend.board.post.model.PostDto;
 import com.hot6.backend.board.question.model.Question;
 import com.hot6.backend.board.question.model.QuestionDto;
 import com.hot6.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Optional;
@@ -85,5 +89,11 @@ public class QuestionService {
         hashtagService.deleteByQuestionIdx(idx);
         answerService.deleteByQuestionIdx(idx);
         questionRepository.deleteById(idx);
+    }
+    public List<QuestionDto.UserQuestionResponse> findUserQuestions(Long userId) {
+        return questionRepository.findByUser_IdxOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(QuestionDto.UserQuestionResponse::from)
+                .toList();
     }
 }
