@@ -104,21 +104,19 @@ public class UserController {
             @PathVariable Long userId,
             @RequestParam("profileImage") MultipartFile profileImage) {
 
-        // 프로필 이미지가 비어 있지 않으면 처리
         if (profileImage != null && !profileImage.isEmpty()) {
             try {
-                // S3에 업로드하고 경로를 반환받기
                 String imagePath = s3Service.upload(profileImage, "users/" + System.currentTimeMillis() + profileImage.getOriginalFilename());
 
-                // 업로드된 이미지의 URL을 반환
+                // ✅ DB 업데이트 수행
+                userService.updateProfileImage(userId, imagePath);
+
                 return ResponseEntity.ok(Map.of("profileImageUrl", imagePath));
             } catch (IOException e) {
-                // 파일 업로드 실패 시 오류 메시지 반환
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body(Map.of("message", "이미지 업로드 실패: " + e.getMessage()));
             }
         } else {
-            // 파일이 비어있는 경우
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("message", "파일이 비어 있습니다."));
         }
