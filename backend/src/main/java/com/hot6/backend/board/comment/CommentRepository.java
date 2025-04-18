@@ -12,5 +12,5 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByPost(Post post);
     @Modifying
     @Transactional
-    void deleteByPostIdx(Long questionIdx);
+    void deleteByPostIdx(Long postIdx);
 }
