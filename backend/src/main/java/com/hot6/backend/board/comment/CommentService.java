@@ -23,20 +23,17 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
 
-    public void create(CommentDto.CommentRequest dto) {
+    public void create(CommentDto.CommentRequest dto, User currentUser) {
         Post post = postRepository.findById(dto.getPostIdx())
-                .orElseThrow(() -> new RuntimeException("게시글 없음"));
-
-        User user = userRepository.findById(dto.getUserIdx())
-                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+                .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다"));
 
         Comment comment = Comment.builder()
                 .content(dto.getContent())
                 .post(post)
-                .user(user)
+                .user(currentUser)
                 .build();
-
         commentRepository.save(comment);
+
     }
 
     public List<CommentDto.CommentResponse> list(Long postIdx) {
