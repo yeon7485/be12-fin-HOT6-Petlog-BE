@@ -72,6 +72,11 @@ public class AnswerService {
     public void update(Long idx, AnswerDto.AnswerRequest dto) {
         Answer answer = answerRepository.findById(idx)
                 .orElseThrow(() -> new RuntimeException("답변이 존재하지 않습니다"));
+
+        if (answer.isSelected()) {
+            throw new IllegalStateException("채택된 답변은 수정할 수 없습니다.");
+        }
+
         answer.setContent(dto.getContent());
         answerRepository.save(answer);
     }
@@ -86,6 +91,11 @@ public class AnswerService {
     public void delete(Long idx) {
         Answer answer = answerRepository.findById(idx)
                 .orElseThrow(() -> new RuntimeException("답변이 존재하지 않습니다."));
+
+        if (answer.isSelected()) {
+            throw new IllegalStateException("채택된 답변은 삭제할 수 없습니다.");
+        }
+
         answerRepository.delete(answer);
     }
 

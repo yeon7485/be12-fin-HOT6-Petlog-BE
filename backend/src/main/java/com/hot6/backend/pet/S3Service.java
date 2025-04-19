@@ -53,4 +53,8 @@ public class S3Service {
             return ResponseEntity.status(500).body("파일 다운로드 실패: " + e.getMessage());
         }
     }
+
+    public void delete(String key) {
+        s3Operations.deleteObject(bucketName, key);
+    }
 }
