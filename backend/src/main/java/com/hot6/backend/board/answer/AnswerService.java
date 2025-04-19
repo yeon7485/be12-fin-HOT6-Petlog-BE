@@ -69,7 +69,7 @@ public class AnswerService {
     }
 
     @Transactional
-    public void update(Long idx, AnswerDto.AnswerRequest dto) {
+    public void update(Long idx, AnswerDto.AnswerRequest dto, List<MultipartFile> images) {
         Answer answer = answerRepository.findById(idx)
                 .orElseThrow(() -> new RuntimeException("답변이 존재하지 않습니다"));
 
@@ -96,6 +96,7 @@ public class AnswerService {
             throw new IllegalStateException("채택된 답변은 삭제할 수 없습니다.");
         }
 
+        answerImageService.deleteImagesByAnswer(idx);
         answerRepository.delete(answer);
     }
 
