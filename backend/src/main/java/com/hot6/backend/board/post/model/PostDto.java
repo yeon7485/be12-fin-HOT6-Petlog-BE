@@ -1,12 +1,13 @@
 package com.hot6.backend.board.post.model;
 
-import com.hot6.backend.user.model.User;
+import com.hot6.backend.board.post.images.PostImage;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class PostDto {
 
@@ -32,6 +33,7 @@ public class PostDto {
         private String category;
         private LocalDate createdAt;
         private String boardType;
+        private List<String> imageUrls;
 
         public static PostResponse from(Post post) {
             return PostResponse.builder()
@@ -43,6 +45,13 @@ public class PostDto {
                     .category(post.getCategory())
                     .createdAt(LocalDate.from(post.getCreatedAt()))
                     .boardType(post.getBoardType().getBoardName())
+                    .imageUrls(
+                            post.getPostImageList() != null
+                                    ? post.getPostImageList().stream()
+                                    .map(PostImage::getUrl)
+                                    .toList()
+                                    : List.of()
+                    )
                     .build();
         }
     }
