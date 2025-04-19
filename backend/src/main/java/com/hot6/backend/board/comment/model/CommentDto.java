@@ -28,6 +28,7 @@ public class CommentDto {
         private Long postIdx;
         private String boardName; 
         private LocalDate createdAt;
+        private String profileImageUrl;
 
         public static CommentResponse from(Comment comment) {
             return CommentResponse.builder()
@@ -38,6 +39,7 @@ public class CommentDto {
                     .postIdx(comment.getPost().getIdx())
                     .boardName(comment.getPost().getBoardType().getBoardName())
                     .createdAt(LocalDate.from(comment.getCreatedAt()))
+                    .profileImageUrl(comment.getUser().getUserProfileImage())
                     .build();
         }
     }

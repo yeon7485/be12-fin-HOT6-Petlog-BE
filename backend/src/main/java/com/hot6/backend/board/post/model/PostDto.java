@@ -34,6 +34,7 @@ public class PostDto {
         private LocalDate createdAt;
         private String boardType;
         private List<String> imageUrls;
+        private String profileImageUrl;
 
         public static PostResponse from(Post post) {
             return PostResponse.builder()
@@ -52,6 +53,7 @@ public class PostDto {
                                     .toList()
                                     : List.of()
                     )
+                    .profileImageUrl(post.getUser().getUserProfileImage())
                     .build();
         }
     }
@@ -64,6 +66,7 @@ public class PostDto {
         private String title;
         private String boardType;
         private LocalDateTime createdAt;
+
 
         public static UserPostResponse from(Post post) {
             return UserPostResponse.builder()

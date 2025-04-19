@@ -29,6 +29,7 @@ public class AnswerDto {
         private LocalDate createdAt;
         private String writer;
         private List<String> imageUrls;
+        private String profileImageUrl;
 
         public static AnswerResponse from(Answer answer) {
             return AnswerResponse.builder()
@@ -45,6 +46,7 @@ public class AnswerDto {
                                     .toList()
                                     : List.of()
                     )
+                    .profileImageUrl(answer.getUser().getUserProfileImage())
                     .build();
         }
     }
