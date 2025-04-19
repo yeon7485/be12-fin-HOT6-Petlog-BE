@@ -4,7 +4,9 @@ import com.hot6.backend.board.post.model.PostDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -15,11 +17,15 @@ public class PostController {
 
     private final PostService postService;
 
-    @PostMapping("/create")
-    public ResponseEntity<Void> create(@RequestBody PostDto.PostRequest dto) {
-        postService.create(dto);
+    @PostMapping(value = "/create", consumes = {"multipart/form-data"})
+    public ResponseEntity<Void> create(
+            @RequestPart("post") PostDto.PostRequest dto,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images
+    ) throws IOException {
+        postService.create(dto, images);
         return ResponseEntity.ok().build();
     }
+
 
     @GetMapping("/list/{boardName}")
     public ResponseEntity<List<PostDto.PostResponse>> list(@PathVariable String boardName) {
@@ -46,11 +52,16 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/update/{idx}")
-    public ResponseEntity<Void> update(@PathVariable Long idx, @RequestBody PostDto.PostRequest dto) {
-        postService.update(idx, dto);
+    @PutMapping(value = "/update/{idx}", consumes = {"multipart/form-data"})
+    public ResponseEntity<Void> update(
+            @PathVariable Long idx,
+            @RequestPart("post") PostDto.PostRequest dto,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images
+    ) throws IOException {
+        postService.update(idx, dto, images);
         return ResponseEntity.ok().build();
     }
+
     @GetMapping("/list/user/{userId}")
     public ResponseEntity<List<PostDto.UserPostResponse>> getUserPosts(@PathVariable Long userId) {
         return ResponseEntity.ok(postService.findUserPosts(userId));

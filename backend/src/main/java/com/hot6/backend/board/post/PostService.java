@@ -1,6 +1,7 @@
 package com.hot6.backend.board.post;
 
 import com.hot6.backend.board.comment.CommentService;
+import com.hot6.backend.board.post.images.PostImageService;
 import com.hot6.backend.board.post.model.BoardType;
 import com.hot6.backend.board.post.model.Post;
 import com.hot6.backend.board.post.model.PostDto;
@@ -9,8 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -19,12 +22,12 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Service
 @RequiredArgsConstructor
 public class PostService {
-
+    private final PostImageService postImageService;
     private final CommentService commentService;
     private final PostRepository postRepository;
     private final BoardTypeRepository boardTypeRepoistory;
 
-    public void create(PostDto.PostRequest dto) {
+    public void create(PostDto.PostRequest dto, List<MultipartFile> images) throws IOException {
         BoardType boardType = boardTypeRepoistory.findByBoardName(dto.getBoardType())
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "게시판 종류 없음"));
 
@@ -35,13 +38,18 @@ public class PostService {
                 .user(user)
                 .title(dto.getTitle())
                 .content(dto.getContent())
-                .image(dto.getImage())
+                .image(dto.getImage()) // 메인 대표 이미지
                 .category(dto.getCategory())
                 .boardType(boardType)
                 .build();
 
         postRepository.save(post);
+
+        if (images != null && !images.isEmpty()) {
+            postImageService.saveImages(images, post);
+        }
     }
+
 
 
     public List<PostDto.PostResponse> list(String boardName) {
@@ -89,7 +97,7 @@ public class PostService {
         postRepository.delete(post);
     }
 
-    public void update(Long idx, PostDto.PostRequest dto) {
+    public void update(Long idx, PostDto.PostRequest dto, List<MultipartFile> images) throws IOException {
         Post post = postRepository.findById(idx)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "게시글 없음"));
 
@@ -103,7 +111,13 @@ public class PostService {
         post.setBoardType(boardType);
 
         postRepository.save(post);
+
+        if (images != null && !images.isEmpty()) {
+            postImageService.deleteImagesByPost(idx);
+            postImageService.saveImages(images, post);
+        }
     }
+
     public List<PostDto.UserPostResponse> findUserPosts(Long userId) {
         return postRepository.findByUserIdxAndIsDeletedFalseOrderByCreatedAtDesc(userId)
                 .stream()
