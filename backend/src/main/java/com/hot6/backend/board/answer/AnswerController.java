@@ -41,12 +41,16 @@ public class AnswerController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/update/{idx}")
-    public ResponseEntity<Void> update(@PathVariable Long idx,
-                                       @RequestBody AnswerDto.AnswerRequest dto) {
-        answerService.update(idx, dto);
+    @PutMapping(value = "/update/{idx}", consumes = {"multipart/form-data"})
+    public ResponseEntity<Void> update(
+            @PathVariable Long idx,
+            @RequestPart("answer") AnswerDto.AnswerRequest dto,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images
+    ) throws IOException {
+        answerService.update(idx, dto, images);
         return ResponseEntity.ok().build();
     }
+
 
     @GetMapping("/read/{idx}")
     public ResponseEntity<AnswerDto.AnswerResponse> read(@PathVariable Long idx) {
