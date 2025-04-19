@@ -93,6 +93,7 @@ public class PostService {
         Post post = postRepository.findById(idx)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "게시글 없음"));
 
+        postImageService.deleteImagesByPost(idx);
         commentService.deleteByPostIdx(idx);
         postRepository.delete(post);
     }
