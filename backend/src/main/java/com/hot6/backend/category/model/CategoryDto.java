@@ -1,15 +1,19 @@
 package com.hot6.backend.category.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
+
+@AllArgsConstructor
 public class CategoryDto {
 
     @Getter
-    public class CategoryCreateRequest {
+    public static class CategoryCreateRequest {
         @Schema(description = "카테고리 이름", example = "병원")
-        private String categoryName;
+        private String name;
 
         @Schema(description = "카테고리 색상 코드", example = "#FF8A65")
         private String color; // 선택일 수 있음
@@ -22,17 +26,18 @@ public class CategoryDto {
     }
 
     @Getter
-    public class CategoryUpdateRequest {
+    @Setter
+    public static class CategoryUpdateRequest {
         @Schema(description = "수정할 카테고리의 ID", example = "1")
-        private Long categoryId;
+        private Long Idx;
 
         @Schema(description = "카테고리 이름", example = "병원")
-        private String categoryName;
+        private String name;
 
         @Schema(description = "카테고리 색상 코드", example = "#FF8A65")
         private String color;
 
-        @Schema(description = "카테고리 설명", example = "정기 검진 및 예방접종을 위한 병원 방문 일정")
+        @Schema(description =    "카테고리 설명", example = "정기 검진 및 예방접종을 위한 병원 방문 일정")
         private String description;
     }
 
@@ -40,10 +45,10 @@ public class CategoryDto {
     @Builder
     public static class CategoryResponse{
         @Schema(description = "카테고리 고유 ID", example = "1")
-        private Long categoryIdx;
+        private Long Idx;
 
         @Schema(description = "카테고리 이름", example = "병원")
-        private String categoryName;
+        private String name;
 
         @Schema(description = "카테고리 색상 코드", example = "#FF8A65")
         private String color;
