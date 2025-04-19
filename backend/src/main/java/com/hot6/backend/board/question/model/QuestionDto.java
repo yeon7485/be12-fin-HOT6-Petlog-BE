@@ -39,7 +39,6 @@ public class QuestionDto {
         private String writer;
         @JsonProperty("qTitle")
         private String qTitle;
-
         private String content;
         private boolean selected;
         private String image;
@@ -47,6 +46,7 @@ public class QuestionDto {
         private List<String> tags;
         private int answerCount;
         private List<String> imageUrls;
+        private String profileImageUrl;
 
         public static QuestionResponse from(Question question, int answerCount) {
             return QuestionResponse.builder()
@@ -68,6 +68,7 @@ public class QuestionDto {
                                     .toList()
                                     : List.of()
                     )
+                    .profileImageUrl(question.getUser().getUserProfileImage())
                     .build();
         }
     }
