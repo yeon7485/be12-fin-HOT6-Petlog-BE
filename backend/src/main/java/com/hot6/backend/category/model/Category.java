@@ -1,11 +1,12 @@
 package com.hot6.backend.category.model;
 
+import com.hot6.backend.board.post.model.Post;
 import com.hot6.backend.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,4 +22,7 @@ public class Category extends BaseEntity {
     private String color;
     private CategoryType type;
     private String description;
+
+    @OneToMany(mappedBy = "category")
+    private List<Post> posts = new ArrayList<>();
 }

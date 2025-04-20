@@ -1,6 +1,7 @@
 package com.hot6.backend.board.post.model;
 
 import com.hot6.backend.board.post.images.PostImage;
+import com.hot6.backend.category.model.CategoryDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,7 @@ public class PostDto {
         private String title;
         private String content;
         private String image;
-        private String category;
+        private Long categoryIdx;
         private String boardType; // board name으로 받음
     }
 
@@ -43,14 +44,12 @@ public class PostDto {
                     .title(post.getTitle())
                     .content(post.getContent())
                     .image(post.getImage())
-                    .category(post.getCategory())
+                    .category(post.getCategory().getName())
                     .createdAt(LocalDate.from(post.getCreatedAt()))
                     .boardType(post.getBoardType().getBoardName())
                     .imageUrls(
                             post.getPostImageList() != null
-                                    ? post.getPostImageList().stream()
-                                    .map(PostImage::getUrl)
-                                    .toList()
+                                    ? post.getPostImageList().stream().map(PostImage::getUrl).toList()
                                     : List.of()
                     )
                     .profileImageUrl(post.getUser().getUserProfileImage())
