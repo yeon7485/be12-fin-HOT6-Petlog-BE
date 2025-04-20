@@ -20,6 +20,7 @@ public class Category extends BaseEntity {
     private Long idx;
     private String name;
     private String color;
+    @Enumerated(EnumType.STRING)
     private CategoryType type;
     private String description;
 

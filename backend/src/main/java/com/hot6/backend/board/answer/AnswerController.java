@@ -22,10 +22,11 @@ public class AnswerController {
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> create(
+            @AuthenticationPrincipal User currentUser,
             @RequestPart("answer") AnswerDto.AnswerRequest request,
             @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
 
-        answerService.create(request, images);
+        answerService.create(currentUser, request, images);
         return ResponseEntity.ok("답변 등록 성공");
     }
 
