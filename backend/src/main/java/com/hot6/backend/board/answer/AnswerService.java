@@ -10,6 +10,7 @@ import com.hot6.backend.user.model.User;
 import com.hot6.backend.user.model.UserType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,23 +26,24 @@ public class AnswerService {
     private final UserRepository userRepository;
     private final AnswerImageService answerImageService;
 
-    public void create(AnswerDto.AnswerRequest request, List<MultipartFile> images) throws IOException {
+    public void create(User user, AnswerDto.AnswerRequest request, List<MultipartFile> images) throws IOException {
         Question question = questionRepository.findById(request.getQuestionIdx())
                 .orElseThrow(() -> new IllegalArgumentException("해당 질문이 존재하지 않습니다."));
 
-        User user = userRepository.findById(1L) // TODO: 인증 사용자로 대체 예정
-                .orElseThrow(() -> new IllegalArgumentException("사용자 정보 없음"));
+        if (user.getUserType() == UserType.AI) {
+            throw new IllegalArgumentException("AI 유저는 답변을 등록할 수 없습니다.");
+        }
 
         Answer answer = Answer.builder()
                 .question(question)
                 .user(user)
                 .content(request.getContent())
                 .selected(false)
+                .isAi(false)
                 .build();
 
         Answer saved = answerRepository.save(answer);
 
-        // ✅ 이미지 저장
         if (images != null && !images.isEmpty()) {
             answerImageService.saveImages(images, saved);
         }
@@ -145,6 +147,4 @@ public class AnswerService {
         answerRepository.save(aiAnswer);
         System.out.println(">> AI 답변 저장 완료");
     }
-
-
 }
