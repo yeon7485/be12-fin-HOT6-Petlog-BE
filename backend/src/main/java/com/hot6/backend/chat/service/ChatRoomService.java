@@ -4,6 +4,8 @@ import com.hot6.backend.chat.model.*;
 import com.hot6.backend.chat.repository.ChatRoomRepository;
 import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.common.exception.BaseException;
+import com.hot6.backend.schedule.ScheduleService;
+import com.hot6.backend.schedule.model.Schedule;
 import com.hot6.backend.user.UserService;
 import com.hot6.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class ChatRoomService {
     private final ChatRoomHashtagService chatRoomHashtagService;
     private final UserService userService;
     private final ChatMessageService chatMessageService;
+    private final ScheduleService scheduleService;
 
     public Slice<ChatDto.ChatRoomListDto> getList(Long userIdx, Pageable pageable) {
         Slice<ChatRoom> chatRooms = chatRoomRepository.findAllWithSlice(pageable);
@@ -52,11 +55,6 @@ public class ChatRoomService {
         User findUser = userService.findUserByIdx(userIdx);
         chatRoomParticipantService.save(findUser, chatRoom);
     }
-
-//    public List<ChatDto.ChatInfo> getChatRoomByUserIdx(Long userIdx) {
-//        List<ChatRoom> allByParticipants = chatRoomRepository.findAllByParticipants(userIdx);
-//        return allByParticipants.stream().map(ChatDto.ChatInfo::from).collect(Collectors.toList());
-//    }
 
     @Transactional(readOnly = true)
     public Slice<ChatDto.MyChatRoomListDto> findMyChatRooms(Long userId, Pageable pageable) {
@@ -96,5 +94,41 @@ public class ChatRoomService {
                 .build();
 
         return chatMessageService.saveChatMessage(chat);
+    }
+
+    public List<ChatDto.ChatRoomScheduleElement> getChatRoomSchedule(Long chatRoomIdx) {
+        return scheduleService.getALLScheduleByChatRoom(chatRoomIdx);
+    }
+
+    public void createChatRoomSchedule(ChatDto.CreateChatRoomScheduleRequest dto, Long chatRoomIdx, User user) {
+        ChatRoom chatRoom = chatRoomRepository.findByIdx(chatRoomIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
+        scheduleService.createChatRoomSchedule(dto, chatRoom, user);
+    }
+
+
+    public ChatDto.ChatRoomScheduleDetailResponse getChatRoomScheduleDetail(Long chatRoomIdx, Long scheduleIdx ,User user) {
+        ChatRoom chatRoom = chatRoomRepository.findByIdx(chatRoomIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
+        Schedule schedule = scheduleService.findByIdWithPetAndUser(scheduleIdx);
+
+        // 일정 >- 반려동물 >- 유저
+        // 일정
+
+        boolean isParticipating = schedule.getPet() != null &&
+                schedule.getPet().getUser() != null &&
+                schedule.getPet().getUser().getIdx().equals(user.getIdx());
+
+        List<ChatRoomUserDto> participants = participantRepository.findAllByChatRoom(chatRoom)
+                .stream()
+                .map(p -> new ChatRoomUserDto(p.getUser().getIdx(), p.getUser().getNickname()))
+                .toList();
+
+        return ChatDto.ChatRoomScheduleDetailResponse.builder()
+                .title(schedule.getSTitle())
+                .time(schedule.getStartAt() + " ~ " + schedule.getEndAt())
+                .place(schedule.getPlaceId())
+                .memo(schedule.getSMemo())
+                .participants(participants)
+                .isParticipating(isParticipating)
+                .build();
     }
 }

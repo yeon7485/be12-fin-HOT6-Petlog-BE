@@ -1,5 +1,6 @@
 package com.hot6.backend.schedule.model;
 
+import com.hot6.backend.chat.model.ChatRoom;
 import com.hot6.backend.category.model.Category;
 import com.hot6.backend.common.BaseEntity;
 import com.hot6.backend.pet.model.Pet;
@@ -44,4 +45,8 @@ public class Schedule extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "pet_idx", foreignKey = @ForeignKey(name = "FK_schedule_pet"))  // DB에 생성될 외래키 이름
     private Pet pet;
+
+    @ManyToOne
+    @JoinColumn(name = "chat_room_idx")
+    private ChatRoom chatRoom;
 }

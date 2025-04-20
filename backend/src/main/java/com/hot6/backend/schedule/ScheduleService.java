@@ -2,6 +2,10 @@ package com.hot6.backend.schedule;
 
 import com.hot6.backend.category.model.Category;
 import com.hot6.backend.category.model.CategoryRepository;
+import com.hot6.backend.chat.model.ChatDto;
+import com.hot6.backend.chat.model.ChatRoom;
+import com.hot6.backend.common.BaseResponseStatus;
+import com.hot6.backend.common.exception.BaseException;
 import com.hot6.backend.pet.PetRepository;
 import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.schedule.model.Schedule;
@@ -12,6 +16,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -42,5 +49,19 @@ public class ScheduleService {
         }
 
         return result;
+    }
+
+    public List<ChatDto.ChatRoomScheduleElement> getALLScheduleByChatRoom(Long chatRoomIdx) {
+        return scheduleRepository.findAllWithChatRoomByChatRoomIdx(chatRoomIdx).stream().map(ChatDto.ChatRoomScheduleElement::from).collect(toList());
+    }
+
+    public void createChatRoomSchedule(ChatDto.CreateChatRoomScheduleRequest dto, ChatRoom chatRoom, User user) {
+        Category category = categoryRepository.findById(dto.getCategoryIdx())
+                .orElseThrow(() -> new IllegalArgumentException("카테고리가 존재하지 않습니다."));
+        scheduleRepository.save(dto.toEntity(user,chatRoom,category));
+    }
+
+    public Schedule findByIdWithPetAndUser(Long scheduleIdx) {
+        return scheduleRepository.findByIdWithPetAndUser(scheduleIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.SCHEDULE_NOT_FOUND));
     }
 }

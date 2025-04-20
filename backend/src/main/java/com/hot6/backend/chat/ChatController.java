@@ -117,6 +117,32 @@ public class ChatController {
         return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS,chatRoomService.getChatMessages(chatRoomIdx,user.getIdx())));
     }
 
+    @Operation(summary = "채팅방 일정 조회", description = "지정된 채팅방의 일정을 조회합니다.")
+    @GetMapping("/chatroom/{chatRoomIdx}/schedule")
+    public ResponseEntity<BaseResponse<List<ChatDto.ChatRoomScheduleElement>>> getChatRoomSchedule(
+            @PathVariable Long chatRoomIdx) {
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS,chatRoomService.getChatRoomSchedule(chatRoomIdx)));
+    }
+
+    @Operation(summary = "채팅방 일정 생성", description = "지정된 채팅방의 일정을 생성합니다.")
+    @PostMapping("/chatroom/{chatRoomIdx}/schedule")
+    public ResponseEntity<BaseResponse<String>> createChatRoomSchedule(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long chatRoomIdx,
+            @RequestBody ChatDto.CreateChatRoomScheduleRequest dto) {
+        chatRoomService.createChatRoomSchedule(dto,chatRoomIdx, user);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS,"채팅방에 성공적으로 일정이 등록되었습니다."));
+    }
+
+    @Operation(summary = "채팅방 일정 상세 조회", description = "지정된 채팅방의 일정 정보를 상세히 조회합니다.")
+    @GetMapping("/chatroom/{chatRoomIdx}/schedule")
+    public ResponseEntity<BaseResponse<ChatDto.ChatRoomScheduleDetailResponse>> getChatRoomScheduleDetail(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long chatRoomIdx) {
+        ChatDto.ChatRoomScheduleDetailResponse response = chatRoomService.getChatRoomScheduleDetail(chatRoomIdx, user);
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, response));
+    }
+
     @Operation(
             summary = "WebSocket 채팅 메시지 수신",
             description = """
