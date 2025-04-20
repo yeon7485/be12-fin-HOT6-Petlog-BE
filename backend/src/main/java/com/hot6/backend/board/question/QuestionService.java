@@ -1,6 +1,7 @@
 package com.hot6.backend.board.question;
 
 import com.hot6.backend.board.answer.AnswerService;
+import com.hot6.backend.board.answer.aiAnswer.AiAnswerService;
 import com.hot6.backend.board.hashtagQuestion.Hashtag_QuestionService;
 import com.hot6.backend.board.post.model.PostDto;
 import com.hot6.backend.board.question.images.QuestionImageService;
@@ -31,6 +32,7 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final Hashtag_QuestionService hashtagService;
     private final QuestionImageService questionImageService;
+    private final AiAnswerService aiAnswerService;
 
     public void create(QuestionDto.QuestionRequest dto, List<MultipartFile> images) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -47,6 +49,14 @@ public class QuestionService {
 
         if (images != null && !images.isEmpty()) {
             questionImageService.saveImages(images, question);
+        }
+
+        // ✅ AI 답변 자동 생성
+        try {
+            String aiContent = aiAnswerService.generateAnswer(question.getQTitle(), question.getContent());
+            answerService.createAiAnswerForQuestion(question, aiContent);
+        } catch (Exception e) {
+            System.out.println("AI 답변 생성 실패: " + e.getMessage());
         }
     }
 
@@ -111,7 +121,6 @@ public class QuestionService {
         hashtagService.deleteByQuestionIdx(idx);
         questionRepository.delete(question);
     }
-
 
     public List<QuestionDto.UserQuestionResponse> findUserQuestions(Long userId) {
         return questionRepository.findByUser_IdxOrderByCreatedAtDesc(userId)

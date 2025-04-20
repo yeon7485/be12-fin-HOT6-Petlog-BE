@@ -31,6 +31,8 @@ public class User implements UserDetails {
     private String password;
     private String nickname;
     private String userProfileImage;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserType userType;
     private boolean enabled;
 

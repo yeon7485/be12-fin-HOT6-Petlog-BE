@@ -22,8 +22,11 @@ public class Answer extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
+    @Column(columnDefinition = "TEXT")
     private String content;
     private boolean selected;
+    @Column(nullable = false)
+    private boolean isAi;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_idx")
