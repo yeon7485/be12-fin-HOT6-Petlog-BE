@@ -7,6 +7,7 @@ import com.hot6.backend.board.question.QuestionRepository;
 import com.hot6.backend.board.question.model.Question;
 import com.hot6.backend.user.UserRepository;
 import com.hot6.backend.user.model.User;
+import com.hot6.backend.user.model.UserType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,11 @@ public class AnswerService {
     public void select(Long idx) {
         Answer answer = answerRepository.findById(idx)
                 .orElseThrow(() -> new RuntimeException("답변 없음"));
+
+        if (answer.getUser().getUserType() == UserType.AI) {
+            throw new IllegalStateException("AI가 작성한 답변은 채택할 수 없습니다.");
+        }
+
         answer.setSelected(true);
         answerRepository.save(answer);
 
@@ -77,6 +83,10 @@ public class AnswerService {
             throw new IllegalStateException("채택된 답변은 수정할 수 없습니다.");
         }
 
+        if (answer.getUser().getUserType() == UserType.AI) {
+            throw new IllegalStateException("AI가 작성한 답변은 수정할 수 없습니다.");
+        }
+
         answer.setContent(dto.getContent());
         answerRepository.save(answer);
     }
@@ -96,6 +106,10 @@ public class AnswerService {
             throw new IllegalStateException("채택된 답변은 삭제할 수 없습니다.");
         }
 
+        if (answer.getUser().getUserType() == UserType.AI) {
+            throw new IllegalStateException("AI가 작성한 답변은 삭제할 수 없습니다.");
+        }
+
         answerImageService.deleteImagesByAnswer(idx);
         answerRepository.delete(answer);
     }
@@ -110,4 +124,27 @@ public class AnswerService {
                 .map(AnswerDto.AnswerResponse::from)
                 .toList();
     }
+
+    @Transactional
+    public void createAiAnswerForQuestion(Question question, String aiContent) {
+        if (aiContent == null || aiContent.trim().isEmpty()) {
+            System.out.println(">> AI 답변이 비어있어 저장하지 않음");
+            return;
+        }
+
+        User aiUser = userRepository.findByUserType(UserType.AI)
+                .orElseThrow(() -> new RuntimeException("AI 유저 없음"));
+
+        Answer aiAnswer = Answer.builder()
+                .question(question)
+                .user(aiUser)
+                .content(aiContent)
+                .isAi(true)
+                .build();
+
+        answerRepository.save(aiAnswer);
+        System.out.println(">> AI 답변 저장 완료");
+    }
+
+
 }

@@ -8,7 +8,7 @@ spring:
     defer-datasource-initialization: true
     database-platform: org.hibernate.dialect.MariaDBDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
@@ -72,3 +72,7 @@ logging:
   level:
     org.hibernate.SQL: debug         # 실제 SQL 출력
     org.hibernate.type.descriptor.sql.BasicBinder: trace  # ? 파라미터 값 출력
+
+openai:
+  api:
+    key: ${OPENAI_API_KEY}
