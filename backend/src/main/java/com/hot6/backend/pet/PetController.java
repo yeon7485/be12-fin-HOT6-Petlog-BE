@@ -65,21 +65,15 @@ public class PetController {
     }
 
 
-
-    @PutMapping("/{petId}")
+    @PostMapping("/{petId}/update")
     public ResponseEntity<String> updatePet(
             @PathVariable("petId") Long petId,
-            @RequestPart("pet") PetDto.PetCardUpdateRequest petCardUpdateRequest) {
-
-        try {
-            // 서비스에서 실제 반려동물 카드 수정 로직 처리
-            petService.updatePetCard(petCardUpdateRequest, petId);
-
-            return ResponseEntity.ok("반려동물 카드가 수정되었습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("반려동물 카드 수정 실패");
-        }
+            @RequestPart("pet") PetDto.PetCardUpdateRequest petCardUpdateRequest,
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage) {
+        petService.updatePetCard(petCardUpdateRequest, profileImage, petId);
+        return ResponseEntity.ok("반려동물 카드가 수정되었습니다.");
     }
+
 
     @Operation(summary = "반려동물 카드 삭제", description = "사용자의 반려동물 카드를 삭제합니다.")
     @DeleteMapping("/{petId}")

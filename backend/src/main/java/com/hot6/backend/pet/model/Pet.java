@@ -1,6 +1,7 @@
 package com.hot6.backend.pet.model;
 
 import com.hot6.backend.schedule.model.Schedule;
+import com.hot6.backend.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,12 +28,13 @@ public class Pet {
     @Enumerated(EnumType.STRING)
     private PetStatus status;
 
-    @Column(nullable = false)
-    private Long userId;
-
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PetImage> petImageList = new ArrayList<>();
 
     @OneToMany(mappedBy = "pet", cascade = CascadeType.REMOVE)
     private List<Schedule> schedules;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }
