@@ -1,5 +1,6 @@
 package com.hot6.backend.pet.model;
 
+import com.hot6.backend.record.model.DailyRecord;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,4 +32,7 @@ public class Pet {
 
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PetImage> petImageList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "pet")
+    private List<DailyRecord> dailyRecordList = new ArrayList<>();
 }

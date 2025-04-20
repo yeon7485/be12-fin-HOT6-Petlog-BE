@@ -65,13 +65,13 @@ public enum BaseResponseStatus {
     SCHEDULE_UPDATE_FAILED(false, 3200, "일정 수정에 실패했습니다."),
 
 
-    /* 4000 ~ 4999 : 주문 관련 에러 */
-    //-- 4000 : 주문 실패
-    ORDER_FAILED(false, 4000, "주문에 실패했습니다."),
-    //-- 4100 : 주문내역 조회 에러
-    ORDER_HISTORY_LOOKUP_FAILED(false, 4100, "주문 내역 조회에 실패했습니다."),
-    //-- 4200 : 주문 취소 에러
-    ORDER_CANCEL_FAILED(false, 4200, "주문 취소에 실패했습니다."),
+    /* 4000 ~ 4999 : 펫 관련 에러 */
+    //-- 4000 : 펫 조회
+    PET_NOT_FOUND(false, 4000, "반려동물 조회에 실패했습니다."),
+    //-- 4100 : 펫 등록
+    PET_CREATE_FAILED(false, 4100, "반려동물 등록에 실패했습니다."),
+    //-- 4200 : 펫 수정
+    PET_UPDATE_FAIlED(false, 4200, "반려동물 정보 수정에 실패했습니다."),
 
 
     /* 5000 ~ 5999 : 결제 관련 에러 */

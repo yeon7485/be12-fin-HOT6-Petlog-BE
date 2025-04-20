@@ -1,8 +1,12 @@
-package com.hot6.backend.daily.model;
+package com.hot6.backend.record.model;
 
+import com.hot6.backend.pet.model.Pet;
+import com.hot6.backend.user.model.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 public class DailyRecordDto {
 
@@ -27,7 +31,8 @@ public class DailyRecordDto {
     }
 
     @Getter
-    public class RegisterDailyRecordRequest {
+    @Schema(description = "기록 생성 요청 DTO")
+    public static class RecordCreateRequest {
         @Schema(description = "기록 제목", example = "산책 메모")
         private String title;
 
@@ -35,10 +40,25 @@ public class DailyRecordDto {
         private String memo;
 
         @Schema(description = "카테고리", example = "walk", allowableValues = {"walk", "hospital", "medication", "etc"})
-        private String category;
+        private Long categoryIdx;
 
         @Schema(description = "기록 날짜 (yyyy-MM-dd 형식)", example = "2025-04-02")
-        private String date;
+        private LocalDateTime date;
+
+        @Schema(description = "이미지 URL", example = "testImg.png")
+        private String imageUrl;
+
+        public DailyRecord toEntity(Pet pet) {
+            return DailyRecord.builder()
+                    .rTitle(title)
+                    .rMemo(memo)
+                    .date(date)
+                    .imageUrl(imageUrl)
+                    .pet(pet)
+                    .build();
+        }
+
+
     }
 
 

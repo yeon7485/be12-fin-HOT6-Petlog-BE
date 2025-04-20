@@ -16,4 +16,5 @@ VALUES
     ('뱀', NULL, 'BOARD', '뱀 관련 게시글 카테고리');
 
 INSERT INTO `user` (email, password, nickname, user_type, enabled)
-VALUES ('ai@chatgps.com', 'AI_PASSWORD_PLACEHOLDER', 'ChatGPS', 'AI', 1);
+VALUES ('ai@chatgps.com', 'AI_PASSWORD_PLACEHOLDER', 'ChatGPS', 'AI', 1),
+       ('admin@test.com', 'qwer1234', '관리자', 'ADMIN', 1);

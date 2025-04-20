@@ -1,18 +1,35 @@
-package com.hot6.backend.daily;
+package com.hot6.backend.record;
 
-import com.hot6.backend.daily.model.DailyRecordDto;
-import com.hot6.backend.schedule.model.ScheduleDto;
+import com.hot6.backend.common.BaseResponse;
+import com.hot6.backend.common.BaseResponseStatus;
+import com.hot6.backend.record.model.DailyRecordDto;
+import com.hot6.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/daily-record")
 @Tag(name = "daily-record", description = "기록(체중, 수면 등) 관리 API")
 public class DailyRecordController {
+    private final DailyRecordService dailyRecordService;
+
+    @Operation(summary = "일일 기록 생성", description = "하루의 특정 반려 동물의 기록을 작성합니다.")
+    @PostMapping("/pet/{petIdx}")
+    public ResponseEntity<BaseResponse<String>> createDailyRecord(@RequestBody DailyRecordDto.RecordCreateRequest request,
+                                                    @PathVariable Long petIdx) {
+
+
+        dailyRecordService.createDailyRecord(petIdx, request);
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS));
+    }
+
 
     @Operation(summary = "기록 상세 조회", description = "하루의 기록을 카테고리별로 조회합니다.")
     @GetMapping("/pet/{petIdx}/record/{recordIdx}")
@@ -37,7 +54,7 @@ public class DailyRecordController {
     @PutMapping("/{recordIdx}")
     public ResponseEntity<String> updateRecord(
             @PathVariable Long recordIdx,
-            @RequestBody DailyRecordDto.RegisterDailyRecordRequest request
+            @RequestBody DailyRecordDto.RecordCreateRequest request
     ) {
         return ResponseEntity.ok("기록 수정 완료");
     }
@@ -48,13 +65,6 @@ public class DailyRecordController {
             @PathVariable Long recordIdx
     ) {
         return ResponseEntity.ok("기록 삭제 완료");
-    }
-
-    @Operation(summary = "일일 기록 생성", description = "하루의 특정 반려 동물의 기록을 작성합니다.")
-    @PostMapping("/pet/{petIdx}")
-    public ResponseEntity<String> createDailyRecord(@RequestBody DailyRecordDto.RegisterDailyRecordRequest registerDailyRecordRequest,
-                                                    @PathVariable Long petIdx) {
-        return ResponseEntity.ok("ok");
     }
 
 }
