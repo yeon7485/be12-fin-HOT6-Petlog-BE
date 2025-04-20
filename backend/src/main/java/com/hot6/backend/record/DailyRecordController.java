@@ -30,6 +30,19 @@ public class DailyRecordController {
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS));
     }
 
+    @Operation(summary = "날짜별 기록 전체 조회", description = "특정 날짜의 반려동물 전체 기록을 조회합니다.")
+    @GetMapping("/pet/{petIdx}/record/{year}/{month}/{day}")
+    public ResponseEntity<BaseResponse<List<DailyRecordDto.SimpleDailyRecord>>> getRecordsByDate(
+            @PathVariable Long petIdx,
+            @PathVariable Integer year,
+            @PathVariable Integer month,
+            @PathVariable Integer day
+    ) {
+        List<DailyRecordDto.SimpleDailyRecord> list =  dailyRecordService.getRecordsByDate(petIdx, year, month, day);
+
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, list));
+    }
+
 
     @Operation(summary = "기록 상세 조회", description = "하루의 기록을 카테고리별로 조회합니다.")
     @GetMapping("/pet/{petIdx}/record/{recordIdx}")

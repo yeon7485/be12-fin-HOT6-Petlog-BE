@@ -1,7 +1,9 @@
 package com.hot6.backend.record.model;
 
+import com.hot6.backend.category.model.Category;
 import com.hot6.backend.pet.model.Pet;
-import com.hot6.backend.user.model.User;
+import com.hot6.backend.schedule.model.Schedule;
+import com.hot6.backend.schedule.model.ScheduleDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -57,9 +59,40 @@ public class DailyRecordDto {
                     .pet(pet)
                     .build();
         }
-
-
     }
+
+    @Getter
+    @Builder
+    @Schema(description = "날짜별 기록 응답 DTO")
+    public static class SimpleDailyRecord {
+        @Schema(description = "기록 idx", example = "1")
+        private Long idx;
+
+        @Schema(description = "기록 제목", example = "산책 메모")
+        private String title;
+
+        @Schema(description = "기록 날짜 (yyyy-MM-dd 형식)", example = "2025-04-02")
+        private LocalDateTime date;
+
+        @Schema(description = "카테고리 색상", example = "#000000")
+        private String color;
+
+        @Schema(description = "카테고리 이름", example = "병원")
+        private String categoryName;
+
+
+        public static SimpleDailyRecord from(DailyRecord dailyRecord, Category category) {
+            return SimpleDailyRecord.builder()
+                    .idx(dailyRecord.getIdx())
+                    .title(dailyRecord.getRTitle())
+                    .date(dailyRecord.getDate())
+                    .color(category.getColor())
+                    .categoryName(category.getName())
+                    .build();
+        }
+    }
+
+
 
 
 }
