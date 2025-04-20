@@ -1,6 +1,7 @@
 package com.hot6.backend.schedule.model;
 
 import com.hot6.backend.category.model.Category;
+import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.user.model.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -52,8 +53,8 @@ public class ScheduleDto {
                     .fromChat(false)  // [TODO]: 채팅방 연동 확인 후 수정
                     .build();
         }
-
     }
+
 
     @Getter  @Builder
     public static class ScheduleDetail {
@@ -86,7 +87,7 @@ public class ScheduleDto {
         @Schema(description = "메모", example = "병원에서 예방접종")
         private String memo;
 
-        @Schema(description = "카테고리", example = "병원")
+        @Schema(description = "카테고리 ID", example = "1")
         private Long categoryIdx;
 
         @Schema(description = "일정 시작 시간", example = "2025-04-10T10:00:00")
@@ -107,11 +108,11 @@ public class ScheduleDto {
         @Schema(description = "반복 종료 날짜", example = "2025-04-24")
         private LocalDate repeatEndAt;
 
-        public Schedule toEntity(User user,Long petIdx) {
+        public Schedule toEntity(User user, Category category, Pet pet) {
             return Schedule.builder()
                     .sTitle(title)
                     .sMemo(memo)
-                    .categoryIdx(categoryIdx)
+                    .category(category)
                     .startAt(startAt)
                     .endAt(endAt)
                     .recurring(recurring)
@@ -120,9 +121,9 @@ public class ScheduleDto {
                     .repeatCount(repeatCount)
                     .repeatEndAt(repeatEndAt)
                     .user(user)
+                    .pet(pet)
                     .build();
         }
-
     }
 
     @Getter
@@ -140,8 +141,8 @@ public class ScheduleDto {
         @Schema(description = "기록 날짜 (yyyy-MM-dd 형식)", example = "2025-04-02")
         private String date;
 
-        @Schema(description = "카테고리", example = "hospital", allowableValues = {"walk", "hospital", "medication", "etc"})
-        private String category;
+        @Schema(description = "카테고리 ID", example = "1")
+        private Long categoryIdx;
 
         @Schema(description = "일정 시작 시간", example = "10:00")
         private String startTime;

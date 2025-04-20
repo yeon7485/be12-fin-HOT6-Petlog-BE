@@ -1,9 +1,9 @@
 package com.hot6.backend.schedule;
 
 import com.hot6.backend.category.model.Category;
-import com.hot6.backend.chat.model.ChatDto;
-import com.hot6.backend.common.BaseResponseStatus;
-import com.hot6.backend.common.exception.BaseException;
+import com.hot6.backend.category.model.CategoryRepository;
+import com.hot6.backend.pet.PetRepository;
+import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.schedule.model.Schedule;
 import com.hot6.backend.schedule.model.ScheduleDto;
 import com.hot6.backend.user.model.User;
@@ -12,33 +12,35 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
-    private final ScheduleRepository scheduleRepository;
-    public void createSchedule(User user, Long petIdx, ScheduleDto.ScheduleCreateRequest dto) {
-        scheduleRepository.save(dto.toEntity(user, petIdx));
-    }
 
+    private final ScheduleRepository scheduleRepository;
+    private final CategoryRepository categoryRepository;
+    private final PetRepository petRepository;
+
+    public void createSchedule(User user, Long petIdx, ScheduleDto.ScheduleCreateRequest dto) {
+        Category category = categoryRepository.findById(dto.getCategoryIdx())
+                .orElseThrow(() -> new IllegalArgumentException("카테고리가 존재하지 않습니다."));
+
+        Pet pet = petRepository.findById(petIdx)
+                .orElseThrow(() -> new IllegalArgumentException("해당 반려동물이 존재하지 않습니다."));
+
+        Schedule schedule = dto.toEntity(user, category, pet);
+        scheduleRepository.save(schedule);
+    }
     public List<ScheduleDto.SimpleSchedule> getAllSchedule(Long userIdx) {
         List<Schedule> schedules = scheduleRepository.findAllByUserIdx(userIdx);
+        List<ScheduleDto.SimpleSchedule> result = new ArrayList<>();
 
-        List<ScheduleDto.SimpleSchedule> scheduleList = new ArrayList<>();
-
-        for(Schedule schedule : schedules) {
-            // [TODO]: 카테고리 연동 후 수정
-            Category category = Category.builder()
-                    .name("병원")
-                    .color("#00C9CD")
-                    .idx(schedule.getCategoryIdx())
-                    .build();
-            scheduleList.add(ScheduleDto.SimpleSchedule.from(schedule, category));
+        for (Schedule s : schedules) {
+            Category category = s.getCategory();
+            if (category == null) continue; // 방어적 처리
+            result.add(ScheduleDto.SimpleSchedule.from(s, category));
         }
 
-        return scheduleList;
-
-
+        return result;
     }
 }
