@@ -3,14 +3,11 @@ package com.hot6.backend.board.question.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hot6.backend.board.hashtagQuestion.model.Hashtag_Question;
 import com.hot6.backend.board.question.images.QuestionImage;
-import com.hot6.backend.board.post.model.PostDto;
-import io.swagger.v3.oas.models.tags.Tag;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class QuestionDto {
 
@@ -28,7 +25,8 @@ public class QuestionDto {
                     .qTitle(qTitle)
                     .content(content)
                     .selected(selected)
-                    .image(image).build();
+                    .image(image)
+                    .build();
         }
     }
 
@@ -61,20 +59,19 @@ public class QuestionDto {
                             ? question.getHashtagsList().stream().map(Hashtag_Question::getTag).toList()
                             : List.of())
                     .answerCount(answerCount)
-                    .imageUrls(
-                            question.getQuestionImageList() != null
-                                    ? question.getQuestionImageList().stream()
-                                    .map(QuestionImage::getUrl)
-                                    .toList()
-                                    : List.of()
-                    )
-                    .profileImageUrl(question.getUser().getUserProfileImage())
+                    .imageUrls(question.getQuestionImageList() != null
+                            ? question.getQuestionImageList().stream()
+                            .map(QuestionImage::getUrl)
+                            .toList()
+                            : List.of())
+                    .profileImageUrl(question.getUser() != null ? question.getUser().getUserProfileImage() : null)
                     .build();
         }
     }
+
     @Getter
     @Builder
-    public static class UserQuestionResponse{
+    public static class UserQuestionResponse {
         private Long idx;
         private String writer;
         private String qTitle;
@@ -84,7 +81,7 @@ public class QuestionDto {
         private LocalDate createdAt;
         private List<String> tags;
 
-        public static UserQuestionResponse from(Question question){
+        public static UserQuestionResponse from(Question question) {
             return UserQuestionResponse.builder()
                     .idx(question.getIdx())
                     .writer(question.getUser().getNickname())
