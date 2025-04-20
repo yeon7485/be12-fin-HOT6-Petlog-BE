@@ -1,5 +1,7 @@
 package com.hot6.backend.board.post.model;
 
+import com.hot6.backend.category.model.Category;
+import com.hot6.backend.category.model.CategoryType;
 import com.hot6.backend.common.BaseEntity;
 import com.hot6.backend.user.model.User;
 import com.hot6.backend.board.post.images.PostImage;
@@ -22,7 +24,6 @@ public class Post extends BaseEntity {
     private String title;
     private String content;
     private String image;
-    private String category;
 
     @Builder.Default
     private Boolean isDeleted = false;
@@ -38,4 +39,8 @@ public class Post extends BaseEntity {
 
     @OneToMany(mappedBy = "post")
     private List<PostImage> postImageList;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id") // FK 컬럼명 지정
+    private Category category;
 }

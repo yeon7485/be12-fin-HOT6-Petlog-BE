@@ -5,6 +5,8 @@ import com.hot6.backend.board.post.images.PostImageService;
 import com.hot6.backend.board.post.model.BoardType;
 import com.hot6.backend.board.post.model.Post;
 import com.hot6.backend.board.post.model.PostDto;
+import com.hot6.backend.category.model.Category;
+import com.hot6.backend.category.model.CategoryRepository;
 import com.hot6.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -26,10 +28,14 @@ public class PostService {
     private final CommentService commentService;
     private final PostRepository postRepository;
     private final BoardTypeRepository boardTypeRepoistory;
+    private final CategoryRepository categoryRepository;
 
     public void create(PostDto.PostRequest dto, List<MultipartFile> images) throws IOException {
         BoardType boardType = boardTypeRepoistory.findByBoardName(dto.getBoardType())
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "게시판 종류 없음"));
+
+        Category category = categoryRepository.findById(dto.getCategoryIdx())
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "카테고리 없음")); // ✅ 추가
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -38,8 +44,8 @@ public class PostService {
                 .user(user)
                 .title(dto.getTitle())
                 .content(dto.getContent())
-                .image(dto.getImage()) // 메인 대표 이미지
-                .category(dto.getCategory())
+                .image(dto.getImage())
+                .category(category)
                 .boardType(boardType)
                 .build();
 
@@ -64,23 +70,24 @@ public class PostService {
         return PostDto.PostResponse.from(post);
     }
 
-    public List<PostDto.PostResponse> search(String boardName, String category, String keyword) {
+    public List<PostDto.PostResponse> search(String boardName, String categoryName, String keyword) {
         BoardType boardType = boardTypeRepoistory.findByBoardName(boardName)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "게시판 종류 없음"));
 
         List<Post> results;
 
         if (keyword != null && !keyword.isBlank()) {
-            // 제목 + 작성자 검색으로 확장
-            List<Post> byTitle = postRepository.findByBoardTypeAndCategoryAndTitleContainingIgnoreCase(boardType, category, keyword);
-            List<Post> byWriter = postRepository.findByBoardTypeAndCategoryAndUser_NicknameContainingIgnoreCase(boardType, category, keyword);
+            // 제목과 작성자 기준 검색
+            List<Post> byTitle = postRepository.findByBoardTypeAndCategoryNameAndTitleContainingIgnoreCase(boardType, categoryName, keyword);
+            List<Post> byWriter = postRepository.findByBoardTypeAndCategoryNameAndUser_NicknameContainingIgnoreCase(boardType, categoryName, keyword);
 
-            // 두 리스트 합치되 중복 제거
+            // 중복 제거 후 합치기
             results = Stream.concat(byTitle.stream(), byWriter.stream())
                     .distinct()
                     .toList();
         } else {
-            results = postRepository.findByBoardTypeAndCategory(boardType, category);
+            // 카테고리 이름 기반 조회
+            results = postRepository.findByBoardTypeAndCategoryName(boardType, categoryName);
         }
 
         return results.stream()
@@ -105,11 +112,14 @@ public class PostService {
         BoardType boardType = boardTypeRepoistory.findByBoardName(dto.getBoardType())
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "게시판 종류 없음"));
 
+        Category category = categoryRepository.findById(dto.getCategoryIdx())
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "카테고리 없음"));
+
         post.setTitle(dto.getTitle());
         post.setContent(dto.getContent());
-        post.setCategory(dto.getCategory());
         post.setImage(dto.getImage());
         post.setBoardType(boardType);
+        post.setCategory(category);
 
         postRepository.save(post);
 
@@ -118,6 +128,7 @@ public class PostService {
             postImageService.saveImages(images, post);
         }
     }
+
 
     public List<PostDto.UserPostResponse> findUserPosts(Long userId) {
         return postRepository.findByUserIdxAndIsDeletedFalseOrderByCreatedAtDesc(userId)

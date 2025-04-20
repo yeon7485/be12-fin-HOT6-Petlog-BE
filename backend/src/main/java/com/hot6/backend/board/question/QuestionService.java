@@ -51,12 +51,14 @@ public class QuestionService {
             questionImageService.saveImages(images, question);
         }
 
-        // ✅ AI 답변 자동 생성
         try {
+            System.out.println("🔥 AI 답변 생성 시도 시작");
             String aiContent = aiAnswerService.generateAnswer(question.getQTitle(), question.getContent());
+            System.out.println("🔥 생성된 AI 답변 내용: " + aiContent);
             answerService.createAiAnswerForQuestion(question, aiContent);
+            System.out.println("✅ AI 답변 저장 완료");
         } catch (Exception e) {
-            System.out.println("AI 답변 생성 실패: " + e.getMessage());
+            System.out.println("❌ AI 답변 생성 실패: " + e.getMessage());
         }
     }
 
