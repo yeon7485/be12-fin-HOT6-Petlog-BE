@@ -41,7 +41,7 @@ public class Schedule extends BaseEntity {
     @JoinColumn(name = "category_idx")
     private Category category;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pet_idx")  // DB에 생성될 외래키 이름
+    @ManyToOne
+    @JoinColumn(name = "pet_idx", foreignKey = @ForeignKey(name = "FK_schedule_pet"))  // DB에 생성될 외래키 이름
     private Pet pet;
 }
