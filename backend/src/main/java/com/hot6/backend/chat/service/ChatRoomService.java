@@ -5,6 +5,7 @@ import com.hot6.backend.chat.repository.ChatRoomRepository;
 import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.common.exception.BaseException;
 import com.hot6.backend.pet.PetService;
+import com.hot6.backend.pet.SharedSchedulePetService;
 import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.schedule.ScheduleService;
 import com.hot6.backend.schedule.model.Schedule;
@@ -34,6 +35,8 @@ public class ChatRoomService {
     private final ChatMessageService chatMessageService;
     private final ScheduleService scheduleService;
     private final PetService petService;
+    private final SharedSchedulePetService sharedSchedulePetService;
+
 
     public Slice<ChatDto.ChatRoomListDto> getList(Long userIdx, Pageable pageable) {
         Slice<ChatRoom> chatRooms = chatRoomRepository.findAllWithSlice(pageable);
@@ -124,5 +127,12 @@ public class ChatRoomService {
 
         // 응답 DTO 생성
         return ChatDto.ChatRoomScheduleDetailResponse.from(schedule,usersInChatRoomsSchedule,isParticipating,usersPet);
+    }
+
+    public void participateChatRoomSchedule(Long chatRoomIdx, Long scheduleIdx, User user, ChatDto.ParticipateChatRoomSchedule dto) {
+        ChatRoom chatRoom = chatRoomRepository.findByIdx(chatRoomIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
+        Schedule schedule = scheduleService.getSchedule(scheduleIdx);
+
+        sharedSchedulePetService.saveAll(dto.getAnimalIds(), schedule);
     }
 }

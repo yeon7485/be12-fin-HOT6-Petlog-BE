@@ -144,6 +144,18 @@ public class ChatController {
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, response));
     }
 
+    @Operation(summary = "채팅방 일정 참여하기", description = "채팅방 일정에 내 반려동물들을 등록합니다.")
+    @PostMapping("/chatroom/{chatRoomIdx}/schedule/{scheduleIdx}")
+    public ResponseEntity<BaseResponse<String>> participateChatRoomSchedule(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long chatRoomIdx,
+            @PathVariable Long scheduleIdx,
+            @RequestBody ChatDto.ParticipateChatRoomSchedule dto) {
+        chatRoomService.participateChatRoomSchedule(chatRoomIdx, scheduleIdx,user,dto);
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, "성공적으로 참여되었습니다."));
+    }
+
+
     @Operation(
             summary = "WebSocket 채팅 메시지 수신",
             description = """

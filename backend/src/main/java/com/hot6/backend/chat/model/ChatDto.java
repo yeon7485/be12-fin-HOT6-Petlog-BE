@@ -340,4 +340,9 @@ public class ChatDto {
         }
     }
 
+    @Getter
+    @Schema
+    public static class ParticipateChatRoomSchedule {
+        List<Long> animalIds;
+    }
 }
