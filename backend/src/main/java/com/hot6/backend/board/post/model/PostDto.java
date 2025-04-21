@@ -24,6 +24,7 @@ public class PostDto {
         private Long categoryIdx;
         private String boardType; // board name으로 받음
         private List<Long> petIdxList;
+        private List<String> removedImageUrls;
     }
 
     @Getter
@@ -39,8 +40,6 @@ public class PostDto {
         private String boardType;
         private List<String> imageUrls;
         private String profileImageUrl;
-
-        // ✅ 변경된 타입: PetSummary
         private List<PetSummary> petList;
 
         public static PostResponse from(Post post) {
@@ -64,10 +63,6 @@ public class PostDto {
         }
     }
 
-
-
-
-
     @Getter
     @Builder
     public static class UserPostResponse {
@@ -76,7 +71,6 @@ public class PostDto {
         private String title;
         private String boardType;
         private LocalDateTime createdAt;
-
 
         public static UserPostResponse from(Post post) {
             return UserPostResponse.builder()

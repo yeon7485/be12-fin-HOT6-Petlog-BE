@@ -54,7 +54,6 @@ public class PostService {
 
         postRepository.save(post);
 
-        // ✅ 여러 반려동물 연결
         if (dto.getPetIdxList() != null && !dto.getPetIdxList().isEmpty()) {
             List<Pet> pets = petRepository.findAllById(dto.getPetIdxList());
             for (Pet pet : pets) {
@@ -124,13 +123,13 @@ public class PostService {
         post.setCategory(category);
         postRepository.save(post);
 
-        // ✅ 기존 연결된 반려동물 모두 해제
+        // 기존 펫 제거 후 새로 설정
         List<Pet> oldPets = petRepository.findAllByPost(post);
         for (Pet pet : oldPets) {
             pet.setPost(null);
         }
+        petRepository.saveAll(oldPets);
 
-        // ✅ 새로운 반려동물 연결
         if (dto.getPetIdxList() != null && !dto.getPetIdxList().isEmpty()) {
             List<Pet> newPets = petRepository.findAllById(dto.getPetIdxList());
             for (Pet pet : newPets) {
@@ -139,9 +138,13 @@ public class PostService {
             petRepository.saveAll(newPets);
         }
 
-        // 이미지 업데이트
+        // ✅ 삭제 요청된 이미지만 제거
+        if (dto.getRemovedImageUrls() != null && !dto.getRemovedImageUrls().isEmpty()) {
+            postImageService.deleteImagesByUrls(dto.getRemovedImageUrls());
+        }
+
+        // ✅ 새 이미지 추가
         if (images != null && !images.isEmpty()) {
-            postImageService.deleteImagesByPost(idx);
             postImageService.saveImages(images, post);
         }
     }

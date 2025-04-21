@@ -49,4 +49,13 @@ public class PostImageService {
         }
         return url.substring(index + ".amazonaws.com/".length());
     }
+
+    @Transactional
+    public void deleteImagesByUrls(List<String> urls) {
+        for (String url : urls) {
+            String key = extractKeyFromUrl(url);
+            s3Service.delete(key);
+        }
+        postImageRepository.deleteAllByUrlIn(urls);
+    }
 }
