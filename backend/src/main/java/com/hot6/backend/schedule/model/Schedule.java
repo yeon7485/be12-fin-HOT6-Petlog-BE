@@ -36,13 +36,7 @@ public class Schedule extends BaseEntity {
     private LocalDateTime startAt;
     private LocalDateTime endAt;
 
-    @ManyToOne
-    @JoinColumn(name = "user_idx")
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "category_idx")
-    private Category category;
+    private Long categoryIdx;
 
     @ManyToOne
     @JoinColumn(name = "pet_idx", foreignKey = @ForeignKey(name = "FK_schedule_pet"))  // DB에 생성될 외래키 이름

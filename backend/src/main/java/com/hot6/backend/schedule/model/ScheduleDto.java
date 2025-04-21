@@ -40,6 +40,9 @@ public class ScheduleDto {
         @Schema(description = "카테고리 이름", example = "병원")
         private String category;
 
+        @Schema(description = "펫 이름", example = "콩이")
+        private String petName;
+
         @Schema(description = "채팅방 연동 여부", example = "false")
         private boolean fromChat;
 
@@ -51,6 +54,7 @@ public class ScheduleDto {
                     .color(category.getColor())
                     .category(category.getName())
                     .fromChat(false)  // [TODO]: 채팅방 연동 확인 후 수정
+                    .petName(schedule.getPet().getName())
                     .build();
         }
     }
@@ -108,11 +112,11 @@ public class ScheduleDto {
         @Schema(description = "반복 종료 날짜", example = "2025-04-24")
         private LocalDate repeatEndAt;
 
-        public Schedule toEntity(User user, Category category, Pet pet) {
+        public Schedule toEntity(Category category, Pet pet) {
             return Schedule.builder()
                     .sTitle(title)
                     .sMemo(memo)
-                    .category(category)
+                    .categoryIdx(category.getIdx())
                     .startAt(startAt)
                     .endAt(endAt)
                     .recurring(recurring)
@@ -120,7 +124,6 @@ public class ScheduleDto {
                     .placeId(placeId)
                     .repeatCount(repeatCount)
                     .repeatEndAt(repeatEndAt)
-                    .user(user)
                     .pet(pet)
                     .build();
         }

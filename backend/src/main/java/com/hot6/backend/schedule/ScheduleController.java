@@ -56,9 +56,9 @@ public class ScheduleController {
     //category idx 는 url 로 전달하기 보다는 화면에 있는 컴포넌트를 통해서
     @PostMapping("/pet/{petIdx}")
     public ResponseEntity<BaseResponse<String>> createSchedule(@RequestBody ScheduleDto.ScheduleCreateRequest request,
-                                                       @PathVariable Long petIdx,
-                                                       @AuthenticationPrincipal User user) {
-        scheduleService.createSchedule(user, petIdx, request);
+                                                       @PathVariable Long petIdx
+                                                       ) {
+        scheduleService.createSchedule(petIdx, request);
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS));
     }
 

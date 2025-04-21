@@ -261,17 +261,16 @@ public class ChatDto {
         private Long categoryIdx;
 
         // 엔티티로 변환하는 편의 메서드
-        public Schedule toEntity(User user, ChatRoom chatRoom, Category category) {
+        public Schedule toEntity(ChatRoom chatRoom, Category category) {
             return Schedule.builder()
                     .sTitle(title)
                     .sMemo(memo)
                     .placeId(placeId)
                     .startAt(startAt)
                     .endAt(endAt)
-                    .category(category)
+                    .categoryIdx(category.getIdx())
                     .isDeleted(false)
                     .recurring(false) // 현재는 반복 설정이 없는 구조
-                    .user(user)
                     .chatRoom(chatRoom)
                     .build();
         }

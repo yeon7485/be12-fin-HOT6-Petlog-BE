@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
-    List<Schedule> findAllByUserIdx(Long userIdx);
+    List<Schedule> findAllByPet(Pet pet);
 
     @Query("SELECT s FROM Schedule s JOIN FETCH s.chatRoom WHERE s.chatRoom.idx = :chatRoomIdx")
     List<Schedule> findAllWithChatRoomByChatRoomIdx(Long chatRoomIdx);
