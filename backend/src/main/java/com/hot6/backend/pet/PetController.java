@@ -79,7 +79,7 @@ public class PetController {
     @DeleteMapping("/{petId}")
     public ResponseEntity<String> deletePet(@PathVariable Long petId) {
         try {
-            // 서비스에서 반려동물 삭제
+            // 서비스에서 반려동물 삭제x`
             petService.deletePet(petId);
 
             return ResponseEntity.ok("반려동물 카드가 삭제되었습니다.");
