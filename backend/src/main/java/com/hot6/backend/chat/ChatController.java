@@ -135,11 +135,12 @@ public class ChatController {
     }
 
     @Operation(summary = "채팅방 일정 상세 조회", description = "지정된 채팅방의 일정 정보를 상세히 조회합니다.")
-    @GetMapping("/chatroom/{chatRoomIdx}/schedule")
+    @GetMapping("/chatroom/{chatRoomIdx}/schedule/{scheduleIdx}")
     public ResponseEntity<BaseResponse<ChatDto.ChatRoomScheduleDetailResponse>> getChatRoomScheduleDetail(
             @AuthenticationPrincipal User user,
-            @PathVariable Long chatRoomIdx) {
-        ChatDto.ChatRoomScheduleDetailResponse response = chatRoomService.getChatRoomScheduleDetail(chatRoomIdx, user);
+            @PathVariable Long chatRoomIdx,
+            @PathVariable Long scheduleIdx) {
+        ChatDto.ChatRoomScheduleDetailResponse response = chatRoomService.getChatRoomScheduleDetail(chatRoomIdx, scheduleIdx,user);
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, response));
     }
 

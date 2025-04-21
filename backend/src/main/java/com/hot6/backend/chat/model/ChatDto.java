@@ -1,6 +1,7 @@
 package com.hot6.backend.chat.model;
 
 import com.hot6.backend.category.model.Category;
+import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.schedule.model.Schedule;
 import com.hot6.backend.user.model.User;
 import com.querydsl.core.annotations.QueryProjection;
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -218,17 +220,18 @@ public class ChatDto {
         @Schema(description = "채팅방 스케쥴 idx", example = "1")
         public Long idx;
 
-        @Schema(description = "채팅방에 참여한 유저 닉네임", example = "User1")
+        @Schema(description = "지정 일정의 시작 시간", example = "25.04.12 11:00")
         public String time;
 
-        @Schema(description = "채팅방에 참여한 유저의 imageUrl", example = "User1")
-        public String place;
+        @Schema(description = "지정 채팅방의 제목" , example = "User1")
+        public String title;
 
         public static ChatRoomScheduleElement from(Schedule schedule){
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy.MM.dd HH:mm");
             return ChatRoomScheduleElement.builder()
                     .idx(schedule.getIdx())
-                    .time(schedule.getSTitle())
-                    .place(schedule.getPlaceId())
+                    .time(schedule.getStartAt().format(formatter))
+                    .title(schedule.getSTitle())
                     .build();
         }
     }
@@ -296,6 +299,45 @@ public class ChatDto {
 
         @Schema(description = "현재 사용자의 참여 여부")
         private boolean isParticipating;
+
+        @Schema(description = "내 반려동물 목록")
+        private List<PetInChatRoomSchedule> pets;
+
+        public static ChatRoomScheduleDetailResponse from(Schedule schedule, List<User> users, boolean isParticipating ,List<Pet> pets){
+            return ChatRoomScheduleDetailResponse.builder()
+                    .title(schedule.getSTitle())
+                    .time(schedule.getStartAt().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm")))
+                    .place(schedule.getPlaceId())
+                    .memo(schedule.getSMemo())
+                    .participants(users.stream()
+                            .map(u -> new ChatUserInfo(
+                                    u.getIdx(),
+                                    u.getNickname(),
+                                    u.getUserProfileImage()
+                            ))
+                            .collect(Collectors.toList()))
+                    .isParticipating(isParticipating)
+                    .pets(pets.stream().map(PetInChatRoomSchedule::from).collect(Collectors.toList()))
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
+    @Schema(description = "현재 채팅방에 참여하고 있는 사용자의 반려동물들 리스트 DTO")
+    public static class PetInChatRoomSchedule{
+        @Schema(description = "반려 동물 idx")
+        private Long idx;
+
+        @Schema(description = "반려 동물 이름")
+        private String petName;
+
+        public static PetInChatRoomSchedule from(Pet pet){
+            return PetInChatRoomSchedule.builder()
+                    .idx(pet.getIdx())
+                    .petName(pet.getName())
+                    .build();
+        }
     }
 
 }

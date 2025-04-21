@@ -37,4 +37,7 @@ public class Pet {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "pet")
+    private List<SharedSchedulePet> sharedSchedules;
 }

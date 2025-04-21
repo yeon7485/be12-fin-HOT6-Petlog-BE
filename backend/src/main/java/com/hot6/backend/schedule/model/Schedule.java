@@ -4,12 +4,14 @@ import com.hot6.backend.chat.model.ChatRoom;
 import com.hot6.backend.category.model.Category;
 import com.hot6.backend.common.BaseEntity;
 import com.hot6.backend.pet.model.Pet;
+import com.hot6.backend.pet.model.SharedSchedulePet;
 import com.hot6.backend.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -49,4 +51,7 @@ public class Schedule extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "chat_room_idx")
     private ChatRoom chatRoom;
+
+    @OneToMany(mappedBy = "schedule")
+    private List<SharedSchedulePet> sharedSchedules;
 }

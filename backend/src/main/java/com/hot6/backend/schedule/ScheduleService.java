@@ -51,6 +51,10 @@ public class ScheduleService {
         return result;
     }
 
+    public Schedule getSchedule(Long scheduleIdx) {
+        return scheduleRepository.findById(scheduleIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.SCHEDULE_NOT_FOUND));
+    }
+
     public List<ChatDto.ChatRoomScheduleElement> getALLScheduleByChatRoom(Long chatRoomIdx) {
         return scheduleRepository.findAllWithChatRoomByChatRoomIdx(chatRoomIdx).stream().map(ChatDto.ChatRoomScheduleElement::from).collect(toList());
     }
@@ -61,7 +65,7 @@ public class ScheduleService {
         scheduleRepository.save(dto.toEntity(user,chatRoom,category));
     }
 
-    public Schedule findByIdWithPetAndUser(Long scheduleIdx) {
-        return scheduleRepository.findByIdWithPetAndUser(scheduleIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.SCHEDULE_NOT_FOUND));
+    public List<User> findChatRoomUsersParticipatingInSchedule(Long scheduleIdx) {
+        return scheduleRepository.findChatRoomUsersParticipatingInSchedule(scheduleIdx);
     }
 }
