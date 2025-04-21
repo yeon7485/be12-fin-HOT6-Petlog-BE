@@ -2,6 +2,8 @@ package com.hot6.backend.board.post.model;
 
 import com.hot6.backend.board.post.images.PostImage;
 import com.hot6.backend.category.model.CategoryDto;
+import com.hot6.backend.pet.model.Pet;
+import com.hot6.backend.pet.model.PetSummary;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +23,7 @@ public class PostDto {
         private String image;
         private Long categoryIdx;
         private String boardType; // board name으로 받음
+        private List<Long> petIdxList;
     }
 
     @Getter
@@ -37,6 +40,9 @@ public class PostDto {
         private List<String> imageUrls;
         private String profileImageUrl;
 
+        // ✅ 변경된 타입: PetSummary
+        private List<PetSummary> petList;
+
         public static PostResponse from(Post post) {
             return PostResponse.builder()
                     .idx(post.getIdx())
@@ -47,15 +53,20 @@ public class PostDto {
                     .category(post.getCategory().getName())
                     .createdAt(LocalDate.from(post.getCreatedAt()))
                     .boardType(post.getBoardType().getBoardName())
-                    .imageUrls(
-                            post.getPostImageList() != null
-                                    ? post.getPostImageList().stream().map(PostImage::getUrl).toList()
-                                    : List.of()
-                    )
+                    .imageUrls(post.getPostImageList() != null
+                            ? post.getPostImageList().stream().map(PostImage::getUrl).toList()
+                            : List.of())
                     .profileImageUrl(post.getUser().getUserProfileImage())
+                    .petList(post.getPetList() != null
+                            ? post.getPetList().stream().map(PetSummary::from).toList()
+                            : List.of())
                     .build();
         }
     }
+
+
+
+
 
     @Getter
     @Builder

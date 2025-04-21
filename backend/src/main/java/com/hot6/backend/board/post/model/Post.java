@@ -3,6 +3,7 @@ package com.hot6.backend.board.post.model;
 import com.hot6.backend.category.model.Category;
 import com.hot6.backend.category.model.CategoryType;
 import com.hot6.backend.common.BaseEntity;
+import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.user.model.User;
 import com.hot6.backend.board.post.images.PostImage;
 import jakarta.persistence.*;
@@ -41,6 +42,9 @@ public class Post extends BaseEntity {
     private List<PostImage> postImageList;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id") // FK 컬럼명 지정
+    @JoinColumn(name = "category_id")
     private Category category;
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    private List<Pet> petList;
 }

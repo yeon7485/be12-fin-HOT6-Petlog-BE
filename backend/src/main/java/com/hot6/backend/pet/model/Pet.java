@@ -1,6 +1,9 @@
 package com.hot6.backend.pet.model;
 
 import com.hot6.backend.record.model.DailyRecord;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.hot6.backend.board.post.model.Post;
+import com.hot6.backend.board.question.model.Question;
 import com.hot6.backend.schedule.model.Schedule;
 import com.hot6.backend.user.model.User;
 import jakarta.persistence.*;
@@ -45,5 +48,14 @@ public class Pet {
 
     @OneToMany(mappedBy = "pet")
     private List<SharedSchedulePet> sharedSchedules;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_idx", nullable = true) // 게시글 없는 상태에서도 가능하게
+    private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "question_idx")
+    private Question question;
 
 }
