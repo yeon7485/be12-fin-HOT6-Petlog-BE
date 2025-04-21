@@ -34,17 +34,17 @@ public class DailyRecordService {
         dailyRecordRepository.save(dto.toEntity(pet));
     }
 
-    public List<DailyRecordDto.SimpleDailyRecord> getRecordsByDate(Long petIdx, Integer year, Integer month, Integer day) {
-        Pet pet = petRepository.findById(petIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.PET_NOT_FOUND));
+    public List<DailyRecordDto.SimpleDailyRecord> getRecordsByDate(Integer year, Integer month, Integer day) {
+        //Pet pet = petRepository.findById(petIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.PET_NOT_FOUND));
 
         LocalDate date = LocalDate.of(year, month, day);
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.atTime(LocalTime.MAX); // 23:59:59.999999999
 
-        List<DailyRecord> records = dailyRecordRepository.findAllByPetAndDateBetween(pet, start, end);
+        List<DailyRecord> records = dailyRecordRepository.findAllByDateBetween(start, end);
 
         List<DailyRecordDto.SimpleDailyRecord> recordList = new ArrayList<>();
-        
+
         for(DailyRecord record : records) {
             Category category = Category.builder()
                     .name("체중")

@@ -11,6 +11,8 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 public class DailyRecordDto {
+    private static final String PHOTO_CATEGORY = "오늘의 사진";
+
 
     @Getter
     @Builder
@@ -68,8 +70,14 @@ public class DailyRecordDto {
         @Schema(description = "기록 idx", example = "1")
         private Long idx;
 
-        @Schema(description = "기록 제목", example = "산책 메모")
+        @Schema(description = "기록 제목", example = "산책")
         private String title;
+
+        @Schema(description = "기록 메모", example = "메모")
+        private String memo;
+
+        @Schema(description = "오늘의 사진 이미지 URL", example = "image.png")
+        private String imageUrl;
 
         @Schema(description = "기록 날짜 (yyyy-MM-dd 형식)", example = "2025-04-02")
         private LocalDateTime date;
@@ -80,14 +88,21 @@ public class DailyRecordDto {
         @Schema(description = "카테고리 이름", example = "병원")
         private String categoryName;
 
+        @Schema(description = "펫 이름", example = "콩이")
+        private String petName;
+
 
         public static SimpleDailyRecord from(DailyRecord dailyRecord, Category category) {
+            String imageUrl = PHOTO_CATEGORY.equals(category.getName()) ? dailyRecord.getImageUrl() : null;
             return SimpleDailyRecord.builder()
                     .idx(dailyRecord.getIdx())
                     .title(dailyRecord.getRTitle())
+                    .memo(dailyRecord.getRMemo())
+                    .imageUrl(imageUrl)
                     .date(dailyRecord.getDate())
                     .color(category.getColor())
                     .categoryName(category.getName())
+                    .petName(dailyRecord.getPet().getName())
                     .build();
         }
     }

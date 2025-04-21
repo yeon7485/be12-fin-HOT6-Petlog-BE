@@ -8,6 +8,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DailyRecordRepository extends JpaRepository<DailyRecord, Long> {
-    List<DailyRecord> findAllByPetAndDateBetween(Pet pet, LocalDateTime start, LocalDateTime end);
+    List<DailyRecord> findAllByDateBetween(LocalDateTime start, LocalDateTime end);
 }
 
