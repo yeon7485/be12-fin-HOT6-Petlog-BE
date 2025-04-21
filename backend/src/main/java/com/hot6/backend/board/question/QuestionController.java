@@ -1,6 +1,5 @@
 package com.hot6.backend.board.question;
 
-import com.hot6.backend.board.post.model.PostDto;
 import com.hot6.backend.board.question.model.QuestionDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

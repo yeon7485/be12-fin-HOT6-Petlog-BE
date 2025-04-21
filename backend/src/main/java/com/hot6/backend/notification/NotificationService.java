@@ -43,8 +43,8 @@ public class NotificationService {
         messagingTemplate.convertAndSend("/topic/alerts/" + schedule.getUser().getIdx(), element);
     }
 
-    public List<NotificationDto.NotificationElement> getNotificationsByUserId(Long userId) {
-        return notificationRepository.findAllByScheduleUserIdOrderBySentAtDesc(userId).stream()
+    public List<NotificationDto.NotificationElement> getNotificationsByUserId(Long userIdx) {
+        return notificationRepository.findAllByScheduleUserIdxOrderBySentAtDesc(userIdx).stream()
                 .map(notification -> NotificationDto.NotificationElement.builder()
                         .message(notification.getMessage())
                         .sentAt(notification.getSentAt())

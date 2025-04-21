@@ -3,26 +3,25 @@ package com.hot6.backend.board.question;
 import com.hot6.backend.board.answer.AnswerService;
 import com.hot6.backend.board.answer.aiAnswer.AiAnswerService;
 import com.hot6.backend.board.hashtagQuestion.Hashtag_QuestionService;
-import com.hot6.backend.board.post.model.PostDto;
 import com.hot6.backend.board.question.images.QuestionImageService;
 import com.hot6.backend.board.question.model.Question;
 import com.hot6.backend.board.question.model.QuestionDto;
+import com.hot6.backend.pet.PetRepository;
+import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.user.model.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +32,7 @@ public class QuestionService {
     private final Hashtag_QuestionService hashtagService;
     private final QuestionImageService questionImageService;
     private final AiAnswerService aiAnswerService;
+    private final PetRepository petRepository;
 
     public void create(QuestionDto.QuestionRequest dto, List<MultipartFile> images) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -40,8 +40,14 @@ public class QuestionService {
 
         Question question = dto.toEntity();
         question.setUser(currentUser);
-
         questionRepository.save(question);
+
+        // ✅ 선택된 반려동물과 연관
+        if (dto.getPetIdxList() != null && !dto.getPetIdxList().isEmpty()) {
+            List<Pet> pets = petRepository.findAllById(dto.getPetIdxList());
+            pets.forEach(pet -> pet.setQuestion(question));
+            petRepository.saveAll(pets);
+        }
 
         if (dto.getTags() != null && !dto.getTags().isEmpty()) {
             hashtagService.saveTags(dto.getTags(), question.getIdx());
@@ -97,7 +103,6 @@ public class QuestionService {
 
         question.setQTitle(dto.getQTitle());
         question.setContent(dto.getContent());
-        question.setImage(dto.getImage());
         question.setSelected(dto.isSelected());
 
         questionRepository.save(question);
@@ -111,6 +116,17 @@ public class QuestionService {
             questionImageService.deleteImagesByQuestion(idx);
             questionImageService.saveImages(images, question);
         }
+
+        // ✅ 기존 질문과 연결된 펫 해제 후 다시 연결
+        List<Pet> existingPets = petRepository.findAllByQuestion(question);
+        existingPets.forEach(p -> p.setQuestion(null));
+        petRepository.saveAll(existingPets);
+
+        if (dto.getPetIdxList() != null && !dto.getPetIdxList().isEmpty()) {
+            List<Pet> selectedPets = petRepository.findAllById(dto.getPetIdxList());
+            selectedPets.forEach(pet -> pet.setQuestion(question));
+            petRepository.saveAll(selectedPets);
+        }
     }
 
     @Transactional
@@ -121,6 +137,12 @@ public class QuestionService {
         questionImageService.deleteImagesByQuestion(idx);
         answerService.deleteByQuestionIdx(idx);
         hashtagService.deleteByQuestionIdx(idx);
+
+        // ✅ 연결된 펫들 question 해제
+        List<Pet> relatedPets = petRepository.findAllByQuestion(question);
+        relatedPets.forEach(pet -> pet.setQuestion(null));
+        petRepository.saveAll(relatedPets);
+
         questionRepository.delete(question);
     }
 

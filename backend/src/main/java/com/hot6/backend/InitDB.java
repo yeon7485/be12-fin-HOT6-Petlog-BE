@@ -5,11 +5,6 @@ import com.hot6.backend.chat.repository.ChatRepository;
 import com.hot6.backend.chat.repository.ChatRoomHashtagRepository;
 import com.hot6.backend.chat.repository.ChatRoomParticipantRepository;
 import com.hot6.backend.chat.repository.ChatRoomRepository;
-import com.hot6.backend.pet.PetRepository;
-import com.hot6.backend.pet.model.Pet;
-import com.hot6.backend.pet.model.SharedSchedulePet;
-import com.hot6.backend.schedule.ScheduleRepository;
-import com.hot6.backend.schedule.model.Schedule;
 import com.hot6.backend.user.UserRepository;
 import com.hot6.backend.user.model.User;
 import com.hot6.backend.user.model.UserType;
@@ -44,8 +39,6 @@ public class InitDB {
     @RequiredArgsConstructor
     public static class InitService {
 
-        private final PetRepository petRepository;
-        private final ScheduleRepository scheduleRepository;
         private final UserRepository userRepository;
         private final ChatRoomRepository chatRoomRepository;
         private final ChatRoomHashtagRepository hashtagRepository;
@@ -56,48 +49,22 @@ public class InitDB {
         private EntityManager em;
 
         public void init() {
-            List<User> users = createUsers(10);
-            Map<User, List<Pet>> pets = createPets(users);
-            List<ChatRoom> chatRooms = createChatRooms(10);
-            createHashtags(chatRooms, 30);
-            List<ChatRoomParticipant> participants = createChatRoomParticipants(users, chatRooms);
-            createSchedules(chatRooms, participants, pets);
-            createChatMessages(chatRooms, participants);
+            List<User> users = createUsers(0);
         }
 
         private List<User> createUsers(int count) {
             List<User> users = new ArrayList<>();
             for (int i = 1; i <= count; i++) {
                 users.add(User.builder()
-                        .email("user" + i + "@test.com")
+                        .email("test0" + i + "@test.com")
                         .password("$2a$10$.QJ.leSKCQXX9Tn8pCipIOy8F.XhB8o0Gl1AFIRBN10L0LCFiJSB2") // bcrypt
                         .nickname("User" + i)
                         .userProfileImage("https://example.com/img" + i + ".png")
                         .userType(UserType.USER)
-                                .enabled(true)
+                        .enabled(true)
                         .build());
             }
             return userRepository.saveAll(users);
-        }
-
-        private Map<User, List<Pet>> createPets(List<User> users) {
-            Map<User, List<Pet>> petMap = new HashMap<>();
-            List<Pet> allPets = new ArrayList<>();
-            for (User user : users) {
-                List<Pet> pets = new ArrayList<>();
-                for (int i = 1; i <= 2; i++) { // 유저당 2마리
-                    Pet pet = Pet.builder()
-                            .user(user)
-                            .name(user.getNickname() + "의 반려동물" + i)
-                            .birthDate(LocalDateTime.now().minusYears(2).minusMonths(i).toString())
-                            .build();
-                    pets.add(pet);
-                    allPets.add(pet);
-                }
-                petMap.put(user, pets);
-            }
-            petRepository.saveAll(allPets);
-            return petMap;
         }
 
         private List<ChatRoom> createChatRooms(int count) {
@@ -150,58 +117,6 @@ public class InitDB {
             }
 
             return participantRepository.saveAll(participants);
-        }
-
-        private void createSchedules(List<ChatRoom> chatRooms,
-                                     List<ChatRoomParticipant> participants,
-                                     Map<User, List<Pet>> petMap) {
-            Random random = new Random();
-            List<Schedule> schedules = new ArrayList<>();
-            List<SharedSchedulePet> sharedSchedulePets = new ArrayList<>();
-
-            for (ChatRoom room : chatRooms) {
-                List<ChatRoomParticipant> roomParticipants = participants.stream()
-                        .filter(p -> p.getChatRoom().equals(room))
-                        .toList();
-
-                int scheduleCount = random.nextInt(3) + 1; // 1~3개
-
-                for (int i = 0; i < scheduleCount; i++) {
-                    ChatRoomParticipant creator = roomParticipants.get(random.nextInt(roomParticipants.size()));
-                    User owner = creator.getUser();
-
-                    LocalDateTime start = LocalDateTime.now().plusDays(random.nextInt(30));
-                    LocalDateTime end = start.plusHours(1);
-
-                    Schedule schedule = Schedule.builder()
-                            .chatRoom(room)
-                            .sTitle("일정 " + UUID.randomUUID())
-                            .startAt(start)
-                            .endAt(end)
-                            .placeId("장소 " + (i + 1))
-                            .sMemo("메모 " + (i + 1))
-                            .build();
-
-                    em.persist(schedule);
-                    schedules.add(schedule);
-
-                    // 펫 연결
-                    List<Pet> pets = petMap.get(owner);
-                    Collections.shuffle(pets);
-                    int petCount = Math.min(pets.size(), random.nextInt(2) + 1); // 1~2마리
-
-                    for (int j = 0; j < petCount; j++) {
-                        SharedSchedulePet shared = SharedSchedulePet.builder()
-                                .schedule(schedule)
-                                .pet(pets.get(j))
-                                .build();
-                        em.persist(shared);
-                        sharedSchedulePets.add(shared);
-                    }
-                }
-            }
-
-            log.info("✅ 일정 {}개와 공유 펫 {}개 생성 완료", schedules.size(), sharedSchedulePets.size());
         }
 
         private void createChatMessages(List<ChatRoom> chatRooms, List<ChatRoomParticipant> participants) {

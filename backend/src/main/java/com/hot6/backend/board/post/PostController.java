@@ -29,12 +29,14 @@ public class PostController {
 
     @GetMapping("/list/{boardName}")
     public ResponseEntity<List<PostDto.PostResponse>> list(@PathVariable String boardName) {
-        return ResponseEntity.ok(postService.list(boardName));
+        List<PostDto.PostResponse> responses = postService.list(boardName);
+        return ResponseEntity.ok(responses);
     }
 
-    @GetMapping("/read/{idx}")
-    public ResponseEntity<PostDto.PostResponse> read(@PathVariable Long idx) {
-        return ResponseEntity.ok(postService.read(idx));
+    @GetMapping("/read/{postIdx}")
+    public ResponseEntity<PostDto.PostResponse> read(@PathVariable Long postIdx) {
+        PostDto.PostResponse response = postService.read(postIdx);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/search")

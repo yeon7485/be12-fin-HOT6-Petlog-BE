@@ -2,6 +2,7 @@ package com.hot6.backend.board.question;
 
 import com.hot6.backend.board.post.model.Post;
 import com.hot6.backend.board.question.model.Question;
+import com.hot6.backend.pet.model.Pet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
