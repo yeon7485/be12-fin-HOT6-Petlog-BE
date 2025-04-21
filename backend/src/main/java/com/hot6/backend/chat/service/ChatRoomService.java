@@ -4,6 +4,11 @@ import com.hot6.backend.chat.model.*;
 import com.hot6.backend.chat.repository.ChatRoomRepository;
 import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.common.exception.BaseException;
+import com.hot6.backend.pet.PetService;
+import com.hot6.backend.pet.SharedSchedulePetService;
+import com.hot6.backend.pet.model.Pet;
+import com.hot6.backend.schedule.ScheduleService;
+import com.hot6.backend.schedule.model.Schedule;
 import com.hot6.backend.user.UserService;
 import com.hot6.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +33,10 @@ public class ChatRoomService {
     private final ChatRoomHashtagService chatRoomHashtagService;
     private final UserService userService;
     private final ChatMessageService chatMessageService;
+    private final ScheduleService scheduleService;
+    private final PetService petService;
+    private final SharedSchedulePetService sharedSchedulePetService;
+
 
     public Slice<ChatDto.ChatRoomListDto> getList(Long userIdx, Pageable pageable) {
         Slice<ChatRoom> chatRooms = chatRoomRepository.findAllWithSlice(pageable);
@@ -52,11 +62,6 @@ public class ChatRoomService {
         User findUser = userService.findUserByIdx(userIdx);
         chatRoomParticipantService.save(findUser, chatRoom);
     }
-
-//    public List<ChatDto.ChatInfo> getChatRoomByUserIdx(Long userIdx) {
-//        List<ChatRoom> allByParticipants = chatRoomRepository.findAllByParticipants(userIdx);
-//        return allByParticipants.stream().map(ChatDto.ChatInfo::from).collect(Collectors.toList());
-//    }
 
     @Transactional(readOnly = true)
     public Slice<ChatDto.MyChatRoomListDto> findMyChatRooms(Long userId, Pageable pageable) {
@@ -96,5 +101,38 @@ public class ChatRoomService {
                 .build();
 
         return chatMessageService.saveChatMessage(chat);
+    }
+
+    public List<ChatDto.ChatRoomScheduleElement> getChatRoomSchedule(Long chatRoomIdx) {
+        return scheduleService.getALLScheduleByChatRoom(chatRoomIdx);
+    }
+
+    public void createChatRoomSchedule(ChatDto.CreateChatRoomScheduleRequest dto, Long chatRoomIdx, User user) {
+        ChatRoom chatRoom = chatRoomRepository.findByIdx(chatRoomIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
+        scheduleService.createChatRoomSchedule(dto, chatRoom, user);
+    }
+
+
+    public ChatDto.ChatRoomScheduleDetailResponse getChatRoomScheduleDetail(Long chatRoomIdx, Long scheduleIdx ,User user) {
+        ChatRoom chatRoom = chatRoomRepository.findByIdx(chatRoomIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
+        Schedule schedule = scheduleService.getSchedule(scheduleIdx);
+        List<User> usersInChatRoomsSchedule = scheduleService.findChatRoomUsersParticipatingInSchedule(scheduleIdx);
+
+
+        // 현재 사용자의 참여 여부
+        boolean isParticipating = usersInChatRoomsSchedule.stream()
+                .anyMatch(u -> u.getIdx().equals(user.getIdx()));
+
+        List<Pet> usersPet = isParticipating == false ? petService.findByUser(user) : Collections.emptyList();
+
+        // 응답 DTO 생성
+        return ChatDto.ChatRoomScheduleDetailResponse.from(schedule,usersInChatRoomsSchedule,isParticipating,usersPet);
+    }
+
+    public void participateChatRoomSchedule(Long chatRoomIdx, Long scheduleIdx, User user, ChatDto.ParticipateChatRoomSchedule dto) {
+        ChatRoom chatRoom = chatRoomRepository.findByIdx(chatRoomIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
+        Schedule schedule = scheduleService.getSchedule(scheduleIdx);
+
+        sharedSchedulePetService.saveAll(dto.getAnimalIds(), schedule);
     }
 }
