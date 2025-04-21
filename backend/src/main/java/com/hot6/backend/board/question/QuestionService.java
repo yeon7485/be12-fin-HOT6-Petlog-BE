@@ -21,7 +21,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +41,6 @@ public class QuestionService {
         question.setUser(currentUser);
         questionRepository.save(question);
 
-        // ✅ 선택된 반려동물과 연관
         if (dto.getPetIdxList() != null && !dto.getPetIdxList().isEmpty()) {
             List<Pet> pets = petRepository.findAllById(dto.getPetIdxList());
             pets.forEach(pet -> pet.setQuestion(question));
@@ -58,11 +56,8 @@ public class QuestionService {
         }
 
         try {
-            System.out.println("🔥 AI 답변 생성 시도 시작");
             String aiContent = aiAnswerService.generateAnswer(question.getQTitle(), question.getContent());
-            System.out.println("🔥 생성된 AI 답변 내용: " + aiContent);
             answerService.createAiAnswerForQuestion(question, aiContent);
-            System.out.println("✅ AI 답변 저장 완료");
         } catch (Exception e) {
             System.out.println("❌ AI 답변 생성 실패: " + e.getMessage());
         }
@@ -104,7 +99,6 @@ public class QuestionService {
         question.setQTitle(dto.getQTitle());
         question.setContent(dto.getContent());
         question.setSelected(dto.isSelected());
-
         questionRepository.save(question);
 
         hashtagService.deleteByQuestionIdx(idx);
@@ -112,12 +106,14 @@ public class QuestionService {
             hashtagService.saveTags(dto.getTags(), idx);
         }
 
+        if (dto.getRemovedImageUrls() != null && !dto.getRemovedImageUrls().isEmpty()) {
+            questionImageService.deleteImagesByUrls(dto.getRemovedImageUrls());
+        }
+
         if (images != null && !images.isEmpty()) {
-            questionImageService.deleteImagesByQuestion(idx);
             questionImageService.saveImages(images, question);
         }
 
-        // ✅ 기존 질문과 연결된 펫 해제 후 다시 연결
         List<Pet> existingPets = petRepository.findAllByQuestion(question);
         existingPets.forEach(p -> p.setQuestion(null));
         petRepository.saveAll(existingPets);
@@ -138,7 +134,6 @@ public class QuestionService {
         answerService.deleteByQuestionIdx(idx);
         hashtagService.deleteByQuestionIdx(idx);
 
-        // ✅ 연결된 펫들 question 해제
         List<Pet> relatedPets = petRepository.findAllByQuestion(question);
         relatedPets.forEach(pet -> pet.setQuestion(null));
         petRepository.saveAll(relatedPets);

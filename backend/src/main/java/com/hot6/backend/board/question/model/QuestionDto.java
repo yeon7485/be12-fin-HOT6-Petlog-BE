@@ -20,6 +20,7 @@ public class QuestionDto {
         private boolean selected;
         private List<String> tags;
         private List<Long> petIdxList;
+        private List<String> removedImageUrls;
 
         public Question toEntity() {
             return Question.builder()

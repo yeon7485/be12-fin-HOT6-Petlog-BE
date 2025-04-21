@@ -29,7 +29,6 @@ public class Post extends BaseEntity {
     @Builder.Default
     private Boolean isDeleted = false;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_type_idx")
     private BoardType boardType;
