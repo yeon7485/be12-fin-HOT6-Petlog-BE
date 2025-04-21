@@ -33,4 +33,3 @@ SELECT '뱀', NULL, 'BOARD', '뱀 관련 게시글 카테고리'
 INSERT INTO `user` (email, password, nickname, user_type, enabled)
 SELECT 'ai@chatgps.com', 'AI_PASSWORD_PLACEHOLDER', 'ChatGPS', 'AI', 1
     WHERE NOT EXISTS (SELECT 1 FROM `user` WHERE email = 'ai@chatgps.com');
-

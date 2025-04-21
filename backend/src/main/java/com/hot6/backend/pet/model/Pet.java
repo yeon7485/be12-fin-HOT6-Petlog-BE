@@ -1,5 +1,6 @@
 package com.hot6.backend.pet.model;
 
+import com.hot6.backend.record.model.DailyRecord;
 import com.hot6.backend.schedule.model.Schedule;
 import com.hot6.backend.user.model.User;
 import jakarta.persistence.*;
@@ -31,6 +32,10 @@ public class Pet {
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PetImage> petImageList = new ArrayList<>();
 
+
+    @OneToMany(mappedBy = "pet")
+    private List<DailyRecord> dailyRecordList = new ArrayList<>();
+
     @OneToMany(mappedBy = "pet", cascade = CascadeType.REMOVE)
     private List<Schedule> schedules;
 
@@ -40,4 +45,5 @@ public class Pet {
 
     @OneToMany(mappedBy = "pet")
     private List<SharedSchedulePet> sharedSchedules;
+
 }

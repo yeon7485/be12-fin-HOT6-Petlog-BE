@@ -65,10 +65,15 @@ public enum BaseResponseStatus {
     SCHEDULE_UPDATE_FAILED(false, 3200, "일정 수정에 실패했습니다."),
 
 
-    /* 4000 ~ 4999 : 반려동물 관련 에러 */
-    //-- 4000 :
-    PET_NOT_FOUND(false, 4000, "존재하지 않는 반려동물 입니다."),
 
+    /* 4000 ~ 4999 : 펫 관련 에러 */
+    //-- 4000 : 펫 조회
+    PET_NOT_FOUND(false, 4000, "반려동물 조회에 실패했습니다."),
+    //-- 4100 : 펫 등록
+    PET_CREATE_FAILED(false, 4100, "반려동물 등록에 실패했습니다."),
+    //-- 4200 : 펫 수정
+    PET_UPDATE_FAIlED(false, 4200, "반려동물 정보 수정에 실패했습니다."),
+  
     /* 5000 ~ 5999 : 결제 관련 에러 */
     //-- 5000 : 결제 요청 에러
     PAYMENT_REQUEST_FAILED(false, 5000, "결제 요청에 실패했습니다."),
