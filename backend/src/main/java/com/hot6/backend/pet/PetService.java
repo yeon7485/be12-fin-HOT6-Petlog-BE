@@ -96,5 +96,10 @@ public class PetService {
         // 삭제 처리
         petRepository.delete(pet);
     }
+
+
+    public List<Pet> findByUser(User user) {
+        return petRepository.findByUserIdx(user.getIdx());
+    }
 }
 
