@@ -6,6 +6,7 @@ import com.hot6.backend.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,4 +37,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
       AND cp.user.idx = u.idx
 """)
     List<User> findChatRoomUsersParticipatingInSchedule(Long scheduleIdx);
+
+    List<Schedule> findAllByPetAndStartAtBetween(Pet pet, LocalDateTime start, LocalDateTime end);
 }

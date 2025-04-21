@@ -1,5 +1,8 @@
 package com.hot6.backend;
 
+import com.hot6.backend.category.model.Category;
+import com.hot6.backend.category.model.CategoryRepository;
+import com.hot6.backend.category.model.CategoryType;
 import com.hot6.backend.chat.model.*;
 import com.hot6.backend.chat.repository.ChatRepository;
 import com.hot6.backend.chat.repository.ChatRoomHashtagRepository;
@@ -51,6 +54,7 @@ public class InitDB {
         private final ChatRoomHashtagRepository hashtagRepository;
         private final ChatRoomParticipantRepository participantRepository;
         private final ChatRepository chatRepository;
+        private final CategoryRepository categoryRepository;
 
         @PersistenceContext
         private EntityManager em;
@@ -63,10 +67,52 @@ public class InitDB {
             List<ChatRoomParticipant> participants = createChatRoomParticipants(users, chatRooms);
             createSchedules(chatRooms, participants, pets);
             createChatMessages(chatRooms, participants);
+            createCategory();
+        }
+
+        private List<Category> createCategory() {
+            List<Category> categories = new ArrayList<>();
+
+            categories.add(Category.builder()
+                    .name("병원")
+                    .color("#00C9CD")
+                    .type(CategoryType.SCHEDULE)
+                    .build());
+            categories.add(Category.builder()
+                    .name("미용")
+                    .color("#E6B0BD")
+                    .type(CategoryType.SCHEDULE)
+                    .build());
+            categories.add(Category.builder()
+                    .name("산책")
+                    .color("#65924D")
+                    .type(CategoryType.SCHEDULE)
+                    .build());
+
+            categories.add(Category.builder()
+                    .name("체중")
+                    .color("#00C9CD")
+                    .type(CategoryType.DAILY_RECORD)
+                    .build());
+            categories.add(Category.builder()
+                    .name("이상현상")
+                    .color("#B36063")
+                    .type(CategoryType.DAILY_RECORD)
+                    .build());
+
+            return categoryRepository.saveAll(categories);
         }
 
         private List<User> createUsers(int count) {
             List<User> users = new ArrayList<>();
+            users.add(User.builder()
+                    .email("user" + 0 + "@test.com")
+                    .password("$2a$10$.QJ.leSKCQXX9Tn8pCipIOy8F.XhB8o0Gl1AFIRBN10L0LCFiJSB2") // bcrypt
+                    .nickname("User" + 0)
+                    .userProfileImage("https://example.com/img" + 0 + ".png")
+                    .userType(UserType.ADMIN)
+                    .enabled(true)
+                    .build());
             for (int i = 1; i <= count; i++) {
                 users.add(User.builder()
                         .email("user" + i + "@test.com")
@@ -74,7 +120,7 @@ public class InitDB {
                         .nickname("User" + i)
                         .userProfileImage("https://example.com/img" + i + ".png")
                         .userType(UserType.USER)
-                                .enabled(true)
+                        .enabled(true)
                         .build());
             }
             return userRepository.saveAll(users);

@@ -2,6 +2,7 @@ package com.hot6.backend.schedule;
 
 import com.hot6.backend.common.BaseResponse;
 import com.hot6.backend.common.BaseResponseStatus;
+import com.hot6.backend.record.model.DailyRecordDto;
 import com.hot6.backend.schedule.model.ScheduleDto;
 import com.hot6.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,10 +33,11 @@ public class ScheduleController {
 
     @Operation(summary = "반려동물별 월간 일정 조회", description = "특정 반려동물의 월간 일정을 조회합니다.")
     @GetMapping("/pet/{petIdx}")
-    public ResponseEntity<String> getSchedule(@PathVariable Long petIdx,
-                                                                           @RequestParam int month) {
+    public ResponseEntity<BaseResponse<List<ScheduleDto.SimpleSchedule>>> getSchedulesByPet(
+            @PathVariable Long petIdx) {
 
-        return ResponseEntity.ok("");
+        List<ScheduleDto.SimpleSchedule> list = scheduleService.getSchedulesByPet(petIdx);
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, list));
     }
 
     @Operation(summary = "일정 상세 조회", description = "반려동물의 하루의 상세 일정을 조회합니다.")
@@ -49,6 +51,19 @@ public class ScheduleController {
                 .time("2025-03-31")
                 .isCompleted(true)
                 .build());
+    }
+
+    @Operation(summary = "날짜별 일정 전체 조회", description = "특정 날짜의 반려동물 전체 일정을 조회합니다.")
+    @GetMapping("/date/{year}/{month}/{day}")
+    public ResponseEntity<BaseResponse<List<ScheduleDto.SimpleSchedule>>> getRecordsByDate(
+            @PathVariable Integer year,
+            @PathVariable Integer month,
+            @PathVariable Integer day,
+            @AuthenticationPrincipal User user
+    ) {
+        List<ScheduleDto.SimpleSchedule> list =  scheduleService.getSchedulesByDate(user.getIdx(), year, month, day);
+
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, list));
     }
 
 

@@ -38,7 +38,7 @@ public class ScheduleDto {
         private String color;
 
         @Schema(description = "카테고리 이름", example = "병원")
-        private String category;
+        private String categoryName;
 
         @Schema(description = "펫 이름", example = "콩이")
         private String petName;
@@ -52,7 +52,7 @@ public class ScheduleDto {
                     .title(schedule.getSTitle())
                     .startAt(schedule.getStartAt())
                     .color(category.getColor())
-                    .category(category.getName())
+                    .categoryName(category.getName())
                     .fromChat(false)  // [TODO]: 채팅방 연동 확인 후 수정
                     .petName(schedule.getPet().getName())
                     .build();
