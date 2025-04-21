@@ -60,21 +60,15 @@ public class PetService {
         Pet pet = petRepository.findById(petId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 반려동물이 존재하지 않습니다. id=" + petId));
 
-        // 2. 필드 업데이트
-        pet.setName(petCardUpdateRequest.getName());
-        pet.setBreed(petCardUpdateRequest.getBreed());
-        pet.setGender(petCardUpdateRequest.getGender());
-        pet.setBirthDate(petCardUpdateRequest.getBirthDate());
-        pet.setNeutering(petCardUpdateRequest.isNeutering());
-        pet.setSpecificInformation(petCardUpdateRequest.getSpecificInformation());
-        pet.setStatus(PetStatus.valueOf(petCardUpdateRequest.getStatus()));
+        // 2. DTO를 통해 엔티티 업데이트
+        petCardUpdateRequest.updateEntity(pet);
 
-        // ✅ 3. 프로필 이미지가 새로 들어왔으면, S3 업로드 후 URL 저장
+        // 3. 프로필 이미지가 새로 들어왔으면, S3 업로드 후 URL 저장
         if (profileImage != null && !profileImage.isEmpty()) {
-            String key = "pet/profile/" + UUID.randomUUID();  // 예: 고유한 파일 경로 생성
+            String key = "pet/" + UUID.randomUUID();  // 고유 경로 생성
             try {
                 String imageUrl = s3Service.upload(profileImage, key);
-                pet.setProfileImageUrl(imageUrl);  // 👉 이미지 경로 저장
+                pet.setProfileImageUrl(imageUrl);  // 이미지 URL 반영
             } catch (IOException e) {
                 throw new RuntimeException("이미지 업로드 실패", e);
             }
