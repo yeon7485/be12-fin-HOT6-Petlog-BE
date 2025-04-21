@@ -114,7 +114,7 @@ public class PetDto {
             private String birthDate;
 
             @Schema(description = "중성화 여부", example = "true")
-            private boolean isNeutering;
+            private Boolean isNeutering;
 
             @Schema(description = "특이사항", example = "성격 더러움, 꼬리가 잘려있음")
             private String specificInformation;
@@ -122,24 +122,16 @@ public class PetDto {
             @Schema(description = "상태", example = "정상")
             private String status;  // String 타입
 
-            // Pet 엔티티로 변환하는 메소드
-            public Pet toEntity() {
-                Pet pet = new Pet();
-                pet.setIdx(this.id);
+            public void updateEntity(Pet pet) {
                 pet.setName(this.name);
                 pet.setBreed(this.breed);
                 pet.setGender(this.gender);
                 pet.setBirthDate(this.birthDate);
                 pet.setNeutering(this.isNeutering);
                 pet.setSpecificInformation(this.specificInformation);
-
-                // String 타입을 Enum 타입으로 변환
-                pet.setStatus(PetStatus.valueOf(this.status));  // Enum 변환
-
-                return pet;
+                pet.setStatus(PetStatus.valueOf(this.status));
             }
         }
-
 
         @Getter
         @Builder
