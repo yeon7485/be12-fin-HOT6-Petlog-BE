@@ -95,7 +95,7 @@ public class PetDto {
         }
     }
 
-        @Getter
+        @Data
         @Schema(description = "반려동물 카드 수정 요청")
         public static class PetCardUpdateRequest {
             @Schema(description = "반려동물 ID", example = "1")
@@ -122,10 +122,6 @@ public class PetDto {
             @Schema(description = "상태", example = "정상")
             private String status;  // String 타입
 
-            // ProfileImageUrl 필드를 주석 처리
-            // @Schema(description = "프로필 이미지 URL", example = "https://example.com/coco-updated.jpg")
-            // private String profileImageUrl;
-
             // Pet 엔티티로 변환하는 메소드
             public Pet toEntity() {
                 Pet pet = new Pet();
@@ -139,8 +135,7 @@ public class PetDto {
 
                 // String 타입을 Enum 타입으로 변환
                 pet.setStatus(PetStatus.valueOf(this.status));  // Enum 변환
-                // profileImageUrl 설정 제거
-                // pet.setProfileImageUrl(this.profileImageUrl);
+
                 return pet;
             }
         }
