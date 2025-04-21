@@ -1,5 +1,7 @@
 package com.hot6.backend.pet;
 
+import com.hot6.backend.common.BaseResponseStatus;
+import com.hot6.backend.common.exception.BaseException;
 import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.pet.model.PetDto;
 import com.hot6.backend.pet.model.PetStatus;
@@ -100,6 +102,10 @@ public class PetService {
 
     public List<Pet> findByUser(User user) {
         return petRepository.findByUserIdx(user.getIdx());
+    }
+
+    public Pet findById(Long id) {
+        return petRepository.findById(id).orElseThrow(() -> new BaseException(BaseResponseStatus.PET_NOT_FOUND));
     }
 }
 
