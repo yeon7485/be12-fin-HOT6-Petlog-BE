@@ -3,6 +3,7 @@ package com.hot6.backend.schedule.model;
 import com.hot6.backend.chat.model.ChatRoom;
 import com.hot6.backend.category.model.Category;
 import com.hot6.backend.common.BaseEntity;
+import com.hot6.backend.notification.model.Notification;
 import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.pet.model.SharedSchedulePet;
 import com.hot6.backend.user.model.User;
@@ -54,4 +55,7 @@ public class Schedule extends BaseEntity {
 
     @OneToMany(mappedBy = "schedule")
     private List<SharedSchedulePet> sharedSchedules;
+
+    @OneToOne(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Notification notification;
 }
