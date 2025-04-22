@@ -11,6 +11,9 @@ import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.user.model.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -63,13 +66,13 @@ public class QuestionService {
         }
     }
 
-    public List<QuestionDto.QuestionResponse> list() {
-        return questionRepository.findAll().stream()
+    public Page<QuestionDto.QuestionResponse> list(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return questionRepository.findAll(pageable)
                 .map(q -> {
                     int answerCount = answerService.countByQuestionIdx(q.getIdx());
                     return QuestionDto.QuestionResponse.from(q, answerCount);
-                })
-                .toList();
+                });
     }
 
     public List<QuestionDto.QuestionResponse> search(String keyword) {
