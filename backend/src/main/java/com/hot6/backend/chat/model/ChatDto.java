@@ -1,5 +1,10 @@
 package com.hot6.backend.chat.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hot6.backend.category.model.Category;
 import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.schedule.model.Schedule;
@@ -130,7 +135,7 @@ public class ChatDto {
         public Long idx;
 
         @Schema(description = "채팅 메시지 내용", example = "안녕하세요~")
-        public String message;
+        private Object content;
 
         @Schema(description = "보낸 사용자 idx", example = "1")
         public Long senderIdx;
@@ -146,12 +151,30 @@ public class ChatDto {
 
 
         public static ChatElement from(Chat chat) {
+            ObjectMapper mapper = new ObjectMapper();
+            Object contentObj;
+            try {
+                switch (chat.getType()) {
+                    case TEXT -> {
+                        contentObj = chat.getMessage();
+                    }
+                    case PET -> {
+                        contentObj = mapper.readValue(chat.getMessage(), PetContent.class);
+                    }
+                    case SCHEDULE -> {
+                        contentObj = mapper.readValue(chat.getMessage(), ScheduleContent.class);
+                    }
+                    default -> throw new IllegalArgumentException("알 수 없는 타입: " + chat.getType());
+                }
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("메시지 역직렬화 실패", e);
+            }
             return ChatElement.builder()
                     .idx(chat.getIdx())
                     .senderIdx(chat.getChatRoomParticipant().getUser().getIdx())
                     .nickname(chat.getChatRoomParticipant().getUser().getNickname())
                     .createdAt(chat.getCreatedAt().toString())
-                    .message(chat.getMessage())
+                    .content(contentObj)
                     .type(chat.getType())
                     .build();
         }
@@ -190,9 +213,72 @@ public class ChatDto {
     @AllArgsConstructor
     public static class ChatMessageDto {
         private Long chatroomId;
-        private String type;        // "text", "image", "file" 등
-        private String text;        // 본문 내용 or Base64 or URL
+        private ChatContent content;        // 본문 내용 or Base64 or URL
         private String timestamp;   // ISO String (정렬용, 표시용)
+    }
+
+    @JsonTypeInfo(
+            use = JsonTypeInfo.Id.NAME,
+            include = JsonTypeInfo.As.PROPERTY, // content 내부에 타입 정보 포함,
+            property = "type",
+            visible = true
+    )
+    @JsonSubTypes({
+            @JsonSubTypes.Type(value = TextContent.class, name = "text"),
+            @JsonSubTypes.Type(value = PetContent.class, name = "pet"),
+            @JsonSubTypes.Type(value = ScheduleContent.class, name = "schedule")
+    })
+    public interface ChatContent {
+        // marker interface
+        String getType();
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    public static class TextContent implements ChatContent {
+        private String message;
+
+        @Override
+        public String getType() {
+            return "text";
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class PetContent implements ChatContent {
+        private Long idx;
+        private String name;
+        private String breed;
+        private String gender;
+        private Integer age;
+        private String image;
+
+        @Override
+        public String getType() {
+            return "pet";
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class ScheduleContent  implements ChatContent {
+        private String title;
+        private String datetime;
+        private String location;
+
+        @Override
+        public String getType() {
+            return "schedule";
+        }
     }
 
     @Getter

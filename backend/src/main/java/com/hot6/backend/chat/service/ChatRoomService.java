@@ -1,5 +1,7 @@
 package com.hot6.backend.chat.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hot6.backend.chat.model.*;
 import com.hot6.backend.chat.repository.ChatRoomRepository;
 import com.hot6.backend.common.BaseResponseStatus;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ChatRoomService {
+    private final ObjectMapper objectMapper;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomParticipantService chatRoomParticipantService;
     private final ChatRoomHashtagService chatRoomHashtagService;
@@ -94,10 +97,32 @@ public class ChatRoomService {
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
         ChatRoomParticipant chatRoomParticipant = chatRoomParticipantService.findChatRoomParticipantOrThrow(chatRoom.getIdx(), sender);
 
+        // 2. 메시지 내용 가공 (💥 이 로직이 여기 들어감!)
+        String messageContent;
+        try {
+            switch (chatMessageDto.getContent().getType()) {
+                case "text" -> {
+                    ChatDto.TextContent content = objectMapper.convertValue(chatMessageDto.getContent(), ChatDto.TextContent.class);
+                    messageContent = content.getMessage();
+                }
+                case "pet" -> {
+                    ChatDto.PetContent content = objectMapper.convertValue(chatMessageDto.getContent(), ChatDto.PetContent.class);
+                    messageContent = objectMapper.writeValueAsString(content); // 예외 발생 가능
+                }
+                case "schedule" -> {
+                    ChatDto.ScheduleContent content = objectMapper.convertValue(chatMessageDto.getContent(), ChatDto.ScheduleContent.class);
+                    messageContent = objectMapper.writeValueAsString(content); // 예외 발생 가능
+                }
+                default -> throw new IllegalArgumentException("알 수 없는 타입: " + chatMessageDto.getContent().getType());
+            }
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("메시지 직렬화 중 오류 발생", e); // 로그 찍거나 예외 래핑 가능
+        }
+
         Chat chat = Chat.builder()
                 .chatRoomParticipant(chatRoomParticipant)
-                .type(ChatMessageType.from(chatMessageDto.getType()))
-                .message(chatMessageDto.getText()) // 또는 dto.getMessage() 등
+                .type(ChatMessageType.from(chatMessageDto.getContent().getType()))
+                .message(messageContent) // 또는 dto.getMessage() 등
                 .build();
 
         return chatMessageService.saveChatMessage(chat);

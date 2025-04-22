@@ -4,6 +4,8 @@ import com.hot6.backend.user.model.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.util.List;
+
 public class PetDto {
     @Getter
     @Builder
@@ -178,5 +180,25 @@ public class PetDto {
                         .build();
             }
         }
+
+    @Getter
+    @Schema
+    @Builder
+    public static class UsersPet {
+        private Long idx;
+        private String petName;
+        private String breed;
+        private int age;
+        private String imageUrl;
+
+        public static UsersPet from(Pet pet) {
+            return UsersPet.builder()
+                    .idx(pet.getIdx())
+                    .petName(pet.getName())
+                    .breed(pet.getBreed())
+                    .imageUrl(pet.getProfileImageUrl())
+                    .build();
+        }
+    }
     }
 
