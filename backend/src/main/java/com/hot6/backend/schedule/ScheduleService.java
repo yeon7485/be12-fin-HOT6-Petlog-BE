@@ -85,7 +85,7 @@ public class ScheduleService {
         List<Pet> pets = petRepository.findByUserIdx(userIdx);
 
         for (Pet pet : pets) {
-            List<Schedule> schedules = scheduleRepository.findAllByPetAndStartAtBetween(pet, start, end);
+            List<Schedule> schedules = scheduleRepository.findAllByPetAndOverlappingDate(pet, start, end);
 
             for (Schedule schedule : schedules) {
                 Category category = categoryRepository.findById(schedule.getCategoryIdx())
@@ -124,7 +124,7 @@ public class ScheduleService {
         Pet pet = petRepository.findById(petIdx).orElseThrow(() ->
                 new BaseException(BaseResponseStatus.PET_NOT_FOUND));
 
-        List<Schedule> schedules = scheduleRepository.findAllByPetAndStartAtBetween(pet, start, end);
+        List<Schedule> schedules = scheduleRepository.findAllByPetAndOverlappingDate(pet, start, end);
 
         for (Schedule schedule : schedules) {
             Category category = categoryRepository.findById(schedule.getCategoryIdx())

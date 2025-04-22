@@ -34,6 +34,9 @@ public class ScheduleDto {
         @Schema(description = "일정 시작 날짜", example = "2025-04-10T10:00:00")
         private LocalDateTime startAt;
 
+        @Schema(description = "일정 끝나는 날짜", example = "2025-04-10T10:00:00")
+        private LocalDateTime endAt;
+
         @Schema(description = "카테고리 색상", example = "#00C9CD")
         private String color;
 
@@ -51,6 +54,7 @@ public class ScheduleDto {
                     .idx(schedule.getIdx())
                     .title(schedule.getSTitle())
                     .startAt(schedule.getStartAt())
+                    .endAt(schedule.getEndAt())
                     .color(category.getColor())
                     .categoryName(category.getName())
                     .fromChat(false)  // [TODO]: 채팅방 연동 확인 후 수정
