@@ -53,7 +53,7 @@ public class ScheduleController {
 
     @Operation(summary = "날짜별 일정 전체 조회", description = "특정 날짜의 반려동물 전체 일정을 조회합니다.")
     @GetMapping("/date/{year}/{month}/{day}")
-    public ResponseEntity<BaseResponse<List<ScheduleDto.SimpleSchedule>>> getRecordsByDate(
+    public ResponseEntity<BaseResponse<List<ScheduleDto.SimpleSchedule>>> getAllSchedulesByDate(
             @PathVariable Integer year,
             @PathVariable Integer month,
             @PathVariable Integer day,
@@ -63,6 +63,20 @@ public class ScheduleController {
 
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, list));
     }
+
+    @Operation(summary = "특정 반려동물의 날짜별 일정 조회", description = "특정 날짜의 특정 반려동물 일정을 조회합니다.")
+    @GetMapping("/pet/{petIdx}/date/{year}/{month}/{day}")
+    public ResponseEntity<BaseResponse<List<ScheduleDto.SimpleSchedule>>> getSchedulesByPetAndDate(
+            @PathVariable Long petIdx,
+            @PathVariable Integer year,
+            @PathVariable Integer month,
+            @PathVariable Integer day
+    ) {
+        List<ScheduleDto.SimpleSchedule> list = scheduleService.getSchedulesByPetAndDate(petIdx, year, month, day);
+
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, list));
+    }
+
 
 
     @Operation(summary = "일정 생성", description = "선택한 카테고리와 반려동물에 대해 일정을 생성합니다.")

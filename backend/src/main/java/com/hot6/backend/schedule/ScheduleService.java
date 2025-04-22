@@ -113,4 +113,26 @@ public class ScheduleService {
 
         return scheduleList;
     }
+
+    public List<ScheduleDto.SimpleSchedule> getSchedulesByPetAndDate(Long petIdx, Integer year, Integer month, Integer day) {
+        LocalDate date = LocalDate.of(year, month, day);
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.atTime(LocalTime.MAX); // 23:59:59.999...
+
+        List<ScheduleDto.SimpleSchedule> scheduleList = new ArrayList<>();
+
+        Pet pet = petRepository.findById(petIdx).orElseThrow(() ->
+                new BaseException(BaseResponseStatus.PET_NOT_FOUND));
+
+        List<Schedule> schedules = scheduleRepository.findAllByPetAndStartAtBetween(pet, start, end);
+
+        for (Schedule schedule : schedules) {
+            Category category = categoryRepository.findById(schedule.getCategoryIdx())
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
+            scheduleList.add(ScheduleDto.SimpleSchedule.from(schedule, category));
+
+        }
+
+        return scheduleList;
+    }
 }

@@ -53,6 +53,27 @@ public class DailyRecordService {
         }
         return recordList;
     }
+
+    public List<DailyRecordDto.SimpleDailyRecord> getRecordsByPetAndDate(Long petIdx, Integer year, Integer month, Integer day) {
+        LocalDate date = LocalDate.of(year, month, day);
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.atTime(LocalTime.MAX); // 23:59:59.999999999
+
+        List<DailyRecordDto.SimpleDailyRecord> recordList = new ArrayList<>();
+        Pet pet = petRepository.findById(petIdx).orElseThrow(() ->
+                new BaseException(BaseResponseStatus.PET_NOT_FOUND));
+
+        List<DailyRecord> records = dailyRecordRepository.findAllByPetAndDateBetween(pet, start, end);
+
+        for (DailyRecord record : records) {
+            System.out.println(record);
+            Category category = categoryRepository.findById(record.getCategoryIdx())
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
+            recordList.add(DailyRecordDto.SimpleDailyRecord.from(record, category));
+        }
+
+        return recordList;
+    }
 }
 
 
