@@ -1,8 +1,6 @@
 package com.hot6.backend.chat.service;
 
-import com.hot6.backend.chat.model.ChatDto;
-import com.hot6.backend.chat.model.ChatRoom;
-import com.hot6.backend.chat.model.ChatRoomParticipant;
+import com.hot6.backend.chat.model.*;
 import com.hot6.backend.chat.repository.ChatRoomParticipantRepository;
 import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.common.exception.BaseException;
@@ -13,13 +11,16 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ChatRoomParticipantService {
     private final ChatRoomParticipantRepository chatRoomParticipantRepository;
+    private final ChatMessageService chatMessageService;
 
     @Transactional
     public void save(User user, ChatRoom chatRoom) {
@@ -55,5 +56,27 @@ public class ChatRoomParticipantService {
         chatRoomParticipantRepository.delete(chatRoomParticipant);
 
         System.out.println("🔍 after delete");
+    }
+
+    @Transactional
+    public void join(User user, ChatRoom chatRoom) {
+        Optional<Chat> latestChat  = chatMessageService.findLatestChatByChatRoom(chatRoom);
+        Long messageIdx = latestChat.map(Chat::getIdx).orElse(null);
+        chatRoomParticipantRepository.save(ChatRoomParticipant.builder()
+                .user(user)
+                .chatRoom(chatRoom)
+                .metaData(ChatRoomUserMetaData.builder()
+                        .firstJoinMessageId(messageIdx)
+                        .lastSeenMessageId(messageIdx)
+                        .joinedAt(LocalDateTime.now())
+                        .isMuted(false)
+                        .notificationsEnabled(true)
+                        .build())
+                        .isAdmin(false)
+                .build());
+    }
+
+    public int countByChatRoom(ChatRoom chatRoom) {
+        return chatRoomParticipantRepository.countByChatRoom(chatRoom);
     }
 }

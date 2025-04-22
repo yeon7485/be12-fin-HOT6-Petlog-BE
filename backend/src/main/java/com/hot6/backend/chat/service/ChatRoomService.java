@@ -3,6 +3,7 @@ package com.hot6.backend.chat.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hot6.backend.chat.model.*;
+import com.hot6.backend.chat.repository.ChatRoomParticipantRepository;
 import com.hot6.backend.chat.repository.ChatRoomRepository;
 import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.common.exception.BaseException;
@@ -23,8 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -132,6 +131,7 @@ public class ChatRoomService {
         return scheduleService.getALLScheduleByChatRoom(chatRoomIdx);
     }
 
+    @Transactional
     public void createChatRoomSchedule(ChatDto.CreateChatRoomScheduleRequest dto, Long chatRoomIdx, User user) {
         ChatRoom chatRoom = chatRoomRepository.findByIdx(chatRoomIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
         scheduleService.createChatRoomSchedule(dto, chatRoom, user);
@@ -154,10 +154,22 @@ public class ChatRoomService {
         return ChatDto.ChatRoomScheduleDetailResponse.from(schedule,usersInChatRoomsSchedule,isParticipating,usersPet);
     }
 
+    @Transactional
     public void participateChatRoomSchedule(Long chatRoomIdx, Long scheduleIdx, User user, ChatDto.ParticipateChatRoomSchedule dto) {
         ChatRoom chatRoom = chatRoomRepository.findByIdx(chatRoomIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
         Schedule schedule = scheduleService.getSchedule(scheduleIdx);
 
         sharedSchedulePetService.saveAll(dto.getAnimalIds(), schedule);
     }
+
+    @Transactional
+    public void join(User user, Long roomIdx) {
+        ChatRoom chatRoom = chatRoomRepository.findByIdx(roomIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
+        int curParticipants = chatRoomParticipantService.countByChatRoom(chatRoom);
+        if(chatRoom.getMaxParticipants() == curParticipants) {
+            throw new BaseException(BaseResponseStatus.MAX_PARTICIPANT_LIMIT);
+        }
+        chatRoomParticipantService.join(user, chatRoom);
+    }
+
 }
