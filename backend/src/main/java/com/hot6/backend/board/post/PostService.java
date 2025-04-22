@@ -11,6 +11,9 @@ import com.hot6.backend.pet.PetRepository;
 import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -62,16 +65,18 @@ public class PostService {
             petRepository.saveAll(pets);
         }
 
-        // 이미지 저장
         if (images != null && !images.isEmpty()) {
             postImageService.saveImages(images, post);
         }
     }
 
-    public List<PostDto.PostResponse> list(String boardName) {
+    public Page<PostDto.PostResponse> list(String boardName, int page, int size) {
         BoardType boardType = boardTypeRepository.findByBoardName(boardName)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "게시판 종류 없음"));
-        return postRepository.findByBoardType(boardType).stream().map(PostDto.PostResponse::from).toList();
+
+        Pageable pageable = PageRequest.of(page, size);
+        return postRepository.findByBoardType(boardType, pageable)
+                .map(PostDto.PostResponse::from);
     }
 
     public PostDto.PostResponse read(Long idx) {
@@ -127,7 +132,6 @@ public class PostService {
         post.setCategory(category);
         postRepository.save(post);
 
-        // 기존 펫 제거 후 새로 설정
         List<Pet> oldPets = petRepository.findAllByPost(post);
         for (Pet pet : oldPets) {
             pet.setPost(null);
