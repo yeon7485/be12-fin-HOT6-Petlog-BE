@@ -2,11 +2,13 @@ package com.hot6.backend.pet;
 
 import com.hot6.backend.pet.model.PetDto;
 import com.hot6.backend.schedule.model.ScheduleDto;
+import com.hot6.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,9 +28,9 @@ public class PetController {
 
     // 반려동물 목록 조회 (해당 사용자 ID 기준)
     @Operation(summary = "사용자의 반려동물 카드 목록 조회", description = "사용자가 등록한 반려동물 카드 목록을 조회합니다.")
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<PetDto.PetCard>> getPetList(@PathVariable Long userId) {
-        List<PetDto.PetCard> pets = petService.getPetCardsByUserId(userId);
+    @GetMapping("/user")
+    public ResponseEntity<List<PetDto.PetCard>> getPetList(@AuthenticationPrincipal User user) {
+        List<PetDto.PetCard> pets = petService.getPetCardsByUserId(user.getIdx());
         return ResponseEntity.ok(pets);
     }
 
