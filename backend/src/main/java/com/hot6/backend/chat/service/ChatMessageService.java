@@ -2,6 +2,7 @@ package com.hot6.backend.chat.service;
 
 import com.hot6.backend.chat.model.Chat;
 import com.hot6.backend.chat.model.ChatDto;
+import com.hot6.backend.chat.model.ChatRoom;
 import com.hot6.backend.chat.model.ChatRoomParticipant;
 import com.hot6.backend.chat.repository.ChatMessageRepository;
 import com.hot6.backend.common.BaseResponseStatus;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +20,6 @@ public class ChatMessageService {
 
     public List<ChatDto.ChatElement> findChatMessages(ChatRoomParticipant chatRoomParticipant) {
         Long roomId = chatRoomParticipant.getChatRoom().getIdx();
-        Long userId = chatRoomParticipant.getUser().getIdx();
         Long firstJoinMessageId = chatRoomParticipant.getMetaData().getFirstJoinMessageId();
 
         // 💡 첫 참여 메시지 ID가 null일 경우 예외 처리
@@ -37,5 +38,9 @@ public class ChatMessageService {
 
     public ChatDto.ChatElement saveChatMessage(Chat chat) {
         return ChatDto.ChatElement.from(chatMessageRepository.save(chat));
+    }
+
+    public Optional<Chat> findLatestChatByChatRoom(ChatRoom chatRoom) {
+        return chatMessageRepository.findTopByChatRoomParticipant_ChatRoomOrderByIdxDesc(chatRoom);
     }
 }

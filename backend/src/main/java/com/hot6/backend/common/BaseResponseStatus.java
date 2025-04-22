@@ -34,6 +34,7 @@ public enum BaseResponseStatus {
     CHAT_ROOM_ALREADY_PARTICIPATED(false, 2003, "이미 참여 중인 채팅방입니다."),
     CHAT_ROOM_JOIN_FAILED(false, 2004, "채팅방 참여에 실패했습니다."),
     CHAT_ROOM_LEAVE_FAILED(false, 2005, "채팅방 나가기에 실패했습니다."),
+    MAX_PARTICIPANT_LIMIT(false,2006,"채팅방 참여 인원이 모두 찼습니다."),
 
     //-- 2100 : 채팅방 생성/수정 관련
     CHAT_ROOM_CREATION_FAILED(false, 2100, "채팅방 생성에 실패했습니다."),
