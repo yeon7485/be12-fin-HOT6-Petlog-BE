@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -134,5 +135,15 @@ public class ScheduleService {
         }
 
         return scheduleList;
+    }
+
+    public ScheduleDto.ScheduleDetail getScheduleDetail(Long scheduleIdx) {
+        Schedule schedule = scheduleRepository.findById(scheduleIdx).orElseThrow(
+                () -> new BaseException(BaseResponseStatus.SCHEDULE_NOT_FOUND));
+
+        Category category = categoryRepository.findById(schedule.getCategoryIdx())
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
+        return ScheduleDto.ScheduleDetail.from(schedule, category);
+
     }
 }

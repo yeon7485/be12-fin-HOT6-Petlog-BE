@@ -70,17 +70,51 @@ public class ScheduleDto {
         private Long idx;
         @Schema(description = "일정 제목", example = "예방접종")
         private String title;
-        @Schema(description = "일정 내용", example = "병원에서 강아지 예방접종 받기")
-        private String content;
-        @Schema(description = "시간 (HH:mm 형식)", example = "10:30")
-        private String time; // HH:mm
-        @Schema(description = "일정 완료 여부", example = "false")
-        private boolean isCompleted;
-        @Schema(description = "일정 반복 여부", example = "true")
-        private boolean isRepeat;
+        @Schema(description = "일정 메모", example = "병원에서 강아지 예방접종 받기")
+        private String memo;
 
-        @Schema(description = "반복 주기", example = "weekly")
+        @Schema(description = "반복 여부", example = "true")
+        private boolean recurring;
+        @Schema(description = "반복 주기", example = "주")
         private String repeatCycle;
+        @Schema(description = "반복 수", example = "1")
+        private int repeatCount;
+        @Schema(description = "반복 종료 날짜", example = "2025-04-24")
+        private LocalDate repeatEndAt;
+
+        @Schema(description = "장소", example = "병원")
+        private String placeId;
+
+        @Schema(description = "일정 시작 시간", example = "2025-04-10T10:00:00")
+        private LocalDateTime startAt;
+        @Schema(description = "일정 종료 시간", example = "2025-04-10T11:00:00")
+        private LocalDateTime endAt;
+
+        @Schema(description = "카테고리 색상", example = "#00C9CD")
+        private String color;
+        @Schema(description = "카테고리 이름", example = "병원")
+        private String categoryName;
+
+        @Schema(description = "펫 이름", example = "콩이")
+        private String petName;
+
+        public static ScheduleDetail from(Schedule schedule, Category category) {
+            return ScheduleDetail.builder()
+                    .idx(schedule.getIdx())
+                    .title(schedule.getSTitle())
+                    .memo(schedule.getSMemo())
+                    .recurring(schedule.isRecurring())
+                    .repeatCount(schedule.getRepeatCount())
+                    .repeatCycle(schedule.getRepeatCycle())
+                    .repeatEndAt(schedule.getRepeatEndAt())
+                    .placeId(schedule.getPlaceId())
+                    .startAt(schedule.getStartAt())
+                    .endAt(schedule.getEndAt())
+                    .color(category.getColor())
+                    .categoryName(category.getName())
+                    .petName(schedule.getPet().getName())
+                    .build();
+        }
     }
 
     @Getter
