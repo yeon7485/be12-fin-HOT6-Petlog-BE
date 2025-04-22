@@ -1,12 +1,16 @@
 package com.hot6.backend.pet;
 
+import com.hot6.backend.common.BaseResponse;
+import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.pet.model.PetDto;
 import com.hot6.backend.schedule.model.ScheduleDto;
+import com.hot6.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
@@ -102,6 +107,13 @@ public class PetController {
                         .build())).build();
 
         return ResponseEntity.ok(monthlySchedule);
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<BaseResponse<List<PetDto.UsersPet>>> getUsersPet(
+            @AuthenticationPrincipal User user
+    ){
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS,petService.findByUser(user).stream().map(PetDto.UsersPet::from).collect(Collectors.toList())));
     }
 
 }
