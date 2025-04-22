@@ -10,7 +10,6 @@ import com.hot6.backend.user.model.User;
 import com.hot6.backend.user.model.UserType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -73,11 +72,15 @@ public class AnswerService {
 
     @Transactional
     public void deleteByQuestionIdx(Long questionIdx) {
-        answerRepository.deleteByQuestionIdx(questionIdx);
+        List<Answer> answers = answerRepository.findByQuestion_Idx(questionIdx);
+        for (Answer answer : answers) {
+            answerImageService.deleteImagesByAnswer(answer.getIdx());
+            answerRepository.delete(answer);
+        }
     }
 
     @Transactional
-    public void update(Long idx, AnswerDto.AnswerRequest dto, List<MultipartFile> images) {
+    public void update(Long idx, User currentUser, AnswerDto.AnswerRequest dto, List<MultipartFile> images) throws IOException {
         Answer answer = answerRepository.findById(idx)
                 .orElseThrow(() -> new RuntimeException("답변이 존재하지 않습니다"));
 
@@ -89,8 +92,17 @@ public class AnswerService {
             throw new IllegalStateException("AI가 작성한 답변은 수정할 수 없습니다.");
         }
 
+        List<String> originalUrls = dto.getOriginalImageUrls() != null ? dto.getOriginalImageUrls() : List.of();
+
+        answerImageService.deleteImagesExcept(answer, originalUrls);
+
+        if (images != null && !images.isEmpty()) {
+            answerImageService.saveImages(images, answer);
+        }
+
         answer.setContent(dto.getContent());
         answerRepository.save(answer);
+
     }
 
     public AnswerDto.AnswerResponse read(Long id) {
@@ -100,9 +112,13 @@ public class AnswerService {
     }
 
     @Transactional
-    public void delete(Long idx) {
+    public void delete(Long idx, User user) {
         Answer answer = answerRepository.findById(idx)
                 .orElseThrow(() -> new RuntimeException("답변이 존재하지 않습니다."));
+
+        if (!answer.getUser().getIdx().equals(user.getIdx())) {
+            throw new IllegalArgumentException("작성자만 삭제할 수 있습니다.");
+        }
 
         if (answer.isSelected()) {
             throw new IllegalStateException("채택된 답변은 삭제할 수 없습니다.");

@@ -101,6 +101,10 @@ public class PostService {
         Post post = postRepository.findById(idx)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "게시글 없음"));
 
+        List<Pet> relatedPets = petRepository.findAllByPost(post);
+        relatedPets.forEach(pet -> pet.setPost(null));
+        petRepository.saveAll(relatedPets);
+
         postImageService.deleteImagesByPost(idx);
         commentService.deleteByPostIdx(idx);
         postRepository.delete(post);
@@ -138,12 +142,10 @@ public class PostService {
             petRepository.saveAll(newPets);
         }
 
-        // ✅ 삭제 요청된 이미지만 제거
         if (dto.getRemovedImageUrls() != null && !dto.getRemovedImageUrls().isEmpty()) {
             postImageService.deleteImagesByUrls(dto.getRemovedImageUrls());
         }
 
-        // ✅ 새 이미지 추가
         if (images != null && !images.isEmpty()) {
             postImageService.saveImages(images, post);
         }

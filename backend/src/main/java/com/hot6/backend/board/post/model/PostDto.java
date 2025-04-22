@@ -22,7 +22,7 @@ public class PostDto {
         private String content;
         private String image;
         private Long categoryIdx;
-        private String boardType; // board name으로 받음
+        private String boardType;
         private List<Long> petIdxList;
         private List<String> removedImageUrls;
     }
