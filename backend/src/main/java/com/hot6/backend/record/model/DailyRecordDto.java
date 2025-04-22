@@ -58,6 +58,7 @@ public class DailyRecordDto {
                     .rMemo(memo)
                     .date(date)
                     .imageUrl(imageUrl)
+                    .categoryIdx(categoryIdx)
                     .pet(pet)
                     .build();
         }

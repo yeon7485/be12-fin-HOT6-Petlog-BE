@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -33,7 +32,7 @@ public class ScheduleService {
 
     public void createSchedule(Long petIdx, ScheduleDto.ScheduleCreateRequest dto) {
         Category category = categoryRepository.findById(dto.getCategoryIdx())
-                .orElseThrow(() ->  new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
 
         Pet pet = petRepository.findById(petIdx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.PET_NOT_FOUND));
@@ -68,7 +67,7 @@ public class ScheduleService {
 
     public void createChatRoomSchedule(ChatDto.CreateChatRoomScheduleRequest dto, ChatRoom chatRoom, User user) {
         Category category = categoryRepository.findById(dto.getCategoryIdx())
-                .orElseThrow(() ->  new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
         scheduleRepository.save(dto.toEntity(chatRoom, category));
     }
 

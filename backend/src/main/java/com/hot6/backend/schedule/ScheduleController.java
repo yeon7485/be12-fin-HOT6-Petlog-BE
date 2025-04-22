@@ -2,7 +2,6 @@ package com.hot6.backend.schedule;
 
 import com.hot6.backend.common.BaseResponse;
 import com.hot6.backend.common.BaseResponseStatus;
-import com.hot6.backend.record.model.DailyRecordDto;
 import com.hot6.backend.schedule.model.ScheduleDto;
 import com.hot6.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -61,7 +59,7 @@ public class ScheduleController {
             @PathVariable Integer day,
             @AuthenticationPrincipal User user
     ) {
-        List<ScheduleDto.SimpleSchedule> list =  scheduleService.getSchedulesByDate(user.getIdx(), year, month, day);
+        List<ScheduleDto.SimpleSchedule> list = scheduleService.getSchedulesByDate(user.getIdx(), year, month, day);
 
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, list));
     }
@@ -71,8 +69,8 @@ public class ScheduleController {
     //category idx 는 url 로 전달하기 보다는 화면에 있는 컴포넌트를 통해서
     @PostMapping("/pet/{petIdx}")
     public ResponseEntity<BaseResponse<String>> createSchedule(@RequestBody ScheduleDto.ScheduleCreateRequest request,
-                                                       @PathVariable Long petIdx
-                                                       ) {
+                                                               @PathVariable Long petIdx
+    ) {
         scheduleService.createSchedule(petIdx, request);
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS));
     }

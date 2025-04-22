@@ -22,9 +22,9 @@ public class DailyRecordController {
 
     @Operation(summary = "일일 기록 생성", description = "하루의 특정 반려 동물의 기록을 작성합니다.")
     @PostMapping("/pet/{petIdx}")
-    public ResponseEntity<BaseResponse<String>> createDailyRecord(@RequestBody DailyRecordDto.RecordCreateRequest request,
-                                                    @PathVariable Long petIdx) {
-
+    public ResponseEntity<BaseResponse<String>> createDailyRecord(
+            @RequestBody DailyRecordDto.RecordCreateRequest request,
+            @PathVariable Long petIdx) {
 
         dailyRecordService.createDailyRecord(petIdx, request);
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS));
@@ -35,9 +35,10 @@ public class DailyRecordController {
     public ResponseEntity<BaseResponse<List<DailyRecordDto.SimpleDailyRecord>>> getRecordsByDate(
             @PathVariable Integer year,
             @PathVariable Integer month,
-            @PathVariable Integer day
+            @PathVariable Integer day,
+            @AuthenticationPrincipal User user
     ) {
-        List<DailyRecordDto.SimpleDailyRecord> list =  dailyRecordService.getRecordsByDate(year, month, day);
+        List<DailyRecordDto.SimpleDailyRecord> list = dailyRecordService.getRecordsByDate(user.getIdx(), year, month, day);
 
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, list));
     }

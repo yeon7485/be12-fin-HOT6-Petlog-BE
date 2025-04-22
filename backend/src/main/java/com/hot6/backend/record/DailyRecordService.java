@@ -5,11 +5,9 @@ import com.hot6.backend.category.model.CategoryRepository;
 import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.common.exception.BaseException;
 import com.hot6.backend.pet.PetRepository;
-import com.hot6.backend.pet.PetService;
 import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.record.model.DailyRecord;
 import com.hot6.backend.record.model.DailyRecordDto;
-import com.hot6.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -34,29 +32,27 @@ public class DailyRecordService {
         dailyRecordRepository.save(dto.toEntity(pet));
     }
 
-    public List<DailyRecordDto.SimpleDailyRecord> getRecordsByDate(Integer year, Integer month, Integer day) {
-        //Pet pet = petRepository.findById(petIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.PET_NOT_FOUND));
+    public List<DailyRecordDto.SimpleDailyRecord> getRecordsByDate(Long userIdx, Integer year, Integer month, Integer day) {
 
         LocalDate date = LocalDate.of(year, month, day);
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.atTime(LocalTime.MAX); // 23:59:59.999999999
 
-        List<DailyRecord> records = dailyRecordRepository.findAllByDateBetween(start, end);
-
         List<DailyRecordDto.SimpleDailyRecord> recordList = new ArrayList<>();
+        List<Pet> pets = petRepository.findByUserIdx(userIdx);
 
-        for(DailyRecord record : records) {
-            Category category = Category.builder()
-                    .name("체중")
-                    .color("#00C9CD")
-                    .idx(record.getCategoryIdx())
-                    .build();
+        for (Pet pet : pets) {
+            List<DailyRecord> records = dailyRecordRepository.findAllByPetAndDateBetween(pet, start, end);
 
-            recordList.add(DailyRecordDto.SimpleDailyRecord.from(record, category));
-
+            for (DailyRecord record : records) {
+                System.out.println(record);
+                Category category = categoryRepository.findById(record.getCategoryIdx())
+                        .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
+                recordList.add(DailyRecordDto.SimpleDailyRecord.from(record, category));
+            }
         }
         return recordList;
     }
-    }
+}
 
 
