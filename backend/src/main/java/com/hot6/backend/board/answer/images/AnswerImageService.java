@@ -50,4 +50,14 @@ public class AnswerImageService {
         }
         return url.substring(index + ".amazonaws.com/".length());
     }
+
+    public void deleteImagesExcept(Answer answer, List<String> keepUrls) {
+        List<AnswerImage> all = answerImageRepository.findByAnswer(answer);
+        for (AnswerImage image : all) {
+            if (!keepUrls.contains(image.getUrl().trim())) {
+                s3Service.delete(image.getUrl());
+                answerImageRepository.delete(image);
+            }
+        }
+    }
 }

@@ -16,6 +16,7 @@ public class AnswerDto {
     public static class AnswerRequest {
         private Long questionIdx;
         private String content;
+        private List<String> originalImageUrls;
     }
 
     @Getter

@@ -56,20 +56,15 @@ public class InitDB {
         private EntityManager em;
 
         public void init() {
-            List<User> users = createUsers(10);
-            Map<User, List<Pet>> pets = createPets(users);
-            List<ChatRoom> chatRooms = createChatRooms(10);
-            createHashtags(chatRooms, 30);
-            List<ChatRoomParticipant> participants = createChatRoomParticipants(users, chatRooms);
-            createSchedules(chatRooms, participants, pets);
-            createChatMessages(chatRooms, participants);
+            List<User> users = createUsers(0
+            );
         }
 
         private List<User> createUsers(int count) {
             List<User> users = new ArrayList<>();
             for (int i = 1; i <= count; i++) {
                 users.add(User.builder()
-                        .email("user" + i + "@test.com")
+                        .email("test0" + i + "@test.com")
                         .password("$2a$10$.QJ.leSKCQXX9Tn8pCipIOy8F.XhB8o0Gl1AFIRBN10L0LCFiJSB2") // bcrypt
                         .nickname("User" + i)
                         .userProfileImage("https://example.com/img" + i + ".png")
