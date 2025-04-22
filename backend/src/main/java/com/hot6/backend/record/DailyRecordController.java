@@ -57,23 +57,13 @@ public class DailyRecordController {
     }
 
 
-    @Operation(summary = "기록 상세 조회", description = "하루의 기록을 카테고리별로 조회합니다.")
-    @GetMapping("/pet/{petIdx}/record/{recordIdx}")
-    public ResponseEntity<List<DailyRecordDto.RecordDetail>> getRecordByDate(
-            @PathVariable Long petIdx,
-            @PathVariable Long recordIdx,
-            @RequestParam String date // yyyy-MM-dd
+    @Operation(summary = "기록 상세 조회", description = "특정 기록의 상세 정보를 조회합니다.")
+    @GetMapping("/{recordIdx}")
+    public ResponseEntity<BaseResponse<DailyRecordDto.RecordDetail>> getRecordDetail(
+            @PathVariable Long recordIdx
     ) {
-        List<DailyRecordDto.RecordDetail> records = List.of(
-                DailyRecordDto.RecordDetail.builder()
-                        .recordId(1L)
-                        .title("체중 측정")
-                        .memo("4.3kg")
-                        .category("체중")
-                        .date(date)
-                        .build()
-        );
-        return ResponseEntity.ok(records);
+        DailyRecordDto.RecordDetail record = dailyRecordService.getRecordDetail(recordIdx);
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, record));
     }
 
     @Operation(summary = "기록 수정", description = "기존의 기록을 수정합니다.")

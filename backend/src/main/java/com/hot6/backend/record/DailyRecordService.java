@@ -74,6 +74,16 @@ public class DailyRecordService {
 
         return recordList;
     }
+
+    public DailyRecordDto.RecordDetail getRecordDetail(Long recordIdx) {
+        DailyRecord record = dailyRecordRepository.findById(recordIdx).orElseThrow(
+                () -> new BaseException(BaseResponseStatus.DAILY_RECORD_NOT_FOUND));
+
+        Category category = categoryRepository.findById(record.getCategoryIdx())
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
+
+        return DailyRecordDto.RecordDetail.from(record, category);
+    }
 }
 
 

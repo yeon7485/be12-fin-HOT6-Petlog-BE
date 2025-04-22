@@ -19,7 +19,7 @@ public class DailyRecordDto {
     @Schema(description = "기록 상세 응답 DTO")
     public static class RecordDetail {
         @Schema(description = "기록 ID", example = "1")
-        private Long recordId;
+        private Long idx;
 
         @Schema(description = "기록 제목", example = "체중")
         private String title;
@@ -27,11 +27,33 @@ public class DailyRecordDto {
         @Schema(description = "기록 메모", example = "4.2kg")
         private String memo;
 
-        @Schema(description = "기록 카테고리", example = "체중")
-        private String category;
+        @Schema(description = "기록 카테고리 색상", example = "#000000")
+        private String color;
 
-        @Schema(description = "기록 날짜", example = "2025-04-07")
-        private String date;
+        @Schema(description = "기록 카테고리 이름", example = "체중")
+        private String categoryName;
+
+        @Schema(description = "기록 날짜", example = "2025-04-10T11:00:00")
+        private LocalDateTime date;
+
+        @Schema(description = "펫 이름", example = "빙봉")
+        private String petName;
+
+        @Schema(description = "이미지 URL", example = "testImg.png")
+        private String imageUrl;
+
+        public static RecordDetail from(DailyRecord record, Category category) {
+            return RecordDetail.builder()
+                    .idx(record.getIdx())
+                    .title(record.getRTitle())
+                    .memo(record.getRMemo())
+                    .date(record.getDate())
+                    .color(category.getColor())
+                    .categoryName(category.getName())
+                    .petName(record.getPet().getName())
+                    .imageUrl(record.getImageUrl())
+                    .build();
+        }
     }
 
     @Getter
@@ -46,7 +68,7 @@ public class DailyRecordDto {
         @Schema(description = "카테고리", example = "walk", allowableValues = {"walk", "hospital", "medication", "etc"})
         private Long categoryIdx;
 
-        @Schema(description = "기록 날짜 (yyyy-MM-dd 형식)", example = "2025-04-02")
+        @Schema(description = "기록 날짜 (yyyy-MM-dd 형식)", example = "2025-04-10T11:00:00")
         private LocalDateTime date;
 
         @Schema(description = "이미지 URL", example = "testImg.png")
@@ -80,7 +102,7 @@ public class DailyRecordDto {
         @Schema(description = "오늘의 사진 이미지 URL", example = "image.png")
         private String imageUrl;
 
-        @Schema(description = "기록 날짜 (yyyy-MM-dd 형식)", example = "2025-04-02")
+        @Schema(description = "기록 날짜", example = "2025-04-10T11:00:00")
         private LocalDateTime date;
 
         @Schema(description = "카테고리 색상", example = "#000000")
