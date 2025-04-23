@@ -15,8 +15,8 @@ import java.util.List;
 @Service
 public class NotificationService {
 
-    private static NotificationRepository notificationRepository;
-    private static ScheduleRepository scheduleRepository;
+    private final NotificationRepository notificationRepository;
+    private final ScheduleRepository scheduleRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
     public void createNotification(NotificationDto.NotificationSendRequest request) {
