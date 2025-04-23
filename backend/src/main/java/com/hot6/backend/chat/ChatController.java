@@ -73,7 +73,7 @@ public class ChatController {
     @GetMapping("/chatrooms/me")
     public ResponseEntity<BaseResponse<Slice<ChatDto.MyChatRoomListDto>>> getUserChatRooms(
             @AuthenticationPrincipal User user,
-            @PageableDefault(size = 10) Pageable pageable) {
+            @PageableDefault(size = 100) Pageable pageable) {
 //        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, chatRoomService.getChatRoomByUserIdx(user.getIdx())));
         return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, chatRoomService.findMyChatRooms(user.getIdx(),pageable)));
     }
@@ -83,6 +83,9 @@ public class ChatController {
     public ResponseEntity<List<ChatDto.ChatRoomListDto>> searchChat(
             @RequestParam(required = false) String query,
             @RequestParam(required = false) List<String> hashtags) {
+        //query or hashtags 구분
+        //hashtags 일 경우, 이 리스트를 조건 or 로 걸어서 채팅방 목록 가져오기
+        //chat_room_participant >- chatroom -< chatroomhashtag
 
         List<ChatDto.ChatRoomListDto> list = List.of(
 

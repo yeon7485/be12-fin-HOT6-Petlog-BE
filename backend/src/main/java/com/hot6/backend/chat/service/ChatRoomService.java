@@ -65,7 +65,6 @@ public class ChatRoomService {
         chatRoomParticipantService.save(findUser, chatRoom);
     }
 
-    @Transactional(readOnly = true)
     public Slice<ChatDto.MyChatRoomListDto> findMyChatRooms(Long userId, Pageable pageable) {
         List<Long> roomIds = chatRoomParticipantService.findChatRoomIdsByUserId(userId);
         if (roomIds.isEmpty()) {
