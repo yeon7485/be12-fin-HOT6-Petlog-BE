@@ -10,8 +10,8 @@ import java.util.List;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    List<Question> findByqTitleContainingIgnoreCaseOrUserNicknameContainingIgnoreCaseOrContentContainingIgnoreCaseOrHashtagsListTagContainingIgnoreCase(
-            String title, String nickname, String content, String tag
+    Page<Question> findByqTitleContainingIgnoreCaseOrUserNicknameContainingIgnoreCaseOrContentContainingIgnoreCaseOrHashtagsListTagContainingIgnoreCase(
+            String title, String nickname, String content, String tag, Pageable pageable
     );
 
     List<Question> findByUser_IdxOrderByCreatedAtDesc(Long userIdx);

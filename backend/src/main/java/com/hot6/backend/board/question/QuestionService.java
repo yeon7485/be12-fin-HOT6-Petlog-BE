@@ -75,16 +75,16 @@ public class QuestionService {
                 });
     }
 
-    public List<QuestionDto.QuestionResponse> search(String keyword) {
-        List<Question> result = questionRepository
+    public Page<QuestionDto.QuestionResponse> search(String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Question> resultPage = questionRepository
                 .findByqTitleContainingIgnoreCaseOrUserNicknameContainingIgnoreCaseOrContentContainingIgnoreCaseOrHashtagsListTagContainingIgnoreCase(
-                        keyword, keyword, keyword, keyword);
-        return result.stream()
-                .map(q -> {
-                    int answerCount = answerService.countByQuestionIdx(q.getIdx());
-                    return QuestionDto.QuestionResponse.from(q, answerCount);
-                })
-                .toList();
+                        keyword, keyword, keyword, keyword, pageable);
+
+        return resultPage.map(q -> {
+            int answerCount = answerService.countByQuestionIdx(q.getIdx());
+            return QuestionDto.QuestionResponse.from(q, answerCount);
+        });
     }
 
     public QuestionDto.QuestionResponse read(Long idx) {

@@ -23,4 +23,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByUserIdxAndIsDeletedFalseOrderByCreatedAtDesc(Long userIdx);
 
     Page<Post> findByBoardType(BoardType boardType, Pageable pageable);
+
+    Page<Post> findByBoardTypeAndCategoryNameAndTitleContainingIgnoreCase(BoardType boardType, String categoryName, String keyword, Pageable pageable);
+
+    Page<Post> findByBoardTypeAndCategoryNameAndUser_NicknameContainingIgnoreCase(BoardType boardType, String categoryName, String keyword, Pageable pageable);
+
+    Page<Post> findByBoardTypeAndCategoryName(BoardType boardType, String categoryName, Pageable pageable);
 }

@@ -85,22 +85,26 @@ public class PostService {
         return PostDto.PostResponse.from(post);
     }
 
-    public List<PostDto.PostResponse> search(String boardName, String categoryName, String keyword) {
+    public Page<PostDto.PostResponse> search(String boardName, String categoryName, String keyword, int page, int size) {
         BoardType boardType = boardTypeRepository.findByBoardName(boardName)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "게시판 종류 없음"));
 
-        List<Post> results;
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Post> results;
 
         if (keyword != null && !keyword.isBlank()) {
-            List<Post> byTitle = postRepository.findByBoardTypeAndCategoryNameAndTitleContainingIgnoreCase(boardType, categoryName, keyword);
-            List<Post> byWriter = postRepository.findByBoardTypeAndCategoryNameAndUser_NicknameContainingIgnoreCase(boardType, categoryName, keyword);
-            results = Stream.concat(byTitle.stream(), byWriter.stream()).distinct().toList();
+            Page<Post> byTitle = postRepository.findByBoardTypeAndCategoryNameAndTitleContainingIgnoreCase(boardType, categoryName, keyword, pageable);
+            Page<Post> byWriter = postRepository.findByBoardTypeAndCategoryNameAndUser_NicknameContainingIgnoreCase(boardType, categoryName, keyword, pageable);
+
+            results = byTitle;
         } else {
-            results = postRepository.findByBoardTypeAndCategoryName(boardType, categoryName);
+            results = postRepository.findByBoardTypeAndCategoryName(boardType, categoryName, pageable);
         }
 
-        return results.stream().map(PostDto.PostResponse::from).toList();
+        return results.map(PostDto.PostResponse::from);
     }
+
 
     public void delete(Long idx) {
         Post post = postRepository.findById(idx)
