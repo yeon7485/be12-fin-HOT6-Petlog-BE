@@ -31,9 +31,9 @@ public class PetController {
 
     // 반려동물 목록 조회 (해당 사용자 ID 기준)
     @Operation(summary = "사용자의 반려동물 카드 목록 조회", description = "사용자가 등록한 반려동물 카드 목록을 조회합니다.")
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<PetDto.PetCard>> getPetList(@PathVariable Long userId) {
-        List<PetDto.PetCard> pets = petService.getPetCardsByUserId(userId);
+    @GetMapping("/user")
+    public ResponseEntity<List<PetDto.PetCard>> getPetList(@AuthenticationPrincipal User user) {
+        List<PetDto.PetCard> pets = petService.getPetCardsByUserId(user.getIdx());
         return ResponseEntity.ok(pets);
     }
 

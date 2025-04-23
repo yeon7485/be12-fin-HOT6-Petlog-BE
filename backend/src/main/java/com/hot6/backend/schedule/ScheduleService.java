@@ -14,6 +14,9 @@ import com.hot6.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,27 +31,31 @@ public class ScheduleService {
     private final CategoryRepository categoryRepository;
     private final PetRepository petRepository;
 
-    public void createSchedule(User user, Long petIdx, ScheduleDto.ScheduleCreateRequest dto) {
+    public void createSchedule(Long petIdx, ScheduleDto.ScheduleCreateRequest dto) {
         Category category = categoryRepository.findById(dto.getCategoryIdx())
-                .orElseThrow(() -> new IllegalArgumentException("카테고리가 존재하지 않습니다."));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
 
         Pet pet = petRepository.findById(petIdx)
-                .orElseThrow(() -> new IllegalArgumentException("해당 반려동물이 존재하지 않습니다."));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.PET_NOT_FOUND));
 
-        Schedule schedule = dto.toEntity(user, category, pet);
+        Schedule schedule = dto.toEntity(category, pet);
         scheduleRepository.save(schedule);
     }
+
     public List<ScheduleDto.SimpleSchedule> getAllSchedule(Long userIdx) {
-        List<Schedule> schedules = scheduleRepository.findAllByUserIdx(userIdx);
-        List<ScheduleDto.SimpleSchedule> result = new ArrayList<>();
+        List<ScheduleDto.SimpleSchedule> scheduleList = new ArrayList<>();
+        List<Pet> pets = petRepository.findByUserIdx(userIdx);
 
-        for (Schedule s : schedules) {
-            Category category = s.getCategory();
-            if (category == null) continue; // 방어적 처리
-            result.add(ScheduleDto.SimpleSchedule.from(s, category));
+        for (Pet pet : pets) {
+            List<Schedule> schedules = scheduleRepository.findAllByPet(pet);
+
+            for (Schedule schedule : schedules) {
+                Category category = categoryRepository.findById(schedule.getCategoryIdx())
+                        .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
+                scheduleList.add(ScheduleDto.SimpleSchedule.from(schedule, category));
+            }
         }
-
-        return result;
+        return scheduleList;
     }
 
     public Schedule getSchedule(Long scheduleIdx) {
@@ -61,11 +68,82 @@ public class ScheduleService {
 
     public void createChatRoomSchedule(ChatDto.CreateChatRoomScheduleRequest dto, ChatRoom chatRoom, User user) {
         Category category = categoryRepository.findById(dto.getCategoryIdx())
-                .orElseThrow(() -> new IllegalArgumentException("카테고리가 존재하지 않습니다."));
-        scheduleRepository.save(dto.toEntity(user,chatRoom,category));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
+        scheduleRepository.save(dto.toEntity(chatRoom, category));
     }
 
     public List<User> findChatRoomUsersParticipatingInSchedule(Long scheduleIdx) {
         return scheduleRepository.findChatRoomUsersParticipatingInSchedule(scheduleIdx);
+    }
+
+    public List<ScheduleDto.SimpleSchedule> getSchedulesByDate(Long userIdx, Integer year, Integer month, Integer day) {
+        LocalDate date = LocalDate.of(year, month, day);
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.atTime(LocalTime.MAX); // 23:59:59.999...
+
+        List<ScheduleDto.SimpleSchedule> scheduleList = new ArrayList<>();
+
+        List<Pet> pets = petRepository.findByUserIdx(userIdx);
+
+        for (Pet pet : pets) {
+            List<Schedule> schedules = scheduleRepository.findAllByPetAndOverlappingDate(pet, start, end);
+
+            for (Schedule schedule : schedules) {
+                Category category = categoryRepository.findById(schedule.getCategoryIdx())
+                        .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
+                scheduleList.add(ScheduleDto.SimpleSchedule.from(schedule, category));
+            }
+        }
+
+        return scheduleList;
+    }
+
+    public List<ScheduleDto.SimpleSchedule> getSchedulesByPet(Long petIdx) {
+        List<ScheduleDto.SimpleSchedule> scheduleList = new ArrayList<>();
+
+        Pet pet = petRepository.findById(petIdx).orElseThrow(() ->
+                new BaseException(BaseResponseStatus.PET_NOT_FOUND));
+
+        List<Schedule> schedules = scheduleRepository.findAllByPet(pet);
+
+        for (Schedule schedule : schedules) {
+            Category category = categoryRepository.findById(schedule.getCategoryIdx())
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
+            scheduleList.add(ScheduleDto.SimpleSchedule.from(schedule, category));
+        }
+
+        return scheduleList;
+    }
+
+    public List<ScheduleDto.SimpleSchedule> getSchedulesByPetAndDate(Long petIdx, Integer year, Integer month, Integer day) {
+        LocalDate date = LocalDate.of(year, month, day);
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.atTime(LocalTime.MAX); // 23:59:59.999...
+
+        List<ScheduleDto.SimpleSchedule> scheduleList = new ArrayList<>();
+
+        Pet pet = petRepository.findById(petIdx).orElseThrow(() ->
+                new BaseException(BaseResponseStatus.PET_NOT_FOUND));
+
+        List<Schedule> schedules = scheduleRepository.findAllByPetAndOverlappingDate(pet, start, end);
+
+        for (Schedule schedule : schedules) {
+            Category category = categoryRepository.findById(schedule.getCategoryIdx())
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
+            scheduleList.add(ScheduleDto.SimpleSchedule.from(schedule, category));
+
+        }
+
+        return scheduleList;
+    }
+
+    public ScheduleDto.ScheduleDetail getScheduleDetail(Long scheduleIdx) {
+        Schedule schedule = scheduleRepository.findById(scheduleIdx).orElseThrow(
+                () -> new BaseException(BaseResponseStatus.SCHEDULE_NOT_FOUND));
+
+        Category category = categoryRepository.findById(schedule.getCategoryIdx())
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
+        return ScheduleDto.ScheduleDetail.from(schedule, category);
+
     }
 }

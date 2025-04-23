@@ -65,47 +65,22 @@ public enum BaseResponseStatus {
     //-- 3200 : 일정 수정
     SCHEDULE_UPDATE_FAILED(false, 3200, "일정 수정에 실패했습니다."),
 
+    /* 4000~ 4999 : 기록 관련 에러 */
+    //-- 4000 : 기록 조회
+    DAILY_RECORD_NOT_FOUND(false, 4000, "기록 조회에 실패했습니다."),
+    //-- 4100 : 기록 등록
+    DAILY_RECORD_CREATE_FAILED(false, 4100, "기록 등록에 실패했습니다."),
+    //-- 4200 : 기록 수정
+    DAILY_RECORD_UPDATE_FAILED(false, 4200, "기록 수정에 실패했습니다."),
 
 
-    /* 4000 ~ 4999 : 펫 관련 에러 */
-    //-- 4000 : 펫 조회
-    PET_NOT_FOUND(false, 4000, "반려동물 조회에 실패했습니다."),
-    //-- 4100 : 펫 등록
-    PET_CREATE_FAILED(false, 4100, "반려동물 등록에 실패했습니다."),
-    //-- 4200 : 펫 수정
-    PET_UPDATE_FAIlED(false, 4200, "반려동물 정보 수정에 실패했습니다."),
-  
-    /* 5000 ~ 5999 : 결제 관련 에러 */
-    //-- 5000 : 결제 요청 에러
-    PAYMENT_REQUEST_FAILED(false, 5000, "결제 요청에 실패했습니다."),
-    //-- 5100 : 결제 내역 조회 에러
-    PAYMENT_HISTORY_LOOKUP_FAILED(false, 5100, "결제 내역 조회에 실패했습니다."),
-    //-- 5200 : 결제 취소 에러
-    PAYMENT_CANCEL_FAILED(false, 5200, "결제 취소에 실패했습니다."),
-
-
-    /* 6000 ~ 6999 : 리뷰 관련 에러 */
-    //-- 6000 : 상품 리뷰 등록 에러
-    PRODUCT_REVIEW_REGIST_FAILED(false, 6000, "상품 리뷰 등록에 실패했습니다."),
-    //-- 6100 : 상품 리뷰 조회 에러
-    PRODUCT_REVIEW_LOOKUP_FAILED(false, 6100, "상품 리뷰 조회에 실패했습니다."),
-    //-- 6200 : 상품 리뷰 변경 삭제 에러
-    PRODUCT_REVIEW_UPDATE_FAILED(false, 6200, "상품 리뷰 수정/삭제에 실패했습니다."),
-    //-- 6300 : 식당 리뷰 등록 에러
-    STORE_REVIEW_REGIST_FAILED(false, 6300, "식당 리뷰 등록에 실패했습니다."),
-    //-- 6400 : 식당 리뷰 조회 에러
-    STORE_REVIEW_LOOKUP_FAILED(false, 6400, "식당 리뷰 조회에 실패했습니다."),
-    //-- 6500 : 식당 리뷰 변경 삭제 에러
-    STORE_REVIEW_UPDATE_FAILED(false, 6500, "식당 리뷰 수정/삭제에 실패했습니다."),
-
-
-    /* 7000 ~ 7999 : 예약 관련 에러 */
-    //-- 7000 : 예약 요청 에러
-    RESERVATION_REQUEST_FAILED(false, 7000, "예약 요청에 실패했습니다."),
-    //-- 7100 : 예약 내역 조회 에러
-    RESERVATION_HISTORY_LOOKUP_FAILED(false, 7100, "예약 내역 조회에 실패했습니다."),
-    //-- 7200 : 예약 변경 취소 에러
-    RESERVATION_UPDATE_FAILED(false, 7200, "예약 변경/취소에 실패했습니다."),
+    /* 5000 ~ 5999 : 펫 관련 에러 */
+    //-- 5000 : 펫 조회
+    PET_NOT_FOUND(false, 5000, "반려동물 조회에 실패했습니다."),
+    //-- 5100 : 펫 등록
+    PET_CREATE_FAILED(false, 5100, "반려동물 등록에 실패했습니다."),
+    //-- 5200 : 펫 수정
+    PET_UPDATE_FAIlED(false, 5200, "반려동물 정보 수정에 실패했습니다."),
 
 
     /* 8000 ~ 8999 : 관리자 관련 에러 */
