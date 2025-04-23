@@ -5,6 +5,8 @@ import com.hot6.backend.board.answer.model.Answer;
 import com.hot6.backend.board.answer.model.AnswerDto;
 import com.hot6.backend.board.question.QuestionRepository;
 import com.hot6.backend.board.question.model.Question;
+import com.hot6.backend.common.BaseResponseStatus;
+import com.hot6.backend.common.exception.BaseException;
 import com.hot6.backend.user.UserRepository;
 import com.hot6.backend.user.model.User;
 import com.hot6.backend.user.model.UserType;
@@ -25,13 +27,13 @@ public class AnswerService {
     private final UserRepository userRepository;
     private final AnswerImageService answerImageService;
 
-    public void create(User user, AnswerDto.AnswerRequest request, List<MultipartFile> images) throws IOException {
-        Question question = questionRepository.findById(request.getQuestionIdx())
-                .orElseThrow(() -> new IllegalArgumentException("해당 질문이 존재하지 않습니다."));
-
+    public void create(User user, AnswerDto.AnswerRequest request, List<MultipartFile> images) {
         if (user.getUserType() == UserType.AI) {
-            throw new IllegalArgumentException("AI 유저는 답변을 등록할 수 없습니다.");
+            throw new BaseException(BaseResponseStatus.AI_ANSWER_FORBIDDEN);
         }
+
+        Question question = questionRepository.findById(request.getQuestionIdx())
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.QUESTION_NOT_FOUND));
 
         Answer answer = Answer.builder()
                 .question(question)
@@ -41,10 +43,13 @@ public class AnswerService {
                 .isAi(false)
                 .build();
 
-        Answer saved = answerRepository.save(answer);
-
-        if (images != null && !images.isEmpty()) {
-            answerImageService.saveImages(images, saved);
+        try {
+            Answer saved = answerRepository.save(answer);
+            if (images != null && !images.isEmpty()) {
+                answerImageService.saveImages(images, saved);
+            }
+        } catch (Exception e) {
+            throw new BaseException(BaseResponseStatus.ANSWER_CREATE_FAILED);
         }
     }
 
@@ -56,18 +61,22 @@ public class AnswerService {
 
     public void select(Long idx) {
         Answer answer = answerRepository.findById(idx)
-                .orElseThrow(() -> new RuntimeException("답변 없음"));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.ANSWER_NOT_FOUND));
 
         if (answer.getUser().getUserType() == UserType.AI) {
-            throw new IllegalStateException("AI가 작성한 답변은 채택할 수 없습니다.");
+            throw new BaseException(BaseResponseStatus.AI_ANSWER_FORBIDDEN);
         }
 
-        answer.setSelected(true);
-        answerRepository.save(answer);
+        try {
+            answer.setSelected(true);
+            answerRepository.save(answer);
 
-        Question question = answer.getQuestion();
-        question.setSelected(true);
-        questionRepository.save(question);
+            Question question = answer.getQuestion();
+            question.setSelected(true);
+            questionRepository.save(question);
+        } catch (Exception e) {
+            throw new BaseException(BaseResponseStatus.ANSWER_SELECTED_FAILED);
+        }
     }
 
     @Transactional
@@ -80,56 +89,50 @@ public class AnswerService {
     }
 
     @Transactional
-    public void update(Long idx, User currentUser, AnswerDto.AnswerRequest dto, List<MultipartFile> images) throws IOException {
+    public void update(Long idx, User currentUser, AnswerDto.AnswerRequest dto, List<MultipartFile> images) {
         Answer answer = answerRepository.findById(idx)
-                .orElseThrow(() -> new RuntimeException("답변이 존재하지 않습니다"));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.ANSWER_NOT_FOUND));
 
-        if (answer.isSelected()) {
-            throw new IllegalStateException("채택된 답변은 수정할 수 없습니다.");
+        if (answer.isSelected() || answer.getUser().getUserType() == UserType.AI) {
+            throw new BaseException(BaseResponseStatus.AI_ANSWER_FORBIDDEN);
         }
 
-        if (answer.getUser().getUserType() == UserType.AI) {
-            throw new IllegalStateException("AI가 작성한 답변은 수정할 수 없습니다.");
+        try {
+            List<String> keepUrls = dto.getOriginalImageUrls() != null ? dto.getOriginalImageUrls() : List.of();
+            answerImageService.deleteImagesExcept(answer, keepUrls);
+
+            if (images != null && !images.isEmpty()) {
+                answerImageService.saveImages(images, answer);
+            }
+
+            answer.setContent(dto.getContent());
+            answerRepository.save(answer);
+        } catch (Exception e) {
+            throw new BaseException(BaseResponseStatus.ANSWER_UPDATE_FAILED);
         }
-
-        List<String> originalUrls = dto.getOriginalImageUrls() != null ? dto.getOriginalImageUrls() : List.of();
-
-        answerImageService.deleteImagesExcept(answer, originalUrls);
-
-        if (images != null && !images.isEmpty()) {
-            answerImageService.saveImages(images, answer);
-        }
-
-        answer.setContent(dto.getContent());
-        answerRepository.save(answer);
-
     }
 
     public AnswerDto.AnswerResponse read(Long id) {
         Answer answer = answerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("해당 답변을 찾을 수 없습니다."));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.ANSWER_NOT_FOUND));
         return AnswerDto.AnswerResponse.from(answer);
     }
 
     @Transactional
     public void delete(Long idx, User user) {
         Answer answer = answerRepository.findById(idx)
-                .orElseThrow(() -> new RuntimeException("답변이 존재하지 않습니다."));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.ANSWER_NOT_FOUND));
 
-        if (!answer.getUser().getIdx().equals(user.getIdx())) {
-            throw new IllegalArgumentException("작성자만 삭제할 수 있습니다.");
+        if (!answer.getUser().getIdx().equals(user.getIdx()) || answer.getUser().getUserType() == UserType.AI || answer.isSelected()) {
+            throw new BaseException(BaseResponseStatus.AI_ANSWER_FORBIDDEN);
         }
 
-        if (answer.isSelected()) {
-            throw new IllegalStateException("채택된 답변은 삭제할 수 없습니다.");
+        try {
+            answerImageService.deleteImagesByAnswer(idx);
+            answerRepository.delete(answer);
+        } catch (Exception e) {
+            throw new BaseException(BaseResponseStatus.ANSWER_DELETE_FAILED);
         }
-
-        if (answer.getUser().getUserType() == UserType.AI) {
-            throw new IllegalStateException("AI가 작성한 답변은 삭제할 수 없습니다.");
-        }
-
-        answerImageService.deleteImagesByAnswer(idx);
-        answerRepository.delete(answer);
     }
 
     public int countByQuestionIdx(Long questionId) {
@@ -146,21 +149,23 @@ public class AnswerService {
     @Transactional
     public void createAiAnswerForQuestion(Question question, String aiContent) {
         if (aiContent == null || aiContent.trim().isEmpty()) {
-            System.out.println(">> AI 답변이 비어있어 저장하지 않음");
             return;
         }
 
         User aiUser = userRepository.findByUserType(UserType.AI)
-                .orElseThrow(() -> new RuntimeException("AI 유저 없음"));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.AI_USER_NOT_FOUND));
 
-        Answer aiAnswer = Answer.builder()
-                .question(question)
-                .user(aiUser)
-                .content(aiContent)
-                .isAi(true)
-                .build();
+        try {
+            Answer aiAnswer = Answer.builder()
+                    .question(question)
+                    .user(aiUser)
+                    .content(aiContent)
+                    .isAi(true)
+                    .build();
 
-        answerRepository.save(aiAnswer);
-        System.out.println(">> AI 답변 저장 완료");
+            answerRepository.save(aiAnswer);
+        } catch (Exception e) {
+            throw new BaseException(BaseResponseStatus.AI_ANSWER_GENERATE_FAILED);
+        }
     }
 }

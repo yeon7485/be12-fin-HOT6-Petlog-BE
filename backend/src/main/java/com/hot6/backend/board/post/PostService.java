@@ -7,6 +7,8 @@ import com.hot6.backend.board.post.model.Post;
 import com.hot6.backend.board.post.model.PostDto;
 import com.hot6.backend.category.model.Category;
 import com.hot6.backend.category.model.CategoryRepository;
+import com.hot6.backend.common.BaseResponseStatus;
+import com.hot6.backend.common.exception.BaseException;
 import com.hot6.backend.pet.PetRepository;
 import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.user.model.User;
@@ -18,13 +20,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Stream;
-
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -36,15 +34,15 @@ public class PostService {
     private final CategoryRepository categoryRepository;
     private final PetRepository petRepository;
 
-    public void create(PostDto.PostRequest dto, List<MultipartFile> images) throws IOException {
+    public void create(PostDto.PostRequest dto, List<MultipartFile> images) {
         BoardType boardType = boardTypeRepository.findByBoardName(dto.getBoardType())
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "게시판 종류 없음"));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_CREATE_FAILED));
 
         Category category = categoryRepository.findById(dto.getCategoryIdx())
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "카테고리 없음"));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_CREATE_FAILED));
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
 
         Post post = Post.builder()
                 .user(user)
@@ -55,24 +53,24 @@ public class PostService {
                 .boardType(boardType)
                 .build();
 
-        postRepository.save(post);
-
-        if (dto.getPetIdxList() != null && !dto.getPetIdxList().isEmpty()) {
-            List<Pet> pets = petRepository.findAllById(dto.getPetIdxList());
-            for (Pet pet : pets) {
-                pet.setPost(post);
+        try {
+            postRepository.save(post);
+            if (dto.getPetIdxList() != null) {
+                List<Pet> pets = petRepository.findAllById(dto.getPetIdxList());
+                pets.forEach(p -> p.setPost(post));
+                petRepository.saveAll(pets);
             }
-            petRepository.saveAll(pets);
-        }
-
-        if (images != null && !images.isEmpty()) {
-            postImageService.saveImages(images, post);
+            if (images != null && !images.isEmpty()) {
+                postImageService.saveImages(images, post);
+            }
+        } catch (Exception e) {
+            throw new BaseException(BaseResponseStatus.POST_CREATE_FAILED);
         }
     }
 
     public Page<PostDto.PostResponse> list(String boardName, int page, int size) {
         BoardType boardType = boardTypeRepository.findByBoardName(boardName)
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "게시판 종류 없음"));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_NOT_FOUND));
 
         Pageable pageable = PageRequest.of(page, size);
         return postRepository.findByBoardType(boardType, pageable)
@@ -80,82 +78,80 @@ public class PostService {
     }
 
     public PostDto.PostResponse read(Long idx) {
-        Post post = postRepository.findById(idx).orElseThrow(() ->
-                new ResponseStatusException(NOT_FOUND, "게시글 없음"));
+        Post post = postRepository.findById(idx)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_NOT_FOUND));
         return PostDto.PostResponse.from(post);
     }
 
     public Page<PostDto.PostResponse> search(String boardName, String categoryName, String keyword, int page, int size) {
         BoardType boardType = boardTypeRepository.findByBoardName(boardName)
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "게시판 종류 없음"));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_NOT_FOUND));
 
         Pageable pageable = PageRequest.of(page, size);
-
-        Page<Post> results;
-
-        if (keyword != null && !keyword.isBlank()) {
-            Page<Post> byTitle = postRepository.findByBoardTypeAndCategoryNameAndTitleContainingIgnoreCase(boardType, categoryName, keyword, pageable);
-            Page<Post> byWriter = postRepository.findByBoardTypeAndCategoryNameAndUser_NicknameContainingIgnoreCase(boardType, categoryName, keyword, pageable);
-
-            results = byTitle;
-        } else {
-            results = postRepository.findByBoardTypeAndCategoryName(boardType, categoryName, pageable);
+        try {
+            if (keyword != null && !keyword.isBlank()) {
+                return postRepository.findByBoardTypeAndCategoryNameAndTitleContainingIgnoreCase(boardType, categoryName, keyword, pageable)
+                        .map(PostDto.PostResponse::from);
+            }
+            return postRepository.findByBoardTypeAndCategoryName(boardType, categoryName, pageable)
+                    .map(PostDto.PostResponse::from);
+        } catch (Exception e) {
+            throw new BaseException(BaseResponseStatus.POST_SEARCH_FAILED);
         }
-
-        return results.map(PostDto.PostResponse::from);
     }
-
 
     public void delete(Long idx) {
         Post post = postRepository.findById(idx)
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "게시글 없음"));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_NOT_FOUND));
 
-        List<Pet> relatedPets = petRepository.findAllByPost(post);
-        relatedPets.forEach(pet -> pet.setPost(null));
-        petRepository.saveAll(relatedPets);
-
-        postImageService.deleteImagesByPost(idx);
-        commentService.deleteByPostIdx(idx);
-        postRepository.delete(post);
+        try {
+            List<Pet> pets = petRepository.findAllByPost(post);
+            pets.forEach(p -> p.setPost(null));
+            petRepository.saveAll(pets);
+            postImageService.deleteImagesByPost(idx);
+            commentService.deleteByPostIdx(idx);
+            postRepository.delete(post);
+        } catch (Exception e) {
+            throw new BaseException(BaseResponseStatus.POST_DELETE_FAILED);
+        }
     }
 
-    public void update(Long idx, PostDto.PostRequest dto, List<MultipartFile> images) throws IOException {
+    public void update(Long idx, PostDto.PostRequest dto, List<MultipartFile> images) {
         Post post = postRepository.findById(idx)
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "게시글 없음"));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_NOT_FOUND));
 
         BoardType boardType = boardTypeRepository.findByBoardName(dto.getBoardType())
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "게시판 종류 없음"));
-
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_UPDATE_FAILED));
         Category category = categoryRepository.findById(dto.getCategoryIdx())
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "카테고리 없음"));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_UPDATE_FAILED));
 
-        post.setTitle(dto.getTitle());
-        post.setContent(dto.getContent());
-        post.setImage(dto.getImage());
-        post.setBoardType(boardType);
-        post.setCategory(category);
-        postRepository.save(post);
+        try {
+            post.setTitle(dto.getTitle());
+            post.setContent(dto.getContent());
+            post.setImage(dto.getImage());
+            post.setBoardType(boardType);
+            post.setCategory(category);
+            postRepository.save(post);
 
-        List<Pet> oldPets = petRepository.findAllByPost(post);
-        for (Pet pet : oldPets) {
-            pet.setPost(null);
-        }
-        petRepository.saveAll(oldPets);
+            List<Pet> oldPets = petRepository.findAllByPost(post);
+            oldPets.forEach(p -> p.setPost(null));
+            petRepository.saveAll(oldPets);
 
-        if (dto.getPetIdxList() != null && !dto.getPetIdxList().isEmpty()) {
-            List<Pet> newPets = petRepository.findAllById(dto.getPetIdxList());
-            for (Pet pet : newPets) {
-                pet.setPost(post);
+            if (dto.getPetIdxList() != null) {
+                List<Pet> newPets = petRepository.findAllById(dto.getPetIdxList());
+                newPets.forEach(p -> p.setPost(post));
+                petRepository.saveAll(newPets);
             }
-            petRepository.saveAll(newPets);
-        }
 
-        if (dto.getRemovedImageUrls() != null && !dto.getRemovedImageUrls().isEmpty()) {
-            postImageService.deleteImagesByUrls(dto.getRemovedImageUrls());
-        }
+            if (dto.getRemovedImageUrls() != null) {
+                postImageService.deleteImagesByUrls(dto.getRemovedImageUrls());
+            }
 
-        if (images != null && !images.isEmpty()) {
-            postImageService.saveImages(images, post);
+            if (images != null && !images.isEmpty()) {
+                postImageService.saveImages(images, post);
+            }
+        } catch (Exception e) {
+            throw new BaseException(BaseResponseStatus.POST_UPDATE_FAILED);
         }
     }
 
@@ -166,3 +162,4 @@ public class PostService {
                 .toList();
     }
 }
+

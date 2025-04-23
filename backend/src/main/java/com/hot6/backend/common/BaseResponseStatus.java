@@ -82,6 +82,65 @@ public enum BaseResponseStatus {
     //-- 5200 : 펫 수정
     PET_UPDATE_FAIlED(false, 5200, "반려동물 정보 수정에 실패했습니다."),
 
+    /* 6000 ~ 6999 : 게시판 관련 에러 */
+    //-- 6000 : 게시글
+    POST_NOT_FOUND(false, 6000, "게시글 조회에 실패했습니다."),
+
+    POST_CREATE_FAILED(false, 6001, "게시글 등록에 실패했습니다."),
+
+    POST_UPDATE_FAILED(false, 6002, "게시글 수정에 실패했습니다."),
+
+    POST_DELETE_FAILED(false, 6003, "게시글 삭제에 실패했습니다."),
+
+    POST_SEARCH_FAILED(false, 6004, "게시글 검색에 실패했습니다."),
+
+    POST_DETAIL_FAILED(false, 6005, "게시글 상세조회에 실패했습니다."),
+
+    //-- 6100 : 댓글
+    COMMENT_NOT_FOUND(false, 6100,"댓글 조회에 실패했습니다."),
+
+    COMMENT_CREATE_FAILED(false, 6101, "댓글 등록에 실패했습니다."),
+
+    COMMENT_UPDATE_FAILED(false, 6102, "댓글 수정에 실패했습니다."),
+
+    COMMENT_DELETE_FAILED(false, 6103, "댓글 삭제에 실패했습니다."),
+
+    //-- 6200 : 질문, 해시태그
+    QUESTION_NOT_FOUND(false, 6200,"질문 조회에 실패했습니다."),
+
+    QUESTION_CREATE_FAILED(false, 6201, "질문 등록에 실패했습니다."),
+
+    QUESTION_UPDATE_FAILED(false, 6202, "질문 수정에 실패했습니다."),
+
+    QUESTION_DELETE_FAILED(false, 6203, "질문 삭제에 실패했습니다."),
+
+    QUESTION_SEARCH_FAILED(false, 6204, "질문 검색에 실패했습니다."),
+
+    QUESTION_DETAIL_FAILED(false, 6205, "질문 상세조회에 실패했습니다."),
+
+    HASHTAG_SAVE_FAILED(false, 6206, "해시태그 저장에 실패했습니다."),
+
+    HASHTAG_NOT_FOUND(false, 6207, "해시태그 조회에 실패했습니다."),
+
+    //-- 6300 : 답변
+    ANSWER_NOT_FOUND(false, 6300,"답변 조회에 실패했습니다."),
+
+    ANSWER_CREATE_FAILED(false, 6301, "답변 등록에 실패했습니다."),
+
+    ANSWER_UPDATE_FAILED(false, 6302, "답변 수정에 실패했습니다."),
+
+    ANSWER_DELETE_FAILED(false, 6303, "답변 삭제에 실패했습니다."),
+
+    ANSWER_SELECTED_FAILED(false, 6304, "답변 채택에 실패했습니다."),
+
+    ANSWER_DETAIL_FAILED(false, 6305, "답변 상세조회에 실패했습니다."),
+
+    AI_ANSWER_GENERATE_FAILED(false, 6306, "AI 답변 생성에 실패했습니다."),
+
+    AI_ANSWER_FORBIDDEN(false, 6307, "AI는 이 작업을 수행할 수 없습니다."),
+
+    AI_USER_NOT_FOUND(false, 6308, "AI 유저를 찾을 수 없습니다."),
+
 
     /* 8000 ~ 8999 : 관리자 관련 에러 */
     ADMIN_CATEGORY_DELETE_FAILED_REASON_CONNECT_STORE(false, 8000, "삭제하려는 카테고리는 Store에 하나 이상 연결되어 있는 카테고리 입니다. Store에서 카테고리 수정을 먼저 한 후 삭제해주세요."),
