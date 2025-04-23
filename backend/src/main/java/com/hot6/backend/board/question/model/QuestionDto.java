@@ -3,6 +3,7 @@ package com.hot6.backend.board.question.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hot6.backend.board.hashtagQuestion.model.Hashtag_Question;
 import com.hot6.backend.board.question.images.QuestionImage;
+import com.hot6.backend.pet.model.PetSummary;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,15 +18,15 @@ public class QuestionDto {
         private String qTitle;
         private String content;
         private boolean selected;
-        private String image;
         private List<String> tags;
+        private List<Long> petIdxList;
+        private List<String> removedImageUrls;
 
         public Question toEntity() {
             return Question.builder()
                     .qTitle(qTitle)
                     .content(content)
                     .selected(selected)
-                    .image(image)
                     .build();
         }
     }
@@ -39,12 +40,12 @@ public class QuestionDto {
         private String qTitle;
         private String content;
         private boolean selected;
-        private String image;
         private LocalDate createdAt;
         private List<String> tags;
         private int answerCount;
         private List<String> imageUrls;
         private String profileImageUrl;
+        private List<PetSummary> petList;
 
         public static QuestionResponse from(Question question, int answerCount) {
             return QuestionResponse.builder()
@@ -53,7 +54,6 @@ public class QuestionDto {
                     .qTitle(question.getQTitle())
                     .content(question.getContent())
                     .selected(question.isSelected())
-                    .image(question.getImage())
                     .createdAt(LocalDate.from(question.getCreatedAt()))
                     .tags(question.getHashtagsList() != null
                             ? question.getHashtagsList().stream().map(Hashtag_Question::getTag).toList()
@@ -65,6 +65,9 @@ public class QuestionDto {
                             .toList()
                             : List.of())
                     .profileImageUrl(question.getUser() != null ? question.getUser().getUserProfileImage() : null)
+                    .petList(question.getPetList() != null
+                            ? question.getPetList().stream().map(PetSummary::from).toList()
+                            : List.of())
                     .build();
         }
     }
@@ -77,7 +80,6 @@ public class QuestionDto {
         private String qTitle;
         private String content;
         private boolean selected;
-        private String image;
         private LocalDate createdAt;
         private List<String> tags;
 
@@ -88,7 +90,6 @@ public class QuestionDto {
                     .qTitle(question.getQTitle())
                     .content(question.getContent())
                     .selected(question.isSelected())
-                    .image(question.getImage())
                     .build();
         }
     }

@@ -1,6 +1,5 @@
 package com.hot6.backend.board.question.images;
 
-
 import com.hot6.backend.board.question.model.Question;
 import com.hot6.backend.pet.S3Service;
 import jakarta.transaction.Transactional;
@@ -43,6 +42,15 @@ public class QuestionImageService {
         questionImageRepository.deleteByQuestionIdx(questionIdx);
     }
 
+    @Transactional
+    public void deleteImagesByUrls(List<String> urls) {
+        for (String url : urls) {
+            String key = extractKeyFromUrl(url);
+            s3Service.delete(key);
+        }
+        questionImageRepository.deleteAllByUrlIn(urls);
+    }
+
     private String extractKeyFromUrl(String url) {
         int index = url.indexOf(".amazonaws.com/");
         if (index == -1) {
@@ -50,6 +58,4 @@ public class QuestionImageService {
         }
         return url.substring(index + ".amazonaws.com/".length());
     }
-
 }
-

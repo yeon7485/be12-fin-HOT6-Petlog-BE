@@ -3,20 +3,21 @@ package com.hot6.backend.board.question;
 import com.hot6.backend.board.answer.AnswerService;
 import com.hot6.backend.board.answer.aiAnswer.AiAnswerService;
 import com.hot6.backend.board.hashtagQuestion.Hashtag_QuestionService;
-import com.hot6.backend.board.post.model.PostDto;
 import com.hot6.backend.board.question.images.QuestionImageService;
 import com.hot6.backend.board.question.model.Question;
 import com.hot6.backend.board.question.model.QuestionDto;
+import com.hot6.backend.pet.PetRepository;
+import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.user.model.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -33,6 +34,7 @@ public class QuestionService {
     private final Hashtag_QuestionService hashtagService;
     private final QuestionImageService questionImageService;
     private final AiAnswerService aiAnswerService;
+    private final PetRepository petRepository;
 
     public void create(QuestionDto.QuestionRequest dto, List<MultipartFile> images) throws IOException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -40,8 +42,13 @@ public class QuestionService {
 
         Question question = dto.toEntity();
         question.setUser(currentUser);
-
         questionRepository.save(question);
+
+        if (dto.getPetIdxList() != null && !dto.getPetIdxList().isEmpty()) {
+            List<Pet> pets = petRepository.findAllById(dto.getPetIdxList());
+            pets.forEach(pet -> pet.setQuestion(question));
+            petRepository.saveAll(pets);
+        }
 
         if (dto.getTags() != null && !dto.getTags().isEmpty()) {
             hashtagService.saveTags(dto.getTags(), question.getIdx());
@@ -52,35 +59,32 @@ public class QuestionService {
         }
 
         try {
-            System.out.println("🔥 AI 답변 생성 시도 시작");
             String aiContent = aiAnswerService.generateAnswer(question.getQTitle(), question.getContent());
-            System.out.println("🔥 생성된 AI 답변 내용: " + aiContent);
             answerService.createAiAnswerForQuestion(question, aiContent);
-            System.out.println("✅ AI 답변 저장 완료");
         } catch (Exception e) {
             System.out.println("❌ AI 답변 생성 실패: " + e.getMessage());
         }
     }
 
-    public List<QuestionDto.QuestionResponse> list() {
-        return questionRepository.findAll().stream()
+    public Page<QuestionDto.QuestionResponse> list(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return questionRepository.findAll(pageable)
                 .map(q -> {
                     int answerCount = answerService.countByQuestionIdx(q.getIdx());
                     return QuestionDto.QuestionResponse.from(q, answerCount);
-                })
-                .toList();
+                });
     }
 
-    public List<QuestionDto.QuestionResponse> search(String keyword) {
-        List<Question> result = questionRepository
+    public Page<QuestionDto.QuestionResponse> search(String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Question> resultPage = questionRepository
                 .findByqTitleContainingIgnoreCaseOrUserNicknameContainingIgnoreCaseOrContentContainingIgnoreCaseOrHashtagsListTagContainingIgnoreCase(
-                        keyword, keyword, keyword, keyword);
-        return result.stream()
-                .map(q -> {
-                    int answerCount = answerService.countByQuestionIdx(q.getIdx());
-                    return QuestionDto.QuestionResponse.from(q, answerCount);
-                })
-                .toList();
+                        keyword, keyword, keyword, keyword, pageable);
+
+        return resultPage.map(q -> {
+            int answerCount = answerService.countByQuestionIdx(q.getIdx());
+            return QuestionDto.QuestionResponse.from(q, answerCount);
+        });
     }
 
     public QuestionDto.QuestionResponse read(Long idx) {
@@ -97,9 +101,7 @@ public class QuestionService {
 
         question.setQTitle(dto.getQTitle());
         question.setContent(dto.getContent());
-        question.setImage(dto.getImage());
         question.setSelected(dto.isSelected());
-
         questionRepository.save(question);
 
         hashtagService.deleteByQuestionIdx(idx);
@@ -107,9 +109,22 @@ public class QuestionService {
             hashtagService.saveTags(dto.getTags(), idx);
         }
 
+        if (dto.getRemovedImageUrls() != null && !dto.getRemovedImageUrls().isEmpty()) {
+            questionImageService.deleteImagesByUrls(dto.getRemovedImageUrls());
+        }
+
         if (images != null && !images.isEmpty()) {
-            questionImageService.deleteImagesByQuestion(idx);
             questionImageService.saveImages(images, question);
+        }
+
+        List<Pet> existingPets = petRepository.findAllByQuestion(question);
+        existingPets.forEach(p -> p.setQuestion(null));
+        petRepository.saveAll(existingPets);
+
+        if (dto.getPetIdxList() != null && !dto.getPetIdxList().isEmpty()) {
+            List<Pet> selectedPets = petRepository.findAllById(dto.getPetIdxList());
+            selectedPets.forEach(pet -> pet.setQuestion(question));
+            petRepository.saveAll(selectedPets);
         }
     }
 
@@ -121,6 +136,11 @@ public class QuestionService {
         questionImageService.deleteImagesByQuestion(idx);
         answerService.deleteByQuestionIdx(idx);
         hashtagService.deleteByQuestionIdx(idx);
+
+        List<Pet> relatedPets = petRepository.findAllByQuestion(question);
+        relatedPets.forEach(pet -> pet.setQuestion(null));
+        petRepository.saveAll(relatedPets);
+
         questionRepository.delete(question);
     }
 

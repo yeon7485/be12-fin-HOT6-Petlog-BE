@@ -2,6 +2,8 @@ package com.hot6.backend.board.post.model;
 
 import com.hot6.backend.board.post.images.PostImage;
 import com.hot6.backend.category.model.CategoryDto;
+import com.hot6.backend.pet.model.Pet;
+import com.hot6.backend.pet.model.PetSummary;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +22,9 @@ public class PostDto {
         private String content;
         private String image;
         private Long categoryIdx;
-        private String boardType; // board name으로 받음
+        private String boardType;
+        private List<Long> petIdxList;
+        private List<String> removedImageUrls;
     }
 
     @Getter
@@ -36,6 +40,7 @@ public class PostDto {
         private String boardType;
         private List<String> imageUrls;
         private String profileImageUrl;
+        private List<PetSummary> petList;
 
         public static PostResponse from(Post post) {
             return PostResponse.builder()
@@ -47,12 +52,13 @@ public class PostDto {
                     .category(post.getCategory().getName())
                     .createdAt(LocalDate.from(post.getCreatedAt()))
                     .boardType(post.getBoardType().getBoardName())
-                    .imageUrls(
-                            post.getPostImageList() != null
-                                    ? post.getPostImageList().stream().map(PostImage::getUrl).toList()
-                                    : List.of()
-                    )
+                    .imageUrls(post.getPostImageList() != null
+                            ? post.getPostImageList().stream().map(PostImage::getUrl).toList()
+                            : List.of())
                     .profileImageUrl(post.getUser().getUserProfileImage())
+                    .petList(post.getPetList() != null
+                            ? post.getPetList().stream().map(PetSummary::from).toList()
+                            : List.of())
                     .build();
         }
     }
@@ -65,7 +71,6 @@ public class PostDto {
         private String title;
         private String boardType;
         private LocalDateTime createdAt;
-
 
         public static UserPostResponse from(Post post) {
             return UserPostResponse.builder()

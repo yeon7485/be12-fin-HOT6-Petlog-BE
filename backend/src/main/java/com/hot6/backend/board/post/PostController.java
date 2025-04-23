@@ -2,6 +2,7 @@ package com.hot6.backend.board.post;
 
 import com.hot6.backend.board.post.model.PostDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,24 +27,32 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-
     @GetMapping("/list/{boardName}")
-    public ResponseEntity<List<PostDto.PostResponse>> list(@PathVariable String boardName) {
-        return ResponseEntity.ok(postService.list(boardName));
+    public ResponseEntity<Page<PostDto.PostResponse>> list(
+            @PathVariable String boardName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Page<PostDto.PostResponse> responses = postService.list(boardName, page, size);
+        return ResponseEntity.ok(responses);
     }
 
-    @GetMapping("/read/{idx}")
-    public ResponseEntity<PostDto.PostResponse> read(@PathVariable Long idx) {
-        return ResponseEntity.ok(postService.read(idx));
+    @GetMapping("/read/{postIdx}")
+    public ResponseEntity<PostDto.PostResponse> read(@PathVariable Long postIdx) {
+        PostDto.PostResponse response = postService.read(postIdx);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<PostDto.PostResponse>> search(
+    public ResponseEntity<Page<PostDto.PostResponse>> search(
             @RequestParam String boardName,
             @RequestParam String category,
-            @RequestParam(required = false) String keyword
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
     ) {
-        return ResponseEntity.ok(postService.search(boardName, category, keyword));
+        Page<PostDto.PostResponse> result = postService.search(boardName, category, keyword, page, size);
+        return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/delete/{idx}")

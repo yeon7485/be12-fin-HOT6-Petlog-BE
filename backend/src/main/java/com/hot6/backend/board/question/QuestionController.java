@@ -1,8 +1,8 @@
 package com.hot6.backend.board.question;
 
-import com.hot6.backend.board.post.model.PostDto;
 import com.hot6.backend.board.question.model.QuestionDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,13 +38,21 @@ public class QuestionController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<QuestionDto.QuestionResponse>> list() {
-        return ResponseEntity.ok(questionService.list());
+    public ResponseEntity<Page<QuestionDto.QuestionResponse>> list(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        return ResponseEntity.ok(questionService.list(page, size));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<QuestionDto.QuestionResponse>> search(@RequestParam String keyword) {
-        return ResponseEntity.ok(questionService.search(keyword));
+    public ResponseEntity<Page<QuestionDto.QuestionResponse>> search(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Page<QuestionDto.QuestionResponse> result = questionService.search(keyword, page, size);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/read/{idx}")

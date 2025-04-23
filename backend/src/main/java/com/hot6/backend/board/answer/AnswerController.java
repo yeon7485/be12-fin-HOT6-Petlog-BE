@@ -45,10 +45,11 @@ public class AnswerController {
     @PutMapping(value = "/update/{idx}", consumes = {"multipart/form-data"})
     public ResponseEntity<Void> update(
             @PathVariable Long idx,
+            @AuthenticationPrincipal User currentUser,
             @RequestPart("answer") AnswerDto.AnswerRequest dto,
             @RequestPart(value = "images", required = false) List<MultipartFile> images
     ) throws IOException {
-        answerService.update(idx, dto, images);
+        answerService.update(idx, currentUser, dto, images);
         return ResponseEntity.ok().build();
     }
 
@@ -59,10 +60,14 @@ public class AnswerController {
     }
 
     @DeleteMapping("/delete/{idx}")
-    public ResponseEntity<Void> deleteAnswer(@PathVariable Long idx) {
-        answerService.delete(idx);
+    public ResponseEntity<Void> deleteAnswer(
+            @PathVariable Long idx,
+            @AuthenticationPrincipal User currentUser
+    ) {
+        answerService.delete(idx, currentUser);
         return ResponseEntity.ok().build();
     }
+
     @GetMapping("/list/user/{userId}")
     public ResponseEntity<List<AnswerDto.AnswerResponse>> listByUserId(@PathVariable Long userId) {
         return ResponseEntity.ok(answerService.readByAnswer(userId));

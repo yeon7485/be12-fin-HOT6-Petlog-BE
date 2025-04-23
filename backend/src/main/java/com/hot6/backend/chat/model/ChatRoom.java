@@ -24,6 +24,7 @@ public class ChatRoom extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
     private String cTitle;
+    private int maxParticipants;
 
 
     @BatchSize(size = 50)

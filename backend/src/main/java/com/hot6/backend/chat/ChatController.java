@@ -63,7 +63,7 @@ public class ChatController {
     @GetMapping("/")
     public ResponseEntity<BaseResponse<Slice<ChatDto.ChatRoomListDto>>> getChatList(
             @AuthenticationPrincipal User user,
-            @PageableDefault(size = 10) Pageable pageable
+            @PageableDefault(size = 100) Pageable pageable
     ) {
         Long userIdx = (user != null) ? user.getIdx() : null;
         return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, chatRoomService.getList(userIdx,pageable)));
@@ -155,17 +155,26 @@ public class ChatController {
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, "성공적으로 참여되었습니다."));
     }
 
+    @Operation(summary = "채팅방 참여하기", description = "현재 내가 참여하고 있지 않은 채팅방에 참여합니다.")
+    @PostMapping("/chatroom/{roomIdx}/join")
+    public ResponseEntity<BaseResponse<String>> joinChatRoom(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long roomIdx
+    ) {
+        chatRoomService.join(user, roomIdx);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, "채팅방에 성공적으로 참여!"));
+    }
 
     @Operation(
             summary = "WebSocket 채팅 메시지 수신",
             description = """
-        이 기능은 WebSocket 기반으로 구현되며, STOMP 프로토콜을 사용합니다.<br><br>
-        - 연결 주소: `ws://{server}/ws/chat`<br>
-        - 구독 주소: `/topic/chatroom/{chatRoomIdx}`<br>
-        - 전송 주소: `/app/chat.sendMessage`<br>
-        - 메시지 형식: JSON<br>
-        - 실시간 메시지 전송 및 수신은 Swagger에서 테스트할 수 없습니다. <br><br>
-        """
+                    이 기능은 WebSocket 기반으로 구현되며, STOMP 프로토콜을 사용합니다.<br><br>
+                    - 연결 주소: `ws://{server}/ws/chat`<br>
+                    - 구독 주소: `/topic/chatroom/{chatRoomIdx}`<br>
+                    - 전송 주소: `/app/chat.sendMessage`<br>
+                    - 메시지 형식: JSON<br>
+                    - 실시간 메시지 전송 및 수신은 Swagger에서 테스트할 수 없습니다. <br><br>
+                    """
     )
     @GetMapping("/chatroom/ws-doc")
     public ResponseEntity<String> websocketDoc() {
