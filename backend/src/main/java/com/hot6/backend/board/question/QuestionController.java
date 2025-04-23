@@ -46,8 +46,13 @@ public class QuestionController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<QuestionDto.QuestionResponse>> search(@RequestParam String keyword) {
-        return ResponseEntity.ok(questionService.search(keyword));
+    public ResponseEntity<Page<QuestionDto.QuestionResponse>> search(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Page<QuestionDto.QuestionResponse> result = questionService.search(keyword, page, size);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/read/{idx}")

@@ -44,12 +44,15 @@ public class PostController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<PostDto.PostResponse>> search(
+    public ResponseEntity<Page<PostDto.PostResponse>> search(
             @RequestParam String boardName,
             @RequestParam String category,
-            @RequestParam(required = false) String keyword
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
     ) {
-        return ResponseEntity.ok(postService.search(boardName, category, keyword));
+        Page<PostDto.PostResponse> result = postService.search(boardName, category, keyword, page, size);
+        return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/delete/{idx}")
