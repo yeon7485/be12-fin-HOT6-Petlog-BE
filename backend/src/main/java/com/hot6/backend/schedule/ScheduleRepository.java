@@ -48,4 +48,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                                                   @Param("start") LocalDateTime start,
                                                   @Param("end") LocalDateTime end);
 
+    List<Schedule> findByStartAtBetween(LocalDateTime start, LocalDateTime end);
+
 }

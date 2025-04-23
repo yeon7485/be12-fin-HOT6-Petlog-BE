@@ -2,6 +2,8 @@ package com.hot6.backend.notification;
 
 import com.hot6.backend.notification.model.Notification;
 import com.hot6.backend.notification.model.NotificationDto;
+import com.hot6.backend.pet.PetRepository;
+import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.schedule.ScheduleRepository;
 import com.hot6.backend.schedule.model.Schedule;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -20,9 +24,10 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final ScheduleRepository scheduleRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final PetRepository petRepository;
 
     @Transactional
-    public void createNotification(NotificationDto.NotificationSendRequest request) {
+    public void createNotification(NotificationDto.NotificationSendRequest request, Long userIdx) {
         // 1. 스케줄 조회
         Schedule schedule = scheduleRepository.findById(request.getScheduleId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 스케줄 없음"));
@@ -43,13 +48,23 @@ public class NotificationService {
                 .sentAt(notification.getSentAt())
                 .build();
 
-        messagingTemplate.convertAndSend("/topic/alerts/" + schedule.getUser().getIdx(), element);
+        messagingTemplate.convertAndSend("/topic/alerts/" + userIdx, element);
     }
 
     public List<NotificationDto.NotificationElement> getNotificationsByUserId(Long userIdx) {
-        return notificationRepository.findAllByScheduleUserIdxOrderBySentAtDesc(userIdx).stream()
-                .map(NotificationDto.NotificationElement::from)
-                .toList();
+        List<NotificationDto.NotificationElement> list = new ArrayList<>();
+
+        List<Pet> petList = petRepository.findByUserIdx(userIdx);
+
+        for (Pet pet : petList) {
+
+            List<Notification> notiList =  notificationRepository.findAllBySchedulePetOrderBySentAtDesc(pet);
+            list.addAll(notiList.stream()
+                    .map(NotificationDto.NotificationElement::from)
+                    .toList());
+        }
+
+        return list;
     }
 
     public void markAsRead(Long notificationId) {

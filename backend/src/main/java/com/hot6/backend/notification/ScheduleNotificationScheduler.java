@@ -28,18 +28,19 @@ public class ScheduleNotificationScheduler {
         List<Schedule> schedules = scheduleRepository.findByStartAtBetween(start, end);
 
         for (Schedule schedule : schedules) {
-            if (schedule.getUser() == null) {
+            Long userIdx = schedule.getPet().getUser().getIdx();
+            if (userIdx == null) {
                 System.out.println("❗ 사용자 정보가 없는 일정: " + schedule.getIdx());
                 continue;
             }
 
             NotificationDto.NotificationSendRequest request = NotificationDto.NotificationSendRequest.builder()
-                    .userId(schedule.getUser().getIdx())
+                    .userId(userIdx)
                     .scheduleId(schedule.getIdx())
                     .message("[알림] \"" + schedule.getSTitle() + "\" 일정이 1시간 남았습니다.")
                     .build();
 
-            notificationService.createNotification(request);
+            notificationService.createNotification(request, userIdx);
         }
     }
 }
