@@ -1,6 +1,8 @@
 package com.hot6.backend.board.answer;
 
 import com.hot6.backend.board.answer.model.AnswerDto;
+import com.hot6.backend.common.BaseResponse;
+import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -21,55 +23,50 @@ public class AnswerController {
     private final AnswerService answerService;
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> create(
+    public ResponseEntity<BaseResponse<String>> create(
             @AuthenticationPrincipal User currentUser,
             @RequestPart("answer") AnswerDto.AnswerRequest request,
             @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
-
         answerService.create(currentUser, request, images);
-        return ResponseEntity.ok("답변 등록 성공");
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS));
     }
 
-
     @GetMapping("/list/{questionIdx}")
-    public ResponseEntity<List<AnswerDto.AnswerResponse>> list(@PathVariable Long questionIdx) {
-        return ResponseEntity.ok(answerService.listByQuestion(questionIdx));
+    public ResponseEntity<BaseResponse<List<AnswerDto.AnswerResponse>>> list(@PathVariable Long questionIdx) {
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, answerService.listByQuestion(questionIdx)));
     }
 
     @PostMapping("/{idx}/select")
-    public ResponseEntity<Void> select(@PathVariable Long idx) {
+    public ResponseEntity<BaseResponse<Void>> select(@PathVariable Long idx) {
         answerService.select(idx);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS));
     }
 
     @PutMapping(value = "/update/{idx}", consumes = {"multipart/form-data"})
-    public ResponseEntity<Void> update(
+    public ResponseEntity<BaseResponse<Void>> update(
             @PathVariable Long idx,
             @AuthenticationPrincipal User currentUser,
             @RequestPart("answer") AnswerDto.AnswerRequest dto,
-            @RequestPart(value = "images", required = false) List<MultipartFile> images
-    ) throws IOException {
+            @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
         answerService.update(idx, currentUser, dto, images);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS));
     }
 
-
     @GetMapping("/read/{idx}")
-    public ResponseEntity<AnswerDto.AnswerResponse> read(@PathVariable Long idx) {
-        return ResponseEntity.ok(answerService.read(idx));
+    public ResponseEntity<BaseResponse<AnswerDto.AnswerResponse>> read(@PathVariable Long idx) {
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, answerService.read(idx)));
     }
 
     @DeleteMapping("/delete/{idx}")
-    public ResponseEntity<Void> deleteAnswer(
+    public ResponseEntity<BaseResponse<Void>> deleteAnswer(
             @PathVariable Long idx,
-            @AuthenticationPrincipal User currentUser
-    ) {
+            @AuthenticationPrincipal User currentUser) {
         answerService.delete(idx, currentUser);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS));
     }
 
     @GetMapping("/list/user/{userId}")
-    public ResponseEntity<List<AnswerDto.AnswerResponse>> listByUserId(@PathVariable Long userId) {
-        return ResponseEntity.ok(answerService.readByAnswer(userId));
+    public ResponseEntity<BaseResponse<List<AnswerDto.AnswerResponse>>> listByUserId(@PathVariable Long userId) {
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, answerService.readByAnswer(userId)));
     }
 }

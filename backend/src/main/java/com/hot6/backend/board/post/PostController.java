@@ -1,6 +1,8 @@
 package com.hot6.backend.board.post;
 
 import com.hot6.backend.board.post.model.PostDto;
+import com.hot6.backend.common.BaseResponse;
+import com.hot6.backend.common.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -19,60 +21,54 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping(value = "/create", consumes = {"multipart/form-data"})
-    public ResponseEntity<Void> create(
+    public ResponseEntity<BaseResponse<Void>> create(
             @RequestPart("post") PostDto.PostRequest dto,
-            @RequestPart(value = "images", required = false) List<MultipartFile> images
-    ) throws IOException {
+            @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
         postService.create(dto, images);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS));
     }
 
     @GetMapping("/list/{boardName}")
-    public ResponseEntity<Page<PostDto.PostResponse>> list(
+    public ResponseEntity<BaseResponse<Page<PostDto.PostResponse>>> list(
             @PathVariable String boardName,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
-    ) {
-        Page<PostDto.PostResponse> responses = postService.list(boardName, page, size);
-        return ResponseEntity.ok(responses);
+            @RequestParam(defaultValue = "5") int size) {
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, postService.list(boardName, page, size)));
     }
 
     @GetMapping("/read/{postIdx}")
-    public ResponseEntity<PostDto.PostResponse> read(@PathVariable Long postIdx) {
-        PostDto.PostResponse response = postService.read(postIdx);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<BaseResponse<PostDto.PostResponse>> read(@PathVariable Long postIdx) {
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, postService.read(postIdx)));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<PostDto.PostResponse>> search(
+    public ResponseEntity<BaseResponse<Page<PostDto.PostResponse>>> search(
             @RequestParam String boardName,
             @RequestParam String category,
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
-    ) {
-        Page<PostDto.PostResponse> result = postService.search(boardName, category, keyword, page, size);
-        return ResponseEntity.ok(result);
+            @RequestParam(defaultValue = "5") int size) {
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS,
+                postService.search(boardName, category, keyword, page, size)));
     }
 
     @DeleteMapping("/delete/{idx}")
-    public ResponseEntity<Void> delete(@PathVariable Long idx) {
+    public ResponseEntity<BaseResponse<Void>> delete(@PathVariable Long idx) {
         postService.delete(idx);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS));
     }
 
     @PutMapping(value = "/update/{idx}", consumes = {"multipart/form-data"})
-    public ResponseEntity<Void> update(
+    public ResponseEntity<BaseResponse<Void>> update(
             @PathVariable Long idx,
             @RequestPart("post") PostDto.PostRequest dto,
-            @RequestPart(value = "images", required = false) List<MultipartFile> images
-    ) throws IOException {
+            @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
         postService.update(idx, dto, images);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS));
     }
 
     @GetMapping("/list/user/{userId}")
-    public ResponseEntity<List<PostDto.UserPostResponse>> getUserPosts(@PathVariable Long userId) {
-        return ResponseEntity.ok(postService.findUserPosts(userId));
+    public ResponseEntity<BaseResponse<List<PostDto.UserPostResponse>>> getUserPosts(@PathVariable Long userId) {
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, postService.findUserPosts(userId)));
     }
 }

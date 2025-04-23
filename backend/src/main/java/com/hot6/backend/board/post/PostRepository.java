@@ -12,14 +12,6 @@ import java.util.List;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
-    List<Post> findByBoardType(BoardType boardType);
-
-    List<Post> findByBoardTypeAndCategoryName(BoardType boardType, String categoryName);
-
-    List<Post> findByBoardTypeAndCategoryNameAndTitleContainingIgnoreCase(BoardType boardType, String categoryName, String keyword);
-
-    List<Post> findByBoardTypeAndCategoryNameAndUser_NicknameContainingIgnoreCase(BoardType boardType, String categoryName, String keyword);
-
     List<Post> findByUserIdxAndIsDeletedFalseOrderByCreatedAtDesc(Long userIdx);
 
     Page<Post> findByBoardType(BoardType boardType, Pageable pageable);

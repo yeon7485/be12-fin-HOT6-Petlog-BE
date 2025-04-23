@@ -8,8 +8,8 @@ import java.util.List;
 
 @Repository
 public interface AnswerImageRepository extends JpaRepository<AnswerImage, Long> {
-
     List<AnswerImage> findByAnswerIdx(Long answerIdx);
+
     void deleteByAnswerIdx(Long answerIdx);
 
     List<AnswerImage> findByAnswer(Answer answer);

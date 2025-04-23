@@ -6,6 +6,8 @@ import com.hot6.backend.board.hashtagQuestion.Hashtag_QuestionService;
 import com.hot6.backend.board.question.images.QuestionImageService;
 import com.hot6.backend.board.question.model.Question;
 import com.hot6.backend.board.question.model.QuestionDto;
+import com.hot6.backend.common.exception.BaseException;
+import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.pet.PetRepository;
 import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.user.model.User;
@@ -14,16 +16,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +35,7 @@ public class QuestionService {
     private final AiAnswerService aiAnswerService;
     private final PetRepository petRepository;
 
-    public void create(QuestionDto.QuestionRequest dto, List<MultipartFile> images) throws IOException {
+    public void create(QuestionDto.QuestionRequest dto, List<MultipartFile> images) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = (User) auth.getPrincipal();
 
@@ -44,104 +43,114 @@ public class QuestionService {
         question.setUser(currentUser);
         questionRepository.save(question);
 
-        if (dto.getPetIdxList() != null && !dto.getPetIdxList().isEmpty()) {
-            List<Pet> pets = petRepository.findAllById(dto.getPetIdxList());
-            pets.forEach(pet -> pet.setQuestion(question));
-            petRepository.saveAll(pets);
-        }
-
-        if (dto.getTags() != null && !dto.getTags().isEmpty()) {
-            hashtagService.saveTags(dto.getTags(), question.getIdx());
-        }
-
-        if (images != null && !images.isEmpty()) {
-            questionImageService.saveImages(images, question);
-        }
-
         try {
+            if (dto.getPetIdxList() != null && !dto.getPetIdxList().isEmpty()) {
+                List<Pet> pets = petRepository.findAllById(dto.getPetIdxList());
+                pets.forEach(pet -> pet.setQuestion(question));
+                petRepository.saveAll(pets);
+            }
+
+            if (dto.getTags() != null && !dto.getTags().isEmpty()) {
+                hashtagService.saveTags(dto.getTags(), question.getIdx());
+            }
+
+            if (images != null && !images.isEmpty()) {
+                questionImageService.saveImages(images, question);
+            }
+
             String aiContent = aiAnswerService.generateAnswer(question.getQTitle(), question.getContent());
             answerService.createAiAnswerForQuestion(question, aiContent);
+
+        } catch (BaseException be) {
+            throw be;
         } catch (Exception e) {
-            System.out.println("❌ AI 답변 생성 실패: " + e.getMessage());
+            throw new BaseException(BaseResponseStatus.QUESTION_CREATE_FAILED);
         }
     }
 
     public Page<QuestionDto.QuestionResponse> list(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return questionRepository.findAll(pageable)
-                .map(q -> {
-                    int answerCount = answerService.countByQuestionIdx(q.getIdx());
-                    return QuestionDto.QuestionResponse.from(q, answerCount);
-                });
+        try {
+            return questionRepository.findAll(pageable)
+                    .map(q -> QuestionDto.QuestionResponse.from(q, answerService.countByQuestionIdx(q.getIdx())));
+        } catch (Exception e) {
+            throw new BaseException(BaseResponseStatus.QUESTION_NOT_FOUND);
+        }
     }
 
     public Page<QuestionDto.QuestionResponse> search(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Question> resultPage = questionRepository
-                .findByqTitleContainingIgnoreCaseOrUserNicknameContainingIgnoreCaseOrContentContainingIgnoreCaseOrHashtagsListTagContainingIgnoreCase(
-                        keyword, keyword, keyword, keyword, pageable);
-
-        return resultPage.map(q -> {
-            int answerCount = answerService.countByQuestionIdx(q.getIdx());
-            return QuestionDto.QuestionResponse.from(q, answerCount);
-        });
+        try {
+            return questionRepository
+                    .findByqTitleContainingIgnoreCaseOrUserNicknameContainingIgnoreCaseOrContentContainingIgnoreCaseOrHashtagsListTagContainingIgnoreCase(
+                            keyword, keyword, keyword, keyword, pageable)
+                    .map(q -> QuestionDto.QuestionResponse.from(q, answerService.countByQuestionIdx(q.getIdx())));
+        } catch (Exception e) {
+            throw new BaseException(BaseResponseStatus.QUESTION_SEARCH_FAILED);
+        }
     }
 
     public QuestionDto.QuestionResponse read(Long idx) {
-        Optional<Question> result = questionRepository.findById(idx);
-        return result.map(q -> {
-            int answerCount = answerService.countByQuestionIdx(q.getIdx());
-            return QuestionDto.QuestionResponse.from(q, answerCount);
-        }).orElse(null);
+        Question question = questionRepository.findById(idx)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.QUESTION_NOT_FOUND));
+        return QuestionDto.QuestionResponse.from(question, answerService.countByQuestionIdx(question.getIdx()));
     }
 
-    public void update(Long idx, QuestionDto.QuestionRequest dto, List<MultipartFile> images) throws IOException {
+    public void update(Long idx, QuestionDto.QuestionRequest dto, List<MultipartFile> images) {
         Question question = questionRepository.findById(idx)
-                .orElseThrow(() -> new RuntimeException("질문이 존재하지 않습니다"));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.QUESTION_NOT_FOUND));
 
-        question.setQTitle(dto.getQTitle());
-        question.setContent(dto.getContent());
-        question.setSelected(dto.isSelected());
-        questionRepository.save(question);
+        try {
+            question.setQTitle(dto.getQTitle());
+            question.setContent(dto.getContent());
+            question.setSelected(dto.isSelected());
+            questionRepository.save(question);
 
-        hashtagService.deleteByQuestionIdx(idx);
-        if (dto.getTags() != null && !dto.getTags().isEmpty()) {
-            hashtagService.saveTags(dto.getTags(), idx);
-        }
+            hashtagService.deleteByQuestionIdx(idx);
+            if (dto.getTags() != null) {
+                hashtagService.saveTags(dto.getTags(), idx);
+            }
 
-        if (dto.getRemovedImageUrls() != null && !dto.getRemovedImageUrls().isEmpty()) {
-            questionImageService.deleteImagesByUrls(dto.getRemovedImageUrls());
-        }
+            if (dto.getRemovedImageUrls() != null) {
+                questionImageService.deleteImagesByUrls(dto.getRemovedImageUrls());
+            }
 
-        if (images != null && !images.isEmpty()) {
-            questionImageService.saveImages(images, question);
-        }
+            if (images != null && !images.isEmpty()) {
+                questionImageService.saveImages(images, question);
+            }
 
-        List<Pet> existingPets = petRepository.findAllByQuestion(question);
-        existingPets.forEach(p -> p.setQuestion(null));
-        petRepository.saveAll(existingPets);
+            List<Pet> existingPets = petRepository.findAllByQuestion(question);
+            existingPets.forEach(p -> p.setQuestion(null));
+            petRepository.saveAll(existingPets);
 
-        if (dto.getPetIdxList() != null && !dto.getPetIdxList().isEmpty()) {
-            List<Pet> selectedPets = petRepository.findAllById(dto.getPetIdxList());
-            selectedPets.forEach(pet -> pet.setQuestion(question));
-            petRepository.saveAll(selectedPets);
+            if (dto.getPetIdxList() != null) {
+                List<Pet> newPets = petRepository.findAllById(dto.getPetIdxList());
+                newPets.forEach(pet -> pet.setQuestion(question));
+                petRepository.saveAll(newPets);
+            }
+
+        } catch (Exception e) {
+            throw new BaseException(BaseResponseStatus.QUESTION_UPDATE_FAILED);
         }
     }
 
     @Transactional
     public void delete(Long idx) {
         Question question = questionRepository.findById(idx)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "질문 없음"));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.QUESTION_NOT_FOUND));
+        try {
+            questionImageService.deleteImagesByQuestion(idx);
+            answerService.deleteByQuestionIdx(idx);
+            hashtagService.deleteByQuestionIdx(idx);
 
-        questionImageService.deleteImagesByQuestion(idx);
-        answerService.deleteByQuestionIdx(idx);
-        hashtagService.deleteByQuestionIdx(idx);
+            List<Pet> relatedPets = petRepository.findAllByQuestion(question);
+            relatedPets.forEach(pet -> pet.setQuestion(null));
+            petRepository.saveAll(relatedPets);
 
-        List<Pet> relatedPets = petRepository.findAllByQuestion(question);
-        relatedPets.forEach(pet -> pet.setQuestion(null));
-        petRepository.saveAll(relatedPets);
-
-        questionRepository.delete(question);
+            questionRepository.delete(question);
+        } catch (Exception e) {
+            throw new BaseException(BaseResponseStatus.QUESTION_DELETE_FAILED);
+        }
     }
 
     public List<QuestionDto.UserQuestionResponse> findUserQuestions(Long userId) {
@@ -151,3 +160,4 @@ public class QuestionService {
                 .toList();
     }
 }
+
