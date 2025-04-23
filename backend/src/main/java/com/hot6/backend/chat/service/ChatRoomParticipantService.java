@@ -47,7 +47,7 @@ public class ChatRoomParticipantService {
     }
 
 
-    @Transactional(readOnly = false)
+    @Transactional
     public void leaveChatRoom(Long chatRoomIdx, Long idx) {
         ChatRoomParticipant chatRoomParticipant = chatRoomParticipantRepository.findByUserIdAndChatRoomIdSimple(idx, chatRoomIdx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_ACCESS_DENIED));

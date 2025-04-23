@@ -151,6 +151,7 @@ public class InitDB {
             for (int i = 1; i <= count; i++) {
                 chatRooms.add(ChatRoom.builder()
                         .cTitle("Chat Room " + i)
+                                .maxParticipants(10)
                         .build());
             }
             return chatRoomRepository.saveAll(chatRooms);

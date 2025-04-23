@@ -9,11 +9,13 @@ import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.common.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
@@ -36,6 +38,7 @@ public class ChatMessageService {
                 .toList();
     }
 
+    @Transactional
     public ChatDto.ChatElement saveChatMessage(Chat chat) {
         return ChatDto.ChatElement.from(chatMessageRepository.save(chat));
     }
