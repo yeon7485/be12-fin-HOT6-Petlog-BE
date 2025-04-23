@@ -7,10 +7,12 @@ import com.hot6.backend.schedule.model.Schedule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class NotificationService {
@@ -19,6 +21,7 @@ public class NotificationService {
     private final ScheduleRepository scheduleRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
+    @Transactional
     public void createNotification(NotificationDto.NotificationSendRequest request) {
         // 1. 스케줄 조회
         Schedule schedule = scheduleRepository.findById(request.getScheduleId())
@@ -45,10 +48,7 @@ public class NotificationService {
 
     public List<NotificationDto.NotificationElement> getNotificationsByUserId(Long userIdx) {
         return notificationRepository.findAllByScheduleUserIdxOrderBySentAtDesc(userIdx).stream()
-                .map(notification -> NotificationDto.NotificationElement.builder()
-                        .message(notification.getMessage())
-                        .sentAt(notification.getSentAt())
-                        .build())
+                .map(NotificationDto.NotificationElement::from)
                 .toList();
     }
 
@@ -58,5 +58,13 @@ public class NotificationService {
 
         notification.setRead(true); // ✅ 읽음 처리
         notificationRepository.save(notification);
+    }
+
+    @Transactional(readOnly = false)
+    public void deleteById(Long idx) {
+        if (!notificationRepository.existsById(idx)) {
+            throw new IllegalArgumentException("존재하지 않는 알림입니다. idx=" + idx);
+        }
+        notificationRepository.deleteById(idx);
     }
 }

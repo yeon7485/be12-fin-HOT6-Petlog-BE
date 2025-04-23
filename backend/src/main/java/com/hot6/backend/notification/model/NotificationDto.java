@@ -18,13 +18,25 @@ public class NotificationDto {
     @Schema(description = "알림 항목")
     public static class NotificationElement {
 
+        @Schema(description = "알림 ID", example = "10")
+        private Long idx;
+
         @Schema(description = "알림 메시지", example = "병원 예약 1시간 전입니다.")
         private String message;
 
         @Schema(description = "알림 시간", example = "2025-04-07T11:00:00")
         private LocalDateTime sentAt;
 
-        // 엔티티로 변환 (Schedule을 주입)
+        // ✅ 엔티티 → DTO 변환 (정적 팩토리 메서드)
+        public static NotificationElement from(Notification notification) {
+            return NotificationElement.builder()
+                    .idx(notification.getIdx())
+                    .message(notification.getMessage())
+                    .sentAt(notification.getSentAt())
+                    .build();
+        }
+
+        // DTO → 엔티티 (Schedule을 주입받아야 함)
         public Notification toEntity(Schedule schedule) {
             Notification notification = new Notification();
             notification.setMessage(this.message);
