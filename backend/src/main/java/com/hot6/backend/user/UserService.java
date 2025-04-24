@@ -176,6 +176,7 @@ public class UserService implements UserDetailsService {
         System.out.println("Returning user email: " + user.getEmail());
         // DB에서 가져온 정보를 UserProfileResponse로 반환
         return UserDto.UserProfileResponse.builder()
+                .provider(user.getProvider())
                 .email(user.getEmail())  // DB에서 가져온 이메일
                 .nickname(user.getNickname())  // DB에서 가져온 닉네임
                 .profileImageUrl(user.getUserProfileImage())  // DB에서 가져온 프로필 이미지 URL
@@ -186,6 +187,23 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
         user.setUserProfileImage(imageUrl);
+        userRepository.save(user);
+    }
+    public void updatePassword(Long userId, String currentPassword, String newPassword) {
+        // 사용자 찾기
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 현재 비밀번호 확인
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 올바르지 않습니다.");
+        }
+
+        // 새 비밀번호 암호화
+        String encodedNewPassword = passwordEncoder.encode(newPassword);
+
+        // 비밀번호 업데이트
+        user.setPassword(encodedNewPassword);
         userRepository.save(user);
     }
 }
