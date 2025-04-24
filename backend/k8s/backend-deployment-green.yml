@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: backend-api-green
-          image: seyeonni/petlog/backend:latest
+          image: petlog/backend:latest
           ports:
             - containerPort: 8080
           volumeMounts:
