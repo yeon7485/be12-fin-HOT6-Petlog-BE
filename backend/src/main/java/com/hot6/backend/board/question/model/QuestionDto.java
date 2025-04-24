@@ -81,15 +81,24 @@ public class QuestionDto {
         private String content;
         private boolean selected;
         private LocalDate createdAt;
+        private String profileImageUrl;
         private List<String> tags;
+        private int answerCount;
 
-        public static UserQuestionResponse from(Question question) {
+
+        public static UserQuestionResponse from(Question question, int answerCount) {
             return UserQuestionResponse.builder()
                     .idx(question.getIdx())
                     .writer(question.getUser().getNickname())
                     .qTitle(question.getQTitle())
                     .content(question.getContent())
                     .selected(question.isSelected())
+                    .createdAt(LocalDate.from(question.getCreatedAt()))
+                    .profileImageUrl(question.getUser() != null ? question.getUser().getUserProfileImage() : null)
+                    .tags(question.getHashtagsList() != null
+                            ? question.getHashtagsList().stream().map(Hashtag_Question::getTag).toList()
+                            : List.of())
+                    .answerCount(answerCount)
                     .build();
         }
     }

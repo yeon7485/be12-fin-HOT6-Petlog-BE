@@ -1,5 +1,6 @@
 package com.hot6.backend.board.question;
 
+import com.hot6.backend.board.answer.AnswerRepository;
 import com.hot6.backend.board.answer.AnswerService;
 import com.hot6.backend.board.answer.aiAnswer.AiAnswerService;
 import com.hot6.backend.board.hashtagQuestion.Hashtag_QuestionService;
@@ -34,6 +35,7 @@ public class QuestionService {
     private final QuestionImageService questionImageService;
     private final AiAnswerService aiAnswerService;
     private final PetRepository petRepository;
+    private final AnswerRepository answerRepository;
 
     public void create(QuestionDto.QuestionRequest dto, List<MultipartFile> images) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -154,10 +156,12 @@ public class QuestionService {
     }
 
     public List<QuestionDto.UserQuestionResponse> findUserQuestions(Long userId) {
-        return questionRepository.findByUser_IdxOrderByCreatedAtDesc(userId)
-                .stream()
-                .map(QuestionDto.UserQuestionResponse::from)
+        List<Question> questions = questionRepository.findByUser_IdxOrderByCreatedAtDesc(userId);
+
+        return questions.stream()
+                .map(q -> QuestionDto.UserQuestionResponse.from(q, answerRepository.countByQuestion(q)))
                 .toList();
     }
+
 }
 
