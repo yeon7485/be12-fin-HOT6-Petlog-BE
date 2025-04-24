@@ -1,6 +1,7 @@
 package com.hot6.backend.board.post.images;
 
 import com.hot6.backend.board.post.model.Post;
+import com.hot6.backend.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PostImage {
+public class PostImage extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
