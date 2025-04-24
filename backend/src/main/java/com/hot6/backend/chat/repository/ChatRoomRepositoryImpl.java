@@ -1,6 +1,9 @@
 package com.hot6.backend.chat.repository;
 
 import com.hot6.backend.chat.model.ChatRoom;
+import com.hot6.backend.chat.model.QChatRoom;
+import com.hot6.backend.chat.model.QChatRoomHashtag;
+import com.hot6.backend.chat.model.QChatRoomParticipant;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -37,5 +40,25 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepositoryCustom {
     }
 
 
+    @Override
+    public List<ChatRoom> findByTagsWithParticipants(List<String> tagList) {
+        return queryFactory
+                .selectDistinct(chatRoom)
+                .from(chatRoom)
+                .join(chatRoom.hashtags, chatRoomHashtag) // ✅ 올바른 필드명
+                .join(chatRoom.participants, chatRoomParticipant).fetchJoin() // ✅ fetchJoin으로 참여자도 함께 조회
+                .where(chatRoomHashtag.cTag.in(tagList))
+                .fetch();
+    }
 
+    @Override
+    public List<ChatRoom> findByTitleWithParticipantsAndTags(String keyword) {
+        return queryFactory
+                .selectDistinct(chatRoom)
+                .from(chatRoom)
+                .join(chatRoom.participants, chatRoomParticipant).fetchJoin()
+                .join(chatRoom.hashtags, chatRoomHashtag)
+                .where(chatRoom.cTitle.containsIgnoreCase(keyword))
+                .fetch();
+    }
 }

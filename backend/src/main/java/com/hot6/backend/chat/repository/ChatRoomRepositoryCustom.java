@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface ChatRoomRepositoryCustom {
     Slice<ChatRoom> findChatRoomsWithDetailsByIds(List<Long> roomIds, Pageable pageable);
-    
+    List<ChatRoom> findByTagsWithParticipants(List<String> tagList);
+    List<ChatRoom> findByTitleWithParticipantsAndTags(String keyword);
 }

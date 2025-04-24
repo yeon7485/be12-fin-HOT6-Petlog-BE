@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long>,ChatRoomRepositoryCustom  {
+public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long>, ChatRoomRepositoryCustom  {
 
     @Query("SELECT cr FROM ChatRoom cr")
     Slice<ChatRoom> findAllWithSlice(Pageable pageable);
@@ -38,4 +38,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long>,ChatRo
 
     // ChatRoomRepositoryCustom.java
     Slice<ChatRoom> findChatRoomsWithDetailsByIds(List<Long> roomIds, Pageable pageable);
+    List<ChatRoom> findByTagsWithParticipants(List<String> tagList);
+    List<ChatRoom> findByTitleWithParticipantsAndTags(String keyword);
 }
