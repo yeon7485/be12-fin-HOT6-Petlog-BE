@@ -111,6 +111,9 @@ public class UserDto {
 
         @Schema(description = "회원의 펫 카드 리스트")
         private List<PetDto.PetCard> petCards;
+
+        @Schema(description = "카카오 로그인 여부")
+        private String provider;
     }
 
     @Getter

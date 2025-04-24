@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -79,10 +80,17 @@ public class UserController {
     }
 
     @Operation(summary = "비밀번호 수정", description = "회원이 현재 비밀번호를 입력하고 새 비밀번호로 변경")
-    @PostMapping("/{idx}/password")
-    public ResponseEntity<String> updatePassword(@PathVariable Long idx,
-                                                 @RequestBody UserDto.PasswordUpdateRequest request) {
-        return ResponseEntity.ok("ok");
+    @PostMapping("/password")  // 이제 {idx}를 포함할 필요 없음
+    public ResponseEntity<String> updatePassword(
+            @RequestBody UserDto.PasswordUpdateRequest request,
+            @AuthenticationPrincipal User user) {
+        try {
+            // user.getIdx()로 로그인된 유저의 userId를 직접 가져옵니다.
+            userService.updatePassword(user.getIdx(), request.getCurrentPassword(), request.getNewPassword());
+            return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 처리 (소셜 회원은 비밀번호 불필요)")
