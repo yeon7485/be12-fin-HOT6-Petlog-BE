@@ -15,7 +15,7 @@ import java.io.InputStream;
 
 @Service
 public class S3Service {
-    @Value("${S3_BUCKET_NAME}")
+    @Value("${spring.cloud.aws.s3.bucket}")
     private String bucketName;
 
     private final S3Operations s3Operations;
