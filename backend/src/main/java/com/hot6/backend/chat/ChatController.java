@@ -80,17 +80,12 @@ public class ChatController {
 
     @Operation(summary = "채팅방 검색", description = "채팅방 제목 또는 해시태그로 검색합니다.")
     @GetMapping("/search")
-    public ResponseEntity<List<ChatDto.ChatRoomListDto>> searchChat(
+    public ResponseEntity<BaseResponse<List<ChatDto.ChatRoomListDto>>> searchChat(
+            @AuthenticationPrincipal User user,
             @RequestParam(required = false) String query,
             @RequestParam(required = false) List<String> hashtags) {
-        //query or hashtags 구분
-        //hashtags 일 경우, 이 리스트를 조건 or 로 걸어서 채팅방 목록 가져오기
-        //chat_room_participant >- chatroom -< chatroomhashtag
-
-        List<ChatDto.ChatRoomListDto> list = List.of(
-
-        );
-        return ResponseEntity.ok(list);
+        Long userIdx = (user != null) ? user.getIdx() : null;
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, chatRoomService.searchChatRoom(userIdx,query,hashtags)));
     }
 
     @Operation(summary = "단일 채팅방의 정보 조회", description = "단일 채팅방의 정보를 조회합니다.(채팅방 이름, 해시 태그)")

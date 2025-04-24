@@ -24,6 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Transactional(readOnly = true)
@@ -171,4 +174,17 @@ public class ChatRoomService {
         chatRoomParticipantService.join(user, chatRoom);
     }
 
+    public List<ChatDto.ChatRoomListDto> searchChatRoom(Long userIdx, String query, List<String> hashtags) {
+        List<ChatRoom> chatRooms;
+
+        if (query != null && !query.isBlank()) {
+            chatRooms = chatRoomRepository.findByTitleWithParticipantsAndTags(query);
+        } else {
+            chatRooms = chatRoomRepository.findByTagsWithParticipants(hashtags);
+        }
+
+        return chatRooms.stream()
+                .map(room -> ChatDto.ChatRoomListDto.from(room, userIdx))
+                .collect(Collectors.toList());
+    }
 }
