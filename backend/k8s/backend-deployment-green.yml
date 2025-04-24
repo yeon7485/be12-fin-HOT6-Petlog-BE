@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-api-deployment-green
+  labels:
+    type: backend-app
+    deployment: green
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: backend-app
+      deployment: green
+  strategy:
+    type: RollingUpdate
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        type: backend-app
+        deployment: green
+    spec:
+      containers:
+        - name: backend-api-green
+          image: seyeonni/petlog/backend:latest
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: backend-api-config

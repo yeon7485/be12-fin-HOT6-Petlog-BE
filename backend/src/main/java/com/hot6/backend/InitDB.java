@@ -22,8 +22,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +30,7 @@ import java.util.*;
 
 @Slf4j
 //@Profile("dev") // 개발 환경에서만 실행
-@Component
+//@Component
 @RequiredArgsConstructor
 public class InitDB {
     private final InitService initService;
