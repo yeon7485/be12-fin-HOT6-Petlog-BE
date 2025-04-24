@@ -2,6 +2,7 @@ package com.hot6.backend.chat.repository;
 
 import com.hot6.backend.chat.model.ChatRoom;
 import com.hot6.backend.chat.model.ChatRoomParticipant;
+import com.hot6.backend.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -20,4 +21,6 @@ WHERE p.user.idx = :userIdx AND p.chatRoom.idx = :chatRoomIdx
     Optional<ChatRoomParticipant> findByUserIdAndChatRoomIdSimple(Long userIdx,Long chatRoomIdx);
 
     int countByChatRoom(ChatRoom chatRoom);
+
+    Optional<ChatRoomParticipant> findChatRoomParticipantByChatRoomAndUser(ChatRoom chatRoom, User user);
 }

@@ -79,4 +79,8 @@ public class ChatRoomParticipantService {
     public int countByChatRoom(ChatRoom chatRoom) {
         return chatRoomParticipantRepository.countByChatRoom(chatRoom);
     }
+
+    public ChatRoomParticipant findByChatRoomAndUser(ChatRoom chatRoom, User user) {
+        return chatRoomParticipantRepository.findChatRoomParticipantByChatRoomAndUser(chatRoom, user).orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_USER_NOT_FOUNT));
+    }
 }

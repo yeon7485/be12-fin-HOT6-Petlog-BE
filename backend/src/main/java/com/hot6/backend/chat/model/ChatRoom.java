@@ -34,4 +34,8 @@ public class ChatRoom extends BaseEntity {
     @BatchSize(size = 50)
     @OneToMany(mappedBy = "chatRoom")
     private Set<ChatRoomHashtag> hashtags = new HashSet<>();
+
+    public void updateInfo(String title){
+        this.cTitle = title;
+    }
 }
