@@ -1,5 +1,7 @@
 package com.hot6.backend.pet;
 
+import com.hot6.backend.common.BaseResponseStatus;
+import com.hot6.backend.common.exception.BaseException;
 import io.awspring.cloud.s3.S3Operations;
 import io.awspring.cloud.s3.S3Resource;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,9 +50,12 @@ public class S3Service {
                 return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(s3Resource);
             }
 
-            return ResponseEntity.badRequest().body("사진 파일만 다운로드 가능합니다.");
+            // ✅ 잘못된 형식 예외
+            throw new BaseException(BaseResponseStatus.INVALID_FILE_TYPE);
+
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("파일 다운로드 실패: " + e.getMessage());
+            // ✅ 다운로드 실패 예외
+            throw new BaseException(BaseResponseStatus.FILE_DOWNLOAD_FAILED, e.getMessage());
         }
     }
 

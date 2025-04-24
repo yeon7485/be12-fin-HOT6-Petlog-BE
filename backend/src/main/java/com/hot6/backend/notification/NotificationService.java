@@ -1,5 +1,7 @@
 package com.hot6.backend.notification;
 
+import com.hot6.backend.common.BaseResponseStatus;
+import com.hot6.backend.common.exception.BaseException;
 import com.hot6.backend.notification.model.Notification;
 import com.hot6.backend.notification.model.NotificationDto;
 import com.hot6.backend.pet.PetRepository;
@@ -30,7 +32,7 @@ public class NotificationService {
     public void createNotification(NotificationDto.NotificationSendRequest request, Long userIdx) {
         // 1. 스케줄 조회
         Schedule schedule = scheduleRepository.findById(request.getScheduleId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 스케줄 없음"));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.NOTIFICATION_NOT_FOUND));
 
         // 2. DTO → 엔티티로 변환
         Notification notification = NotificationDto.NotificationElement.builder()
@@ -69,7 +71,7 @@ public class NotificationService {
 
     public void markAsRead(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new IllegalArgumentException("알림이 존재하지 않습니다."));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.NOTIFICATION_NOT_FOUND));
 
         notification.setRead(true); // ✅ 읽음 처리
         notificationRepository.save(notification);
@@ -78,7 +80,7 @@ public class NotificationService {
     @Transactional(readOnly = false)
     public void deleteById(Long idx) {
         if (!notificationRepository.existsById(idx)) {
-            throw new IllegalArgumentException("존재하지 않는 알림입니다. idx=" + idx);
+            throw new BaseException(BaseResponseStatus.NOTIFICATION_NOT_FOUND);
         }
         notificationRepository.deleteById(idx);
     }

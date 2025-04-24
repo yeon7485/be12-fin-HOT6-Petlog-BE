@@ -5,6 +5,8 @@ import com.hot6.backend.category.model.Category;
 import com.hot6.backend.category.model.CategoryDto;
 import com.hot6.backend.category.model.CategoryRepository;
 import com.hot6.backend.category.model.CategoryType;
+import com.hot6.backend.common.BaseResponseStatus;
+import com.hot6.backend.common.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +24,7 @@ public class CategoryService {
         try {
             categoryType = CategoryType.valueOf(request.getType());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("유효하지 않은 카테고리 타입입니다: " + request.getType());
+            throw new BaseException(BaseResponseStatus.CATEGORY_INVALID_TYPE);
         }
 
         Category category = Category.builder()
@@ -47,7 +49,7 @@ public class CategoryService {
 
     public void updateCategory(Long categoryIdx, CategoryDto.CategoryUpdateRequest request) {
         Category category = categoryRepository.findById(categoryIdx)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
 
         category.setName(request.getName());
         category.setColor(request.getColor());
@@ -58,7 +60,7 @@ public class CategoryService {
 
     public void deleteCategory(Long categoryIdx) {
         Category category = categoryRepository.findById(categoryIdx)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
 
         categoryRepository.delete(category);
     }
