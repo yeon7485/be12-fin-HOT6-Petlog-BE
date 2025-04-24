@@ -6,6 +6,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -13,10 +15,21 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    private static final String SECRET = System.getenv("JWT_SECRET");
-    private static final int EXP = Integer.parseInt(System.getenv("JWT_EXPIRED"));
 
+    @Value("${jwt.secret}")
+    private String secret;
 
+    @Value("${jwt.expired}")
+    private int expired;
+
+    public static String SECRET;
+    public static int EXP;
+
+    @PostConstruct
+    public void init() {
+        SECRET = secret;
+        EXP = expired;
+    }
     public static User getUser(String token) {
         try {
             Claims claims = Jwts.parserBuilder()
