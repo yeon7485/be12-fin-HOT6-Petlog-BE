@@ -23,10 +23,10 @@ import static com.hot6.backend.pet.model.QPet.pet;
 @Service
 public class PetService {
     private final PetRepository petRepository;
-    private final ImageService imageService;
     private final UserRepository userRepository;
     private final S3Service s3Service;
 
+    // 카드 생성
     public void createPetCard(PetDto.PetCardCreateRequest request, String imagePath) {
         // 이미지 URL이 있을 경우, 해당 URL을 사용
         String profileImageUrl = null;
@@ -35,7 +35,7 @@ public class PetService {
         }
 
         User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다: " + request.getUserId()));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NOT_FOUND));
 
 
         Pet pet = request.toEntity(user,imagePath);
@@ -43,12 +43,7 @@ public class PetService {
         petRepository.save(pet);  // DB에 저장
     }
 
-    public String saveProfileImage(MultipartFile image) {
-        String imagePath = imageService.upload(new MultipartFile[]{image}).get(0);
-        // 서버에서 이미지 경로 반환 시 절대 경로로 설정
-        return imagePath;
-    }
-
+    //유저별 카드 목록
     public List<PetDto.PetCard> getPetCardsByUserId(Long userId) {
         List<Pet> pets = petRepository.findByUserIdx(userId);
 
@@ -57,10 +52,11 @@ public class PetService {
                 .collect(Collectors.toList());
     }
 
+    // 카드 수정
     public void updatePetCard(PetDto.PetCardUpdateRequest petCardUpdateRequest, MultipartFile profileImage, Long petId) {
         // 1. 기존 반려동물 조회
         Pet pet = petRepository.findById(petId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 반려동물이 존재하지 않습니다. id=" + petId));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.PET_NOT_FOUND_WITH_ID, petId));
 
         // 2. DTO를 통해 엔티티 업데이트
         petCardUpdateRequest.updateEntity(pet);
@@ -72,18 +68,17 @@ public class PetService {
                 String imageUrl = s3Service.upload(profileImage, key);
                 pet.setProfileImageUrl(imageUrl);  // 이미지 URL 반영
             } catch (IOException e) {
-                throw new RuntimeException("이미지 업로드 실패", e);
+                throw new BaseException(BaseResponseStatus.IMAGE_UPLOAD_FAILED);
             }
         }
-
         // 4. 저장
         petRepository.save(pet);
     }
-
+    // 카드 상세 조회
     public PetDto.PetCardDetailResponse getPetDetailById(Long petId) {
         // Pet ID로 해당 반려동물을 DB에서 조회
         Pet pet = petRepository.findById(petId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 반려동물이 존재하지 않습니다. id=" + petId));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.PET_NOT_FOUND_WITH_ID, petId));
 
         // 조회된 Pet 객체를 PetCardDetailResponse로 변환하여 반환
         return PetDto.PetCardDetailResponse.from(pet);
@@ -93,7 +88,7 @@ public class PetService {
     public void deletePet(Long petId) {
         // 반려동물 ID로 조회
         Pet pet = petRepository.findById(petId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 반려동물이 존재하지 않습니다. id=" + petId));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.PET_NOT_FOUND_WITH_ID, petId));
 
         // 삭제 처리
         petRepository.delete(pet);
