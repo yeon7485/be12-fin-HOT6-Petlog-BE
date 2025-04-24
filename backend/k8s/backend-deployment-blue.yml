@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend-api-deployment-blue
+  name: backend-blue
   labels:
     type: backend-app
     deployment: blue
