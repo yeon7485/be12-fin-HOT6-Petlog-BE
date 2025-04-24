@@ -21,9 +21,7 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -186,5 +184,52 @@ public class ChatRoomService {
         return chatRooms.stream()
                 .map(room -> ChatDto.ChatRoomListDto.from(room, userIdx))
                 .collect(Collectors.toList());
+    }
+
+    public void updateChatRoomInfo(User user, Long chatRoomIdx, ChatDto.UpdateChatRequest request) {
+        ChatRoom chatRoom = chatRoomRepository.findByIdx(chatRoomIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
+        // 채팅방 참여자(isAdmin) == userIdx
+
+        ChatRoomParticipant participant = chatRoomParticipantService.findByChatRoomAndUser(chatRoom, user);
+
+        // 3. 관리자 여부 확인
+        if (!participant.getIsAdmin()) {
+            throw new BaseException(BaseResponseStatus.CHAT_ROOM_UPDATE_NO_PERMISSION);
+        }
+
+        chatRoom.updateInfo(request.getTitle());
+        // 해시태그 변경...
+        //입력값... 기존 해시태그랑 비교?
+        //새로 생성된 것과 없어진것 찾아서 없어진것 삭제 , 새로 생성된건 추가...
+
+        // 🔧 1. 기본 정보 업데이트
+        chatRoom.updateInfo(request.getTitle());
+
+        // 🔧 2. 기존 해시태그 가져오기
+        List<ChatRoomHashtag> existingTags = chatRoomHashtagService.findByChatRoom(chatRoom);
+        Set<String> existingTagNames = existingTags.stream()
+                .map(ChatRoomHashtag::getCTag)
+                .collect(Collectors.toSet());
+
+        // 🔧 3. 클라이언트로부터 받은 새로운 해시태그 목록
+        Set<String> newTagNames = new HashSet<>(request.getHashtags()); // 이미 # 제거된 상태
+
+        // 🔧 4. 삭제 대상 찾기 (기존에는 있었는데, 새 요청에는 없는 것)
+        List<ChatRoomHashtag> toRemove = existingTags.stream()
+                .filter(tag -> !newTagNames.contains(tag.getCTag()))
+                .collect(Collectors.toList());
+
+        chatRoomHashtagService.deleteAll(toRemove);
+
+        // 🔧 5. 추가 대상 찾기 (요청에는 있는데, 기존에는 없는 것)
+        List<ChatRoomHashtag> toAdd = newTagNames.stream()
+                .filter(tag -> !existingTagNames.contains(tag))
+                .map(tag -> ChatRoomHashtag.builder()
+                        .chatRoom(chatRoom)
+                        .cTag(tag)
+                        .build())
+                .collect(Collectors.toList());
+
+        chatRoomHashtagService.saveAll(toAdd);
     }
 }

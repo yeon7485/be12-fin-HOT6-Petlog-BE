@@ -38,9 +38,11 @@ public enum BaseResponseStatus {
 
     //-- 2100 : 채팅방 생성/수정 관련
     CHAT_ROOM_CREATION_FAILED(false, 2100, "채팅방 생성에 실패했습니다."),
+    CHAT_ROOM_USER_NOT_FOUNT(false,2104,"채팅방 수정 시, 채팅방 유저 조회에 실패하였습니다."),
     CHAT_ROOM_UPDATE_FAILED(false, 2101, "채팅방 수정에 실패했습니다."),
     CHAT_ROOM_DELETE_FAILED(false, 2102, "채팅방 삭제에 실패했습니다."),
     CHAT_ROOM_HASHTAG_FORMAT_INVALID(false, 2103, "해시태그 형식이 잘못되었습니다."),
+    CHAT_ROOM_UPDATE_NO_PERMISSION(false, 2104, "채팅방 수정 권한이 없습니다."),
 
     //-- 2200 : 채팅 메시지 관련
     CHAT_MESSAGE_SEND_FAILED(false, 2200, "채팅 메시지 전송에 실패했습니다."),

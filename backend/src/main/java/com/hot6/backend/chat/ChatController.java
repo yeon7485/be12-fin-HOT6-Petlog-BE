@@ -38,8 +38,10 @@ public class ChatController {
     @Operation(summary = "그룹 채팅방 수정", description = "채팅방 제목과 해시태그를 수정합니다.")
     @PutMapping("/{chatRoomIdx}")
     public ResponseEntity<String> updateGroupChat(
+            @AuthenticationPrincipal User user,
             @PathVariable Long chatRoomIdx,
             @RequestBody ChatDto.UpdateChatRequest request) {
+        chatRoomService.updateChatRoomInfo(user, chatRoomIdx, request);
         return ResponseEntity.ok("채팅방 수정 완료");
     }
 
