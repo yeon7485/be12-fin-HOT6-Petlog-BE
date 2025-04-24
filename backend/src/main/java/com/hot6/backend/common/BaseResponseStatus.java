@@ -84,7 +84,6 @@ public enum BaseResponseStatus {
     //-- 5200 : 펫 수정
     PET_UPDATE_FAILED(false, 5200, "반려동물 정보 수정에 실패했습니다."),
 
-<<<<<<< Updated upstream
     /* 6000 ~ 6999 : 게시판 관련 에러 */
     //-- 6000 : 게시글
     POST_NOT_FOUND(false, 6000, "게시글 조회에 실패했습니다."),
@@ -144,15 +143,6 @@ public enum BaseResponseStatus {
 
     AI_USER_NOT_FOUND(false, 6308, "AI 유저를 찾을 수 없습니다."),
 
-=======
-    /* 6000 ~ 6999 : 이미지 관련 에러 */
-    //-- 6000 : 이미지 업로드 실패
-    IMAGE_UPLOAD_FAILED(false,6000,"이미지 업로드에 실패했습니다"),
-    //-- 6100 : 이미지 다운로드 에러
-    INVALID_FILE_TYPE(false, 6100, "사진 파일만 다운로드 가능합니다."),
-    //-- 6200 : 파일 다운로드 에러
-    FILE_DOWNLOAD_FAILED(false, 6200, "파일 다운로드에 실패했습니다."),
-
     /* 7000 ~ 7999 : 알림 관련 에러 */
     // 7000 : 알림 조회 실패
     NOTIFICATION_NOT_FOUND(false, 7000, "해당 알림이 존재하지 않습니다."),
@@ -168,7 +158,6 @@ public enum BaseResponseStatus {
 
     // 7400 : 알림 읽음 처리 실패
     NOTIFICATION_MARK_AS_READ_FAILED(false, 7400, "알림 읽음 처리에 실패했습니다."),
->>>>>>> Stashed changes
 
     /* 8000 ~ 8999 : 관리자 관련 에러 */
     ADMIN_CATEGORY_DELETE_FAILED_REASON_CONNECT_STORE(false, 8000, "삭제하려는 카테고리는 Store에 하나 이상 연결되어 있는 카테고리 입니다. Store에서 카테고리 수정을 먼저 한 후 삭제해주세요."),
@@ -181,8 +170,15 @@ public enum BaseResponseStatus {
     //-- 9200 : 부모 카테고리 조회 에러
     CATEGORY_NOT_FOUND_PARENT_CATEGORY(false, 9200, "부모 카테고리를 찾을 수 없습니다."),
     // 9300 : 유효하지 않은 카테고리 타입
-    CATEGORY_INVALID_TYPE(false, 9300, "유효하지 않은 카테고리 타입입니다.");
+    CATEGORY_INVALID_TYPE(false, 9300, "유효하지 않은 카테고리 타입입니다."),
 
+    /* 10000 ~ 10999 : 이미지 관련 에러 */
+    //-- 10000 : 이미지 업로드 실패
+    IMAGE_UPLOAD_FAILED(false,10000,"이미지 업로드에 실패했습니다"),
+    //-- 10100 : 이미지 다운로드 에러
+    INVALID_FILE_TYPE(false, 10100, "사진 파일만 다운로드 가능합니다."),
+    //-- 10200 : 파일 다운로드 에러
+    FILE_DOWNLOAD_FAILED(false, 10200, "파일 다운로드에 실패했습니다.");
 
 
     private final boolean isSuccess;
