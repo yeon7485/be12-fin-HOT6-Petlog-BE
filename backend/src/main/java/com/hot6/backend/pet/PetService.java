@@ -11,6 +11,7 @@ import com.hot6.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static com.hot6.backend.pet.model.QPet.pet;
 
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class PetService {
@@ -30,6 +32,7 @@ public class PetService {
     @Value("${pet-image}")
     private String petImageUrl;
 
+    @Transactional
     public void createPetCard(PetDto.PetCardCreateRequest request, String imagePath) {
         // ✅ imagePath가 없으면 환경변수로 대체
         String profileImageUrl = (imagePath != null && !imagePath.isBlank())
@@ -46,6 +49,7 @@ public class PetService {
         petRepository.save(pet);
     }
 
+
     //유저별 카드 목록
     public List<PetDto.PetCard> getPetCardsByUserId(Long userId) {
         List<Pet> pets = petRepository.findByUserIdx(userId);
@@ -55,6 +59,7 @@ public class PetService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     // 카드 수정
     public void updatePetCard(PetDto.PetCardUpdateRequest petCardUpdateRequest, MultipartFile profileImage, Long petId) {
         // 1. 기존 반려동물 조회
@@ -87,6 +92,7 @@ public class PetService {
         return PetDto.PetCardDetailResponse.from(pet);
     }
 
+    @Transactional
     // 반려동물 삭제
     public void deletePet(Long petId) {
         // 반려동물 ID로 조회

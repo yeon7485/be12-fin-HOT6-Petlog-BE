@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
@@ -128,7 +129,6 @@ public class UserService implements UserDetailsService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> result = userRepository.findByEmail(email);
 
@@ -193,12 +193,16 @@ public class UserService implements UserDetailsService {
                 .petCards(petCards)  // 펫 카드 목록
                 .build();
     }
+
+    @Transactional
     public void updateProfileImage(Long userId, String imageUrl) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
         user.setUserProfileImage(imageUrl);
         userRepository.save(user);
     }
+
+    @Transactional
     public void updatePassword(Long userId, String currentPassword, String newPassword) {
         // 사용자 찾기
         User user = userRepository.findById(userId)

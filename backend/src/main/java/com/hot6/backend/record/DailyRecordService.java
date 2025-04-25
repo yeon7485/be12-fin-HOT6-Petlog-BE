@@ -10,6 +10,7 @@ import com.hot6.backend.record.model.DailyRecord;
 import com.hot6.backend.record.model.DailyRecordDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,12 +21,14 @@ import java.util.List;
 import static com.hot6.backend.schedule.model.QSchedule.schedule;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class DailyRecordService {
     private final DailyRecordRepository dailyRecordRepository;
     private final PetRepository petRepository;
     private final CategoryRepository categoryRepository;
 
+    @Transactional
     public void createDailyRecord(Long petIdx, DailyRecordDto.RecordCreateRequest dto) {
         Pet pet = petRepository.findById(petIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.PET_NOT_FOUND));
 

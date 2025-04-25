@@ -13,6 +13,7 @@ import com.hot6.backend.schedule.model.ScheduleDto;
 import com.hot6.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import static java.util.stream.Collectors.toList;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ScheduleService {
 
@@ -31,6 +33,7 @@ public class ScheduleService {
     private final CategoryRepository categoryRepository;
     private final PetRepository petRepository;
 
+    @Transactional
     public void createSchedule(Long petIdx, ScheduleDto.ScheduleCreateRequest dto) {
         Category category = categoryRepository.findById(dto.getCategoryIdx())
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
@@ -66,6 +69,7 @@ public class ScheduleService {
         return scheduleRepository.findAllWithChatRoomByChatRoomIdx(chatRoomIdx).stream().map(ChatDto.ChatRoomScheduleElement::from).collect(toList());
     }
 
+    @Transactional
     public void createChatRoomSchedule(ChatDto.CreateChatRoomScheduleRequest dto, ChatRoom chatRoom, User user) {
         Category category = categoryRepository.findById(dto.getCategoryIdx())
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));

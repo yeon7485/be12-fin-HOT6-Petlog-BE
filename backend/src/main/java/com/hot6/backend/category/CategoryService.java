@@ -9,15 +9,17 @@ import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.common.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-
-@RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class CategoryService {
     private final CategoryRepository categoryRepository;
 
+    @Transactional
     public void createCategory(CategoryDto.CategoryCreateRequest request) {
         // 문자열 → enum 변환
         CategoryType categoryType;
@@ -47,6 +49,7 @@ public class CategoryService {
                 .toList();
     }
 
+    @Transactional
     public void updateCategory(Long categoryIdx, CategoryDto.CategoryUpdateRequest request) {
         Category category = categoryRepository.findById(categoryIdx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
@@ -58,6 +61,7 @@ public class CategoryService {
         categoryRepository.save(category);
     }
 
+    @Transactional
     public void deleteCategory(Long categoryIdx) {
         Category category = categoryRepository.findById(categoryIdx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
