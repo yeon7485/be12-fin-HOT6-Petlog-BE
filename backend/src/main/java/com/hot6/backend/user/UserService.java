@@ -47,7 +47,7 @@ public class UserService implements UserDetailsService {
 
     public void sendEmail(String uuid, String email) {
         System.out.println(email);
-        String authUrl = "http://localhost:8080/user/verify-email?uuid=" + uuid;
+        String authUrl = "https://www.petlog.kro.kr/api/user/verify-email?uuid=" + uuid;
         String htmlContent = """
         <div style="font-family: 'Apple SD Gothic Neo', 'sans-serif' !important; width: 540px; height: 600px; border-top: 4px solid #6A0104; margin: 100px auto; padding: 30px 0; box-sizing: border-box;">
             <h1 style="margin: 0; padding: 0 5px; font-size: 28px; font-weight: 400;">
@@ -100,7 +100,7 @@ public class UserService implements UserDetailsService {
 
         userRepository.save(user);
         try {
-            response.sendRedirect("http://localhost:5173/");
+            response.sendRedirect("https://www.petlog.kro.kr/user/login");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
