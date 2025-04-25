@@ -41,9 +41,15 @@ public class UserService implements UserDetailsService {
     private final JavaMailSender mailSender;
     private final EmailVerifyRepository emailVerifyRepository;
 
+    @Value("${profile-image}")
+    private String defaultProfileImageUrl;
+
+    @Value("${email-auth-url}")
+    private String emailAuthUrl;
+
     public void sendEmail(String uuid, String email) {
         System.out.println(email);
-        String authUrl = "http://localhost:8080/user/verify-email?uuid=" + uuid;
+        String authUrl = emailAuthUrl  + uuid;
         String htmlContent = """
         <div style="font-family: 'Apple SD Gothic Neo', 'sans-serif' !important; width: 540px; height: 600px; border-top: 4px solid #6A0104; margin: 100px auto; padding: 30px 0; box-sizing: border-box;">
             <h1 style="margin: 0; padding: 0 5px; font-size: 28px; font-weight: 400;">
@@ -85,6 +91,9 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    @Value("${frontend-server}")
+    private String frontendServer;
+
     @Transactional
     public void verify(String uuid, HttpServletResponse response) {
         System.out.println(uuid);
@@ -96,7 +105,7 @@ public class UserService implements UserDetailsService {
 
         userRepository.save(user);
         try {
-            response.sendRedirect("http://localhost:5173/");
+            response.sendRedirect(frontendServer+"/user/login");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -104,8 +113,20 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public UserDto.CreateResponse signup(UserDto.CreateRequest dto) {
+        // 이메일 중복 확인
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("이미 가입된 이메일입니다.");
+        }
         String uuid = UUID.randomUUID().toString();
         User user = userRepository.save(dto.toEntity(passwordEncoder.encode(dto.getPassword())));
+
+        String resolvedProfileImage = (dto.getProfileImageUrl() == null || dto.getProfileImageUrl().isBlank())
+                ? defaultProfileImageUrl
+                : dto.getProfileImageUrl();
+
+        User user = dto.toEntity(passwordEncoder.encode(dto.getPassword()), resolvedProfileImage);
+
+        userRepository.save(user);
 
         if(!user.getEnabled()) {
             emailVerifyRepository.save(EmailVerify.builder()
