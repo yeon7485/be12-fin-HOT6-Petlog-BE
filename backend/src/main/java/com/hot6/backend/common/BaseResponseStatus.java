@@ -100,6 +100,10 @@ public enum BaseResponseStatus {
 
     POST_DETAIL_FAILED(false, 6005, "게시글 상세조회에 실패했습니다."),
 
+    POST_REQUIRED_TITLE(false, 6006, "제목이 입력되지 않았습니다"),
+
+    POST_REQUIRED_CONTENT(false, 6007, "내용이 입력되지 않았습니다"),
+
     //-- 6100 : 댓글
     COMMENT_NOT_FOUND(false, 6100,"댓글 조회에 실패했습니다."),
 
@@ -125,6 +129,10 @@ public enum BaseResponseStatus {
     HASHTAG_SAVE_FAILED(false, 6206, "해시태그 저장에 실패했습니다."),
 
     HASHTAG_NOT_FOUND(false, 6207, "해시태그 조회에 실패했습니다."),
+
+    QUESTION_REQUIRED_TITLE(false, 6208, "제목이 입력되지 않았습니다"),
+
+    QUESTION_REQUIRED_CONTENT(false, 6209, "내용이 입력되지 않았습니다"),
 
     //-- 6300 : 답변
     ANSWER_NOT_FOUND(false, 6300,"답변 조회에 실패했습니다."),

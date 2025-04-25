@@ -4,6 +4,7 @@ import com.hot6.backend.board.post.images.PostImage;
 import com.hot6.backend.category.model.CategoryDto;
 import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.pet.model.PetSummary;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,11 @@ public class PostDto {
     @Setter
     public static class PostRequest {
         private String writer;
+
+        @NotBlank(message = "제목은 필수 입력 항목입니다.")
         private String title;
+
+        @NotBlank(message = "내용은 필수 입력 항목입니다.")
         private String content;
         private String image;
         private Long categoryIdx;
