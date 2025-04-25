@@ -3,10 +3,12 @@ package com.hot6.backend.board.post;
 import com.hot6.backend.board.post.model.PostDto;
 import com.hot6.backend.common.BaseResponse;
 import com.hot6.backend.common.BaseResponseStatus;
+import com.hot6.backend.user.model.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,9 +25,10 @@ public class PostController {
 
     @PostMapping(value = "/create", consumes = {"multipart/form-data"})
     public ResponseEntity<BaseResponse<Void>> create(
+            @AuthenticationPrincipal User user,
             @RequestPart("post") @Valid PostDto.PostRequest dto,
             @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
-        postService.create(dto, images);
+        postService.create(user,dto, images);
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS));
     }
 

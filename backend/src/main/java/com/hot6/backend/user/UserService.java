@@ -128,13 +128,6 @@ public class UserService implements UserDetailsService {
         User user = dto.toEntity(passwordEncoder.encode(dto.getPassword()), resolvedProfileImage);
         userRepository.save(user);
 
-        String resolvedProfileImage = (dto.getProfileImageUrl() == null || dto.getProfileImageUrl().isBlank())
-                ? defaultProfileImageUrl
-                : dto.getProfileImageUrl();
-
-        User user = dto.toEntity(passwordEncoder.encode(dto.getPassword()), resolvedProfileImage);
-
-        userRepository.save(user);
 
         if(!user.getEnabled()) {
             emailVerifyRepository.save(EmailVerify.builder()

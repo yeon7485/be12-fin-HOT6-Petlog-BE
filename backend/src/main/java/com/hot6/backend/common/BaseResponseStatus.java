@@ -103,6 +103,7 @@ public enum BaseResponseStatus {
     POST_REQUIRED_TITLE(false, 6006, "제목이 입력되지 않았습니다"),
 
     POST_REQUIRED_CONTENT(false, 6007, "내용이 입력되지 않았습니다"),
+    POST_BOARD_NOT_FOUND(false, 6008, "게시판 명 조회 실패."),
 
     //-- 6100 : 댓글
     COMMENT_NOT_FOUND(false, 6100,"댓글 조회에 실패했습니다."),

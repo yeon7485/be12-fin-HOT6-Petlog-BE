@@ -19,12 +19,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class PostService {
     private final PostImageService postImageService;
@@ -34,15 +36,13 @@ public class PostService {
     private final CategoryRepository categoryRepository;
     private final PetRepository petRepository;
 
-    public void create(PostDto.PostRequest dto, List<MultipartFile> images) {
+    @Transactional
+    public void create(User user,PostDto.PostRequest dto, List<MultipartFile> images) {
         BoardType boardType = boardTypeRepository.findByBoardName(dto.getBoardType())
-                .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_CREATE_FAILED));
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_BOARD_NOT_FOUND));
 
         Category category = categoryRepository.findById(dto.getCategoryIdx())
-                .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_CREATE_FAILED));
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
 
         Post post = Post.builder()
                 .user(user)
@@ -100,6 +100,7 @@ public class PostService {
         }
     }
 
+    @Transactional
     public void delete(Long idx) {
         Post post = postRepository.findById(idx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_NOT_FOUND));
@@ -116,6 +117,7 @@ public class PostService {
         }
     }
 
+    @Transactional
     public void update(Long idx, PostDto.PostRequest dto, List<MultipartFile> images) {
         Post post = postRepository.findById(idx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_NOT_FOUND));
