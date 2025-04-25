@@ -37,7 +37,7 @@ public class ScheduleNotificationScheduler {
             NotificationDto.NotificationSendRequest request = NotificationDto.NotificationSendRequest.builder()
                     .userId(userIdx)
                     .scheduleId(schedule.getIdx())
-                    .message("[알림] \"" + schedule.getSTitle() + "\" 일정이 1시간 남았습니다.")
+                    .message(schedule.getSTitle() + "일정이 1시간 남았습니다.")
                     .build();
 
             notificationService.createNotification(request, userIdx);
