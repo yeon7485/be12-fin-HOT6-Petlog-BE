@@ -37,6 +37,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         response.setStatus(HttpServletResponse.SC_OK);
-        response.sendRedirect("http://localhost:5173");
+        response.sendRedirect("https://www.petlog.kro.kr");
     }
 }
