@@ -42,7 +42,7 @@ public class UserService implements UserDetailsService {
     private final JavaMailSender mailSender;
     private final EmailVerifyRepository emailVerifyRepository;
 
-    @Value("${PROFILE_IMAGE}")
+    @Value("${profile-image}")
     private String defaultProfileImageUrl;
 
     public void sendEmail(String uuid, String email) {
@@ -204,15 +204,15 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        // 현재 비밀번호 확인
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new IllegalArgumentException("현재 비밀번호가 올바르지 않습니다.");
         }
 
-        // 새 비밀번호 암호화
-        String encodedNewPassword = passwordEncoder.encode(newPassword);
+        if (!newPassword.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$")) {
+            throw new IllegalArgumentException("새 비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.");
+        }
 
-        // 비밀번호 업데이트
+        String encodedNewPassword = passwordEncoder.encode(newPassword);
         user.setPassword(encodedNewPassword);
         userRepository.save(user);
     }

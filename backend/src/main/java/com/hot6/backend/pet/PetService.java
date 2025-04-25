@@ -9,6 +9,7 @@ import com.hot6.backend.schedule.model.ScheduleDto;
 import com.hot6.backend.user.UserRepository;
 import com.hot6.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,21 +27,23 @@ public class PetService {
     private final UserRepository userRepository;
     private final S3Service s3Service;
 
-    // 카드 생성
-    public void createPetCard(PetDto.PetCardCreateRequest request, String imagePath) {
-        // 이미지 URL이 있을 경우, 해당 URL을 사용
-        String profileImageUrl = null;
-        if (imagePath != null) {
-            profileImageUrl = imagePath; // S3에서 반환된 URL
-        }
+    @Value("${pet-image}")
+    private String petImageUrl;
 
+    public void createPetCard(PetDto.PetCardCreateRequest request, String imagePath) {
+        // ✅ imagePath가 없으면 환경변수로 대체
+        String profileImageUrl = (imagePath != null && !imagePath.isBlank())
+                ? imagePath
+                : petImageUrl;
+
+        // 사용자 조회
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NOT_FOUND));
 
-
-        Pet pet = request.toEntity(user,imagePath);
-        pet.setProfileImageUrl(profileImageUrl);  // 프로필 이미지 URL 설정
-        petRepository.save(pet);  // DB에 저장
+        // Entity 생성 + 이미지 URL 적용
+        Pet pet = request.toEntity(user, profileImageUrl); // <- 바로 넘겨도 되고
+        pet.setProfileImageUrl(profileImageUrl);           // <- 여기서도 확실히 설정
+        petRepository.save(pet);
     }
 
     //유저별 카드 목록
