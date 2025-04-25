@@ -21,6 +21,7 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -83,11 +84,11 @@ public class ChatRoomService {
         return chatMessageService.findChatMessages(chatRoomParticipant);
     }
 
-    public ChatDto.ChatRoomDetailInfo getChatRoomInfo(Long chatRoomIdx) {
+    public ChatDto.ChatRoomDetailInfo getChatRoomInfo(Long chatRoomIdx,Long userIdx) {
         ChatRoom chatRoom = chatRoomRepository.findWithParticipantsAndHashtagsById(chatRoomIdx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
 
-        return ChatDto.ChatRoomDetailInfo.from(chatRoom);
+        return ChatDto.ChatRoomDetailInfo.from(chatRoom,userIdx);
     }
 
     @Transactional

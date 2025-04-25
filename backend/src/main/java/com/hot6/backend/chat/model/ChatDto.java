@@ -114,15 +114,22 @@ public class ChatDto {
         @Schema(description = "채팅방 해시태그", example = "[\"#햄스터\", \"#친구\"]")
         public List<String> hashtags;
 
+        @Schema(description = "채팅방 주인", example = "true")
+        public boolean isAdmin;
+
         @Schema(description = "채팅방 참여 인원수", example = "6")
         public int participants;
 
-        public static ChatRoomDetailInfo from(ChatRoom chatRoom) {
+        public static ChatRoomDetailInfo from(ChatRoom chatRoom,Long userIdx) {
             return ChatRoomDetailInfo.builder()
                     .idx(chatRoom.getIdx())
                     .title(chatRoom.getCTitle())
                     .participants(chatRoom.getParticipants().size())
                     .hashtags(chatRoom.getHashtags().stream().map(ChatRoomHashtag::getCTag).collect(Collectors.toList()))
+                    .isAdmin(
+                            chatRoom.getParticipants().stream()
+                                    .anyMatch(p -> p.getUser().getIdx().equals(userIdx) && p.getIsAdmin())
+                    )
                     .build();
         }
     }
