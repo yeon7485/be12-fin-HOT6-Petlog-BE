@@ -11,6 +11,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -40,6 +41,9 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
     private final EmailVerifyRepository emailVerifyRepository;
+
+    @Value("${PROFILE_IMAGE}")
+    private String defaultProfileImageUrl;
 
     public void sendEmail(String uuid, String email) {
         System.out.println(email);
@@ -105,7 +109,13 @@ public class UserService implements UserDetailsService {
     @Transactional
     public UserDto.CreateResponse signup(UserDto.CreateRequest dto) {
         String uuid = UUID.randomUUID().toString();
-        User user = userRepository.save(dto.toEntity(passwordEncoder.encode(dto.getPassword())));
+
+        String resolvedProfileImage = (dto.getProfileImageUrl() == null || dto.getProfileImageUrl().isBlank())
+                ? defaultProfileImageUrl
+                : dto.getProfileImageUrl();
+
+        User user = dto.toEntity(passwordEncoder.encode(dto.getPassword()), resolvedProfileImage);
+        userRepository.save(user);
 
         if(!user.getEnabled()) {
             emailVerifyRepository.save(EmailVerify.builder()

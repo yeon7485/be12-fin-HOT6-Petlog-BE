@@ -48,13 +48,13 @@ public class UserDto {
         private Long providerId;
 
 
-        public User toEntity(String password) {
+        public User toEntity(String encodedPassword, String resolvedProfileImageUrl) {
             return User.builder()
                     .email(email)
-                    .password(password)
+                    .password(encodedPassword)
                     .nickname(nickname)
                     .userType(UserType.valueOf(role))
-                    .userProfileImage(profileImageUrl)
+                    .userProfileImage(resolvedProfileImageUrl)
                     .enabled(enabled)
                     .provider(provider)
                     .providerId(providerId)
