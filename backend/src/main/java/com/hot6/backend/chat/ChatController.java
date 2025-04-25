@@ -93,9 +93,10 @@ public class ChatController {
     @Operation(summary = "단일 채팅방의 정보 조회", description = "단일 채팅방의 정보를 조회합니다.(채팅방 이름, 해시 태그)")
     @GetMapping("/chatroom/{chatRoomIdx}")
     public ResponseEntity<BaseResponse<ChatDto.ChatRoomDetailInfo>> getChatRoomInfo(
+            @AuthenticationPrincipal User user,
             @PathVariable Long chatRoomIdx
     ) {
-        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS,chatRoomService.getChatRoomInfo(chatRoomIdx)));
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS,chatRoomService.getChatRoomInfo(chatRoomIdx,user.getIdx())));
     }
 
     @Operation(summary = "채팅방 정보 조회 - 현재 참여한 유저", description = "현재 채팅방에 참여하고 있는 유저의 목록을 조회합니다.")
