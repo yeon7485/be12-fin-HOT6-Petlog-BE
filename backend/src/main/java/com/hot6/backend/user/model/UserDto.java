@@ -2,6 +2,9 @@ package com.hot6.backend.user.model;
 
 import com.hot6.backend.pet.model.PetDto;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,13 +16,20 @@ public class UserDto {
     @Builder
     @Schema(description = "회원가입 요청 DTO")
     public static class CreateRequest {
+
         @Schema(description = "이메일", example = "user@example.com")
+        @Email(message = "올바른 이메일 형식을 입력해주세요.")
+        @NotBlank(message = "이메일은 필수 입력 사항입니다.")
         private String email;
 
         @Schema(description = "비밀번호 (영어, 숫자, 특수문자 포함 8자 이상)", example = "Password123!")
+        @Size(min = 8, max = 20, message = "비밀번호는 8~20자 사이여야 합니다.")
+        @NotBlank(message = "비밀번호 필수 입력 사항입니다.")
         private String password;
 
-        @Schema(description = "닉네임", example = "happyDogLover")
+        @Schema(description = "닉네임(자음/모음, 특수문자 불가)", example = "happyDogLover")
+        @Size(min = 4, max = 16, message = "닉네임은 최소 4자에서 16자까지 입력 가능합니다.")
+        @NotBlank(message = "닉네임은 필수 입력 사항입니다.")
         private String nickname;
 
         @Schema(description = "프로필 이미지 URL (선택사항)", example = "https://example.com/image.png")
@@ -38,13 +48,13 @@ public class UserDto {
         private Long providerId;
 
 
-        public User toEntity(String password) {
+        public User toEntity(String encodedPassword, String resolvedProfileImageUrl) {
             return User.builder()
                     .email(email)
-                    .password(password)
+                    .password(encodedPassword)
                     .nickname(nickname)
                     .userType(UserType.valueOf(role))
-                    .userProfileImage(profileImageUrl)
+                    .userProfileImage(resolvedProfileImageUrl)
                     .enabled(enabled)
                     .provider(provider)
                     .providerId(providerId)

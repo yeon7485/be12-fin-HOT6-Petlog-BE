@@ -10,28 +10,28 @@ management:
      db:
       enabled: true
 spring:
-  datasource:
-    master:
-      url: jdbc:mariadb://${MASTER_DB_HOST}:${MASTER_DB_PORT}/${MASTER_DB_NAME}?useUnicode=true&characterEncoding=utf8mb4&connectionCollation=utf8mb4_general_ci&serverTimezone=Asia/Seoul
-      driver-class-name: org.mariadb.jdbc.Driver
-      username: ${MASTER_DB_USERNAME}
-      password: ${MASTER_DB_PASSWORD}
-    slave:
-      url: jdbc:mariadb://${SLAVE_DB_HOST}:${SLAVE_DB_PORT}/${SLAVE_DB_NAME}?useUnicode=true&characterEncoding=utf8mb4&connectionCollation=utf8mb4_general_ci&serverTimezone=Asia/Seoul
-      driver-class-name: org.mariadb.jdbc.Driver
-      username: ${SLAVE_DB_USERNAME}
-      password: ${SLAVE_DB_PASSWORD}
 #  datasource:
-#    url: jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_NAME}?useUnicode=true&characterEncoding=utf8mb4&connectionCollation=utf8mb4_general_ci&serverTimezone=Asia/Seoul
-#    driver-class-name: org.mariadb.jdbc.Driver
-#    username: ${DB_ID}
-#    password: ${DB_PASSWORD}
+#    master:
+#      url: jdbc:mariadb://${MASTER_DB_HOST}:${MASTER_DB_PORT}/${MASTER_DB_NAME}?useUnicode=true&characterEncoding=utf8mb4&connectionCollation=utf8mb4_general_ci&serverTimezone=Asia/Seoul
+#      driver-class-name: org.mariadb.jdbc.Driver
+#      username: ${MASTER_DB_USERNAME}
+#      password: ${MASTER_DB_PASSWORD}
+#    slave:
+#      url: jdbc:mariadb://${SLAVE_DB_HOST}:${SLAVE_DB_PORT}/${SLAVE_DB_NAME}?useUnicode=true&characterEncoding=utf8mb4&connectionCollation=utf8mb4_general_ci&serverTimezone=Asia/Seoul
+#      driver-class-name: org.mariadb.jdbc.Driver
+#      username: ${SLAVE_DB_USERNAME}
+#      password: ${SLAVE_DB_PASSWORD}
+  datasource:
+    url: jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_NAME}?useUnicode=true&characterEncoding=utf8mb4&connectionCollation=utf8mb4_general_ci&serverTimezone=Asia/Seoul
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: ${DB_ID}
+    password: ${DB_PASSWORD}
 
   jpa:
     defer-datasource-initialization: true
     database-platform: org.hibernate.dialect.MariaDBDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         format_sql: true
@@ -113,3 +113,4 @@ profile-image: ${PROFILE_IMAGE}
 pet-image: ${PET_IMAGE}
 email-auth-url: ${EMAIL_URL}
 frontend-server: ${FE_SERVER}
+

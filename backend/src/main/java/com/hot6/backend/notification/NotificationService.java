@@ -69,6 +69,7 @@ public class NotificationService {
         return list;
     }
 
+    @Transactional
     public void markAsRead(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.NOTIFICATION_NOT_FOUND));
@@ -77,7 +78,7 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     public void deleteById(Long idx) {
         if (!notificationRepository.existsById(idx)) {
             throw new BaseException(BaseResponseStatus.NOTIFICATION_NOT_FOUND);

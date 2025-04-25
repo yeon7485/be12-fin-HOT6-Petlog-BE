@@ -10,15 +10,16 @@ import com.hot6.backend.common.exception.BaseException;
 import com.hot6.backend.user.UserRepository;
 import com.hot6.backend.user.model.User;
 import com.hot6.backend.user.model.UserType;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AnswerService {
 
@@ -27,6 +28,7 @@ public class AnswerService {
     private final UserRepository userRepository;
     private final AnswerImageService answerImageService;
 
+    @Transactional
     public void create(User user, AnswerDto.AnswerRequest request, List<MultipartFile> images) {
         if (user.getUserType() == UserType.AI) {
             throw new BaseException(BaseResponseStatus.AI_ANSWER_FORBIDDEN);

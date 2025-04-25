@@ -9,7 +9,9 @@ import com.hot6.backend.schedule.model.ScheduleDto;
 import com.hot6.backend.user.UserRepository;
 import com.hot6.backend.user.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static com.hot6.backend.pet.model.QPet.pet;
 
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class PetService {
@@ -26,22 +29,26 @@ public class PetService {
     private final UserRepository userRepository;
     private final S3Service s3Service;
 
-    // 카드 생성
-    public void createPetCard(PetDto.PetCardCreateRequest request, String imagePath) {
-        // 이미지 URL이 있을 경우, 해당 URL을 사용
-        String profileImageUrl = null;
-        if (imagePath != null) {
-            profileImageUrl = imagePath; // S3에서 반환된 URL
-        }
+    @Value("${pet-image}")
+    private String petImageUrl;
 
+    @Transactional
+    public void createPetCard(PetDto.PetCardCreateRequest request, String imagePath) {
+        // ✅ imagePath가 없으면 환경변수로 대체
+        String profileImageUrl = (imagePath != null && !imagePath.isBlank())
+                ? imagePath
+                : petImageUrl;
+
+        // 사용자 조회
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NOT_FOUND));
 
-
-        Pet pet = request.toEntity(user,imagePath);
-        pet.setProfileImageUrl(profileImageUrl);  // 프로필 이미지 URL 설정
-        petRepository.save(pet);  // DB에 저장
+        // Entity 생성 + 이미지 URL 적용
+        Pet pet = request.toEntity(user, profileImageUrl); // <- 바로 넘겨도 되고
+        pet.setProfileImageUrl(profileImageUrl);           // <- 여기서도 확실히 설정
+        petRepository.save(pet);
     }
+
 
     //유저별 카드 목록
     public List<PetDto.PetCard> getPetCardsByUserId(Long userId) {
@@ -52,6 +59,7 @@ public class PetService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     // 카드 수정
     public void updatePetCard(PetDto.PetCardUpdateRequest petCardUpdateRequest, MultipartFile profileImage, Long petId) {
         // 1. 기존 반려동물 조회
@@ -84,6 +92,7 @@ public class PetService {
         return PetDto.PetCardDetailResponse.from(pet);
     }
 
+    @Transactional
     // 반려동물 삭제
     public void deletePet(Long petId) {
         // 반려동물 ID로 조회

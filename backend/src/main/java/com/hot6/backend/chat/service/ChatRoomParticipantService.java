@@ -1,6 +1,7 @@
 package com.hot6.backend.chat.service;
 
 import com.hot6.backend.chat.model.*;
+import com.hot6.backend.chat.repository.ChatMessageRepository;
 import com.hot6.backend.chat.repository.ChatRoomParticipantRepository;
 import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.common.exception.BaseException;
@@ -21,14 +22,35 @@ import java.util.Optional;
 public class ChatRoomParticipantService {
     private final ChatRoomParticipantRepository chatRoomParticipantRepository;
     private final ChatMessageService chatMessageService;
+    private final ChatMessageRepository chatMessageRepository;
 
     @Transactional
     public void save(User user, ChatRoom chatRoom) {
-        chatRoomParticipantRepository.save(
+        // ✅ 시스템 메시지 저장 후 저장된 chat 객체 반환
+        Chat chat = chatMessageRepository.save(
+                Chat.builder()
+                        .type(ChatMessageType.TEXT)
+                        .message(user.getNickname() + " 님이 채팅방을 생성하셨습니다!")
+                        .build()
+        );
+
+        // ✅ 참여자 먼저 저장 (metaData 없이)
+        ChatRoomParticipant chatRoomParticipant = chatRoomParticipantRepository.save(
                 ChatRoomParticipant.builder()
                         .user(user)
-                        .isAdmin(true)
                         .chatRoom(chatRoom)
+                        .isAdmin(true)
+                        .build()
+        );
+
+        // ✅ 이후 메타데이터 설정
+        chatRoomParticipant.setMetaData(
+                ChatRoomUserMetaData.builder()
+                        .firstJoinMessageId(chat.getIdx())
+                        .lastSeenMessageId(chat.getIdx())
+                        .joinedAt(LocalDateTime.now())
+                        .isMuted(false)
+                        .notificationsEnabled(true)
                         .build()
         );
     }

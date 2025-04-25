@@ -27,12 +27,16 @@ public class NotificationDto {
         @Schema(description = "알림 시간", example = "2025-04-07T11:00:00")
         private LocalDateTime sentAt;
 
+        @Schema(description = "펫 ID", example = "멍쟈")
+        private String petName;
+
         // ✅ 엔티티 → DTO 변환 (정적 팩토리 메서드)
         public static NotificationElement from(Notification notification) {
             return NotificationElement.builder()
                     .idx(notification.getIdx())
                     .message(notification.getMessage())
                     .sentAt(notification.getSentAt())
+                    .petName(notification.getSchedule().getPet().getName())
                     .build();
         }
 

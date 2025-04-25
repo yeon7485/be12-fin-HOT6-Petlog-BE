@@ -11,6 +11,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -34,6 +35,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
@@ -118,7 +120,13 @@ public class UserService implements UserDetailsService {
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
         }
         String uuid = UUID.randomUUID().toString();
-        User user = userRepository.save(dto.toEntity(passwordEncoder.encode(dto.getPassword())));
+
+        String resolvedProfileImage = (dto.getProfileImageUrl() == null || dto.getProfileImageUrl().isBlank())
+                ? defaultProfileImageUrl
+                : dto.getProfileImageUrl();
+
+        User user = dto.toEntity(passwordEncoder.encode(dto.getPassword()), resolvedProfileImage);
+        userRepository.save(user);
 
         String resolvedProfileImage = (dto.getProfileImageUrl() == null || dto.getProfileImageUrl().isBlank())
                 ? defaultProfileImageUrl
@@ -139,7 +147,6 @@ public class UserService implements UserDetailsService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> result = userRepository.findByEmail(email);
 
@@ -204,26 +211,30 @@ public class UserService implements UserDetailsService {
                 .petCards(petCards)  // 펫 카드 목록
                 .build();
     }
+
+    @Transactional
     public void updateProfileImage(Long userId, String imageUrl) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
         user.setUserProfileImage(imageUrl);
         userRepository.save(user);
     }
+
+    @Transactional
     public void updatePassword(Long userId, String currentPassword, String newPassword) {
         // 사용자 찾기
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        // 현재 비밀번호 확인
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new IllegalArgumentException("현재 비밀번호가 올바르지 않습니다.");
         }
 
-        // 새 비밀번호 암호화
-        String encodedNewPassword = passwordEncoder.encode(newPassword);
+        if (!newPassword.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$")) {
+            throw new IllegalArgumentException("새 비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.");
+        }
 
-        // 비밀번호 업데이트
+        String encodedNewPassword = passwordEncoder.encode(newPassword);
         user.setPassword(encodedNewPassword);
         userRepository.save(user);
     }
