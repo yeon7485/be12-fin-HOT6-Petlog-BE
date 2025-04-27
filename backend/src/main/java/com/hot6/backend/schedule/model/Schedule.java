@@ -52,4 +52,13 @@ public class Schedule extends BaseEntity {
 
     @OneToOne(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private Notification notification;
+
+    public void update(Long categoryIdx, String title, String placeName, String memo, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        if (categoryIdx != null) this.categoryIdx = categoryIdx;
+        if (title != null) this.sTitle = title;
+        if (placeName != null) this.placeId = placeName;
+        if (memo != null) this.sMemo = memo;
+        if (startDateTime != null) this.startAt = startDateTime;
+        if (endDateTime != null) this.endAt = endDateTime;
+    }
 }

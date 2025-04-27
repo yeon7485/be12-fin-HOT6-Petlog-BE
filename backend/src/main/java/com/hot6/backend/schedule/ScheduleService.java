@@ -7,7 +7,9 @@ import com.hot6.backend.chat.model.ChatRoom;
 import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.common.exception.BaseException;
 import com.hot6.backend.pet.PetRepository;
+import com.hot6.backend.pet.SharedSchedulePetService;
 import com.hot6.backend.pet.model.Pet;
+import com.hot6.backend.pet.model.SharedSchedulePet;
 import com.hot6.backend.schedule.model.Schedule;
 import com.hot6.backend.schedule.model.ScheduleDto;
 import com.hot6.backend.user.model.User;
@@ -28,10 +30,10 @@ import static java.util.stream.Collectors.toList;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ScheduleService {
-
     private final ScheduleRepository scheduleRepository;
     private final CategoryRepository categoryRepository;
     private final PetRepository petRepository;
+    private final SharedSchedulePetService sharedSchedulePetService;
 
     @Transactional
     public void createSchedule(Long petIdx, ScheduleDto.ScheduleCreateRequest dto) {
@@ -149,5 +151,28 @@ public class ScheduleService {
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.CATEGORY_NOT_FOUND));
         return ScheduleDto.ScheduleDetail.from(schedule, category);
 
+    }
+
+    @Transactional
+    public void updatePetSchedule(User user, Long petIdx, Long scheduleIdx,ScheduleDto.ScheduleUpdateRequest dto) {
+        Schedule schedule = scheduleRepository.findScheduleByPet_Idx(petIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.SCHEDULE_NOT_FOUND));
+
+        schedule.update(
+                dto.getCategoryIdx(),
+                dto.getTitle(),
+                dto.getPlaceName(),
+                dto.getMemo(),
+                dto.getStartAt(),
+                dto.getEndAt()
+        );
+        scheduleRepository.save(schedule);
+    }
+
+    @Transactional
+    public void deletePetSchedule(Long petIdx, Long scheduleIdx) {
+        Schedule schedule = scheduleRepository.findScheduleByPet_Idx(petIdx)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.SCHEDULE_NOT_FOUND));
+
+        scheduleRepository.delete(schedule);
     }
 }

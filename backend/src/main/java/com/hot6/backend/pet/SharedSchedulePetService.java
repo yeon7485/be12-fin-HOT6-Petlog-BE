@@ -1,6 +1,5 @@
 package com.hot6.backend.pet;
 
-import com.hot6.backend.common.exception.BaseException;
 import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.pet.model.SharedSchedulePet;
 import com.hot6.backend.schedule.model.Schedule;

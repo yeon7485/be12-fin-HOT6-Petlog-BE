@@ -333,7 +333,7 @@ public class ChatDto {
     @Getter
     @NoArgsConstructor
     @Schema(description = "채팅방 일정 생성 요청 DTO")
-    public class CreateChatRoomScheduleRequest {
+    public static class CreateChatRoomScheduleRequest {
 
         @Schema(description = "일정 제목", example = "예방접종")
         private String title;
