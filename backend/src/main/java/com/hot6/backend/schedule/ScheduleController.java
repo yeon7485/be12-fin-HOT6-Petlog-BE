@@ -82,24 +82,32 @@ public class ScheduleController {
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, scheduleDetail));
     }
 
-//    @Operation(summary = "일정 수정", description = "선택한 카테고리와 반려동물의 일정을 수정합니다.")
-//    @PutMapping("/pet/{petIdx}")
-//    public ResponseEntity<String> updateSchedule(@PathVariable Long petIdx,
-//                                                 @RequestBody ScheduleDto.ScheduleUpdateRequest scheduleUpdateRequest) {
-//        return ResponseEntity.ok("ok");
-//    }
-//
-//    @Operation(summary = "일정 삭제", description = "선택한 카테고리와 반려동물의 일정을 삭제합니다.")
-//    @DeleteMapping("/pet/{petIdx}")
-//    public ResponseEntity<String> deleteSchedule(@PathVariable Long petIdx) {
-//        return ResponseEntity.ok("ok");
-//    }
-//
-//
-//    @Operation(summary = "일정 공유", description = "사용자가 본인의 일정을 사용자나 그룹 채팅방에 공유합니다.")
-//    @PostMapping("/share")
-//    public ResponseEntity<String> shareSchedule(@RequestBody ScheduleDto.ScheduleShareRequest request) {
-//        return ResponseEntity.ok("일정 공유 완료");
-//    }
+    @Operation(summary = "일정 수정", description = "선택한 카테고리와 반려동물의 일정을 수정합니다.")
+    @PutMapping("/pet/{petIdx}/schedule/{scheduleIdx}")
+    public ResponseEntity<String> updateSchedule(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long scheduleIdx,
+            @PathVariable Long petIdx,
+            @RequestBody ScheduleDto.ScheduleUpdateRequest scheduleUpdateRequest) {
+        scheduleService.updatePetSchedule(user,petIdx,scheduleIdx,scheduleUpdateRequest);
+        return ResponseEntity.ok("ok");
+    }
+
+    @Operation(summary = "일정 삭제", description = "선택한 카테고리와 반려동물의 일정을 삭제합니다.")
+    @DeleteMapping("/pet/{petIdx}/schedule/{scheduleIdx}")
+    public ResponseEntity<String> deleteSchedule(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long scheduleIdx,
+            @PathVariable Long petIdx) {
+        scheduleService.deletePetSchedule(petIdx,scheduleIdx);
+        return ResponseEntity.ok("ok");
+    }
+
+
+    @Operation(summary = "일정 공유", description = "사용자가 본인의 일정을 사용자나 그룹 채팅방에 공유합니다.")
+    @PostMapping("/share")
+    public ResponseEntity<String> shareSchedule(@RequestBody ScheduleDto.ScheduleShareRequest request) {
+        return ResponseEntity.ok("일정 공유 완료");
+    }
 
 }

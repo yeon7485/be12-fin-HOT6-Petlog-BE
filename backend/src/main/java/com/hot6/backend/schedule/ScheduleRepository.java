@@ -50,4 +50,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     List<Schedule> findByStartAtBetween(LocalDateTime start, LocalDateTime end);
 
+    Optional<Schedule> findScheduleByPet_Idx(Long petIdx);
+
 }

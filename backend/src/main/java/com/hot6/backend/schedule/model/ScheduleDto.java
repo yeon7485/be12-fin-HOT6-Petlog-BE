@@ -95,6 +95,9 @@ public class ScheduleDto {
         @Schema(description = "카테고리 이름", example = "병원")
         private String categoryName;
 
+        @Schema(description = "펫 고유 ID",example = "1")
+        private Long petIdx;
+
         @Schema(description = "펫 이름", example = "콩이")
         private String petName;
 
@@ -112,6 +115,7 @@ public class ScheduleDto {
                     .endAt(schedule.getEndAt())
                     .color(category.getColor())
                     .categoryName(category.getName())
+                    .petIdx(schedule.getPet().getIdx())
                     .petName(schedule.getPet().getName())
                     .build();
         }
@@ -174,7 +178,7 @@ public class ScheduleDto {
         private String title;
 
         @Schema(description = "장소", example = "병원")
-        private String location;
+        private String placeName;
 
         @Schema(description = "메모", example = "병원에서 예방접종")
         private String memo;
@@ -186,10 +190,10 @@ public class ScheduleDto {
         private Long categoryIdx;
 
         @Schema(description = "일정 시작 시간", example = "10:00")
-        private String startTime;
+        private LocalDateTime startAt;
 
         @Schema(description = "일정 종료 시간", example = "11:00")
-        private String endTime;
+        private LocalDateTime endAt;
     }
 
 
