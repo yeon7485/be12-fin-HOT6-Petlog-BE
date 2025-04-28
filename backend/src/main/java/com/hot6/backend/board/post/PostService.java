@@ -108,9 +108,6 @@ public class PostService {
         try {
             List<Pet> pets = petRepository.findAllByPost(post);
             pets.forEach(p -> p.setPost(null));
-            petRepository.saveAll(pets);
-            postImageService.deleteImagesByPost(idx);
-            commentService.deleteByPostIdx(idx);
             postRepository.delete(post);
         } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.POST_DELETE_FAILED);
