@@ -16,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,8 +34,8 @@ public class PostService {
     private final CategoryRepository categoryRepository;
     private final PetRepository petRepository;
 
-    @Transactional
-    public void create(User user,PostDto.PostRequest dto, List<MultipartFile> images) {
+    @Transactional(readOnly = false)
+    public void create(User user, PostDto.PostRequest dto, List<MultipartFile> images) {
         BoardType boardType = boardTypeRepository.findByBoardName(dto.getBoardType())
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_BOARD_NOT_FOUND));
 
@@ -100,7 +98,7 @@ public class PostService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void delete(Long idx) {
         Post post = postRepository.findById(idx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_NOT_FOUND));
@@ -108,13 +106,15 @@ public class PostService {
         try {
             List<Pet> pets = petRepository.findAllByPost(post);
             pets.forEach(p -> p.setPost(null));
+            petRepository.saveAll(pets);
+
             postRepository.delete(post);
         } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.POST_DELETE_FAILED);
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void update(Long idx, PostDto.PostRequest dto, List<MultipartFile> images) {
         Post post = postRepository.findById(idx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_NOT_FOUND));
@@ -154,6 +154,7 @@ public class PostService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<PostDto.UserPostResponse> findUserPosts(Long userId) {
         return postRepository.findByUserIdxAndIsDeletedFalseOrderByCreatedAtDesc(userId)
                 .stream()
@@ -161,4 +162,3 @@ public class PostService {
                 .toList();
     }
 }
-
