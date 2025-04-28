@@ -8,9 +8,9 @@ import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.common.exception.BaseException;
 import com.hot6.backend.user.UserRepository;
 import com.hot6.backend.user.model.User;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +21,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
 
+    @Transactional(readOnly = false)
     public void create(CommentDto.CommentRequest dto, User currentUser) {
         Post post = postRepository.findById(dto.getPostIdx())
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_NOT_FOUND));
@@ -37,6 +38,7 @@ public class CommentService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<CommentDto.CommentResponse> list(Long postIdx) {
         Post post = postRepository.findById(postIdx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_NOT_FOUND));
@@ -50,7 +52,7 @@ public class CommentService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void deleteByPostIdx(Long postIdx) {
         try {
             commentRepository.deleteByPostIdx(postIdx);
@@ -59,7 +61,7 @@ public class CommentService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void delete(Long idx) {
         Comment comment = commentRepository.findById(idx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.COMMENT_NOT_FOUND));
@@ -71,7 +73,7 @@ public class CommentService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void update(Long idx, CommentDto.CommentRequest dto) {
         Comment comment = commentRepository.findById(idx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.COMMENT_NOT_FOUND));
@@ -84,6 +86,7 @@ public class CommentService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<CommentDto.CommentResponse> readByAnswer(Long userId) {
         try {
             return commentRepository.findByUser_IdxOrderByCreatedAtDesc(userId).stream()

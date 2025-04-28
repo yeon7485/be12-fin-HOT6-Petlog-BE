@@ -22,7 +22,7 @@ public class Comment extends BaseEntity {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_idx")
+    @JoinColumn(name = "post_idx", foreignKey = @ForeignKey(name = "fk_comment_post", foreignKeyDefinition = "FOREIGN KEY (post_idx) REFERENCES post(idx) ON DELETE CASCADE"))
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
