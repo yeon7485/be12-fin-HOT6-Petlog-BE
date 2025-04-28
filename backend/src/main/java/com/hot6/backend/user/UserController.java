@@ -130,5 +130,16 @@ public class UserController {
                     .body(Map.of("message", "파일이 비어 있습니다."));
         }
     }
+    @Operation(summary = "닉네임 수정", description = "회원의 닉네임을 수정합니다.")
+    @PutMapping("/{idx}/nickname")
+    public ResponseEntity<String> updateNickname(@PathVariable Long idx,
+                                                 @RequestBody UserDto.NicknameUpdateRequest request) {
+        try {
+            userService.updateNickname(idx, request.getNewNickname());
+            return ResponseEntity.ok("닉네임이 성공적으로 변경되었습니다.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("닉네임 수정 실패: " + e.getMessage());
+        }
+    }
 }
 

@@ -231,4 +231,24 @@ public class UserService implements UserDetailsService {
         user.setPassword(encodedNewPassword);
         userRepository.save(user);
     }
+    // 닉네임 수정
+    @Transactional
+    public void updateNickname(Long userId, String newNickname) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        // 닉네임 길이 체크 (4글자 이상)
+        if (newNickname == null || newNickname.length() < 4) {
+            throw new RuntimeException("닉네임은 4글자 이상이어야 합니다.");
+        }
+
+
+        // 닉네임 중복 체크 (원하는 경우)
+        if (userRepository.existsByNickname(newNickname)) {
+            throw new RuntimeException("이미 존재하는 닉네임입니다.");
+        }
+
+        user.setNickname(newNickname);
+        userRepository.save(user);
+    }
 }
