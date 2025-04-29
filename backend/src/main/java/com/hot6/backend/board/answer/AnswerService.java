@@ -59,7 +59,7 @@ public class AnswerService {
                 .map(AnswerDto.AnswerResponse::from)
                 .toList();
     }
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = false)
     public void select(Long idx) {
         Answer answer = answerRepository.findById(idx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.ANSWER_NOT_FOUND));
