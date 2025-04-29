@@ -12,7 +12,7 @@ import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.pet.PetRepository;
 import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.user.model.User;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class QuestionService {
 
@@ -37,6 +38,7 @@ public class QuestionService {
     private final PetRepository petRepository;
     private final AnswerRepository answerRepository;
 
+    @Transactional(readOnly = false)
     public void create(QuestionDto.QuestionRequest dto, List<MultipartFile> images) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = (User) auth.getPrincipal();
@@ -98,6 +100,7 @@ public class QuestionService {
         return QuestionDto.QuestionResponse.from(question, answerService.countByQuestionIdx(question.getIdx()));
     }
 
+    @Transactional(readOnly = false)
     public void update(Long idx, QuestionDto.QuestionRequest dto, List<MultipartFile> images) {
         Question question = questionRepository.findById(idx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.QUESTION_NOT_FOUND));
@@ -136,7 +139,7 @@ public class QuestionService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void delete(Long idx) {
         Question question = questionRepository.findById(idx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.QUESTION_NOT_FOUND));

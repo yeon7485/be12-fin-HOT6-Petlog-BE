@@ -24,14 +24,14 @@ public class Question extends BaseEntity {
     private String content;
     private boolean selected;
 
-    @OneToMany(mappedBy = "question")
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<Hashtag_Question> hashtagsList;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_idx", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "question")
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<QuestionImage> questionImageList;
 
     @OneToMany(mappedBy = "question", fetch = FetchType.LAZY)
