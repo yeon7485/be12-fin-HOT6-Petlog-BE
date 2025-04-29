@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    List<Comment> findByPost(Post post);
+    List<Comment> findByPostOrderByCreatedAtDesc(Post post);
     @Modifying
     @Transactional
     void deleteByPostIdx(Long questionIdx);

@@ -12,6 +12,7 @@ import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.pet.PetRepository;
 import com.hot6.backend.pet.model.Pet;
 import com.hot6.backend.user.model.User;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -73,7 +74,7 @@ public class QuestionService {
     }
 
     public Page<QuestionDto.QuestionResponse> list(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         try {
             return questionRepository.findAll(pageable)
                     .map(q -> QuestionDto.QuestionResponse.from(q, answerService.countByQuestionIdx(q.getIdx())));

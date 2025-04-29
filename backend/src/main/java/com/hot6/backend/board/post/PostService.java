@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -70,7 +71,7 @@ public class PostService {
         BoardType boardType = boardTypeRepository.findByBoardName(boardName)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_NOT_FOUND));
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return postRepository.findByBoardType(boardType, pageable)
                 .map(PostDto.PostResponse::from);
     }
@@ -85,18 +86,35 @@ public class PostService {
         BoardType boardType = boardTypeRepository.findByBoardName(boardName)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.POST_NOT_FOUND));
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
         try {
             if (keyword != null && !keyword.isBlank()) {
-                return postRepository.findByBoardTypeAndCategoryNameAndTitleContainingIgnoreCase(boardType, categoryName, keyword, pageable)
+                if (categoryName == null || categoryName.isBlank()) {
+                    // 카테고리 없이 제목+작성자 통합 검색
+                    return postRepository.findByBoardTypeAndTitleContainingIgnoreCaseOrBoardTypeAndUser_NicknameContainingIgnoreCase(
+                            boardType, keyword, boardType, keyword, pageable
+                    ).map(PostDto.PostResponse::from);
+                } else {
+                    // 카테고리 내 제목+작성자 통합 검색
+                    return postRepository.findByBoardTypeAndCategoryNameAndTitleContainingIgnoreCaseOrBoardTypeAndCategoryNameAndUser_NicknameContainingIgnoreCase(
+                            boardType, categoryName, keyword, boardType, categoryName, keyword, pageable
+                    ).map(PostDto.PostResponse::from);
+                }
+            }
+
+            if (categoryName == null || categoryName.isBlank()) {
+                return postRepository.findByBoardType(boardType, pageable)
+                        .map(PostDto.PostResponse::from);
+            } else {
+                return postRepository.findByBoardTypeAndCategoryName(boardType, categoryName, pageable)
                         .map(PostDto.PostResponse::from);
             }
-            return postRepository.findByBoardTypeAndCategoryName(boardType, categoryName, pageable)
-                    .map(PostDto.PostResponse::from);
         } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.POST_SEARCH_FAILED);
         }
     }
+
 
     @Transactional(readOnly = false)
     public void delete(Long idx) {
