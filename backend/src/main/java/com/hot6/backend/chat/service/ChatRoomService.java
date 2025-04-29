@@ -41,17 +41,18 @@ public class ChatRoomService {
     private final PetService petService;
     private final SharedSchedulePetService sharedSchedulePetService;
 
-
+    @Transactional(readOnly = true)
     public Slice<ChatDto.ChatRoomListDto> getList(Long userIdx, Pageable pageable) {
         Slice<ChatRoom> chatRooms = chatRoomRepository.findAllWithSlice(pageable);
         //ChatInfo 에 정보 추가(isParticipating)
         return chatRooms.map(room -> ChatDto.ChatRoomListDto.from(room, userIdx));
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void createChatRoom(ChatDto.CreateChatRoomRequest request, Long userIdx) {
         ChatRoom chatRoom = ChatRoom.builder()
                 .cTitle(request.getTitle())
+                .maxParticipants(10)
                 .build();
         chatRoomRepository.save(chatRoom);
         List<ChatRoomHashtag> hashtags = new ArrayList<>();
@@ -67,6 +68,7 @@ public class ChatRoomService {
         chatRoomParticipantService.save(findUser, chatRoom);
     }
 
+    @Transactional(readOnly = true)
     public Slice<ChatDto.MyChatRoomListDto> findMyChatRooms(Long userId, Pageable pageable) {
         List<Long> roomIds = chatRoomParticipantService.findChatRoomIdsByUserId(userId);
         if (roomIds.isEmpty()) {
@@ -79,19 +81,22 @@ public class ChatRoomService {
         return rooms.map(ChatDto.MyChatRoomListDto::from);
     }
 
+    @Transactional(readOnly = true)
     public List<ChatDto.ChatElement> getChatMessages(Long chatRoomIdx, Long userIdx) {
         ChatRoomParticipant chatRoomParticipant = chatRoomParticipantService.findChatRoomParticipantOrThrow(chatRoomIdx, userIdx);
         return chatMessageService.findChatMessages(chatRoomParticipant);
     }
 
+    @Transactional(readOnly = true)
     public ChatDto.ChatRoomDetailInfo getChatRoomInfo(Long chatRoomIdx,Long userIdx) {
+        chatRoomParticipantService.findChatRoomParticipantOrThrow(chatRoomIdx, userIdx);
         ChatRoom chatRoom = chatRoomRepository.findWithParticipantsAndHashtagsById(chatRoomIdx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
 
         return ChatDto.ChatRoomDetailInfo.from(chatRoom,userIdx);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public ChatDto.ChatElement saveSendMessage(Long roomIdx, Long sender, ChatDto.ChatMessageDto chatMessageDto) {
         ChatRoom chatRoom = chatRoomRepository.findByIdx(roomIdx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
@@ -128,17 +133,18 @@ public class ChatRoomService {
         return chatMessageService.saveChatMessage(chat);
     }
 
+    @Transactional(readOnly = true)
     public List<ChatDto.ChatRoomScheduleElement> getChatRoomSchedule(Long chatRoomIdx) {
         return scheduleService.getALLScheduleByChatRoom(chatRoomIdx);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void createChatRoomSchedule(ChatDto.CreateChatRoomScheduleRequest dto, Long chatRoomIdx, User user) {
         ChatRoom chatRoom = chatRoomRepository.findByIdx(chatRoomIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
         scheduleService.createChatRoomSchedule(dto, chatRoom, user);
     }
 
-
+    @Transactional(readOnly = true)
     public ChatDto.ChatRoomScheduleDetailResponse getChatRoomScheduleDetail(Long chatRoomIdx, Long scheduleIdx ,User user) {
         ChatRoom chatRoom = chatRoomRepository.findByIdx(chatRoomIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
         Schedule schedule = scheduleService.getSchedule(scheduleIdx);
@@ -155,15 +161,15 @@ public class ChatRoomService {
         return ChatDto.ChatRoomScheduleDetailResponse.from(schedule,usersInChatRoomsSchedule,isParticipating,usersPet);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void participateChatRoomSchedule(Long chatRoomIdx, Long scheduleIdx, User user, ChatDto.ParticipateChatRoomSchedule dto) {
-        ChatRoom chatRoom = chatRoomRepository.findByIdx(chatRoomIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
+        chatRoomRepository.findByIdx(chatRoomIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
         Schedule schedule = scheduleService.getSchedule(scheduleIdx);
 
         sharedSchedulePetService.saveAll(dto.getAnimalIds(), schedule);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void join(User user, Long roomIdx) {
         ChatRoom chatRoom = chatRoomRepository.findByIdx(roomIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
         int curParticipants = chatRoomParticipantService.countByChatRoom(chatRoom);
@@ -173,6 +179,7 @@ public class ChatRoomService {
         chatRoomParticipantService.join(user, chatRoom);
     }
 
+    @Transactional(readOnly = true)
     public List<ChatDto.ChatRoomListDto> searchChatRoom(Long userIdx, String query, List<String> hashtags) {
         List<ChatRoom> chatRooms;
 
@@ -187,6 +194,7 @@ public class ChatRoomService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = false)
     public void updateChatRoomInfo(User user, Long chatRoomIdx, ChatDto.UpdateChatRequest request) {
         ChatRoom chatRoom = chatRoomRepository.findByIdx(chatRoomIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
         // 채팅방 참여자(isAdmin) == userIdx

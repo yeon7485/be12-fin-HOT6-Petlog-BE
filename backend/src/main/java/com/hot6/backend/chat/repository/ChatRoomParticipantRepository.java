@@ -23,4 +23,7 @@ WHERE p.user.idx = :userIdx AND p.chatRoom.idx = :chatRoomIdx
     int countByChatRoom(ChatRoom chatRoom);
 
     Optional<ChatRoomParticipant> findChatRoomParticipantByChatRoomAndUser(ChatRoom chatRoom, User user);
+
+    @Query(value = "SELECT * FROM chat_room_participant WHERE chat_room_idx = :chatRoomIdx AND user_idx = :userIdx", nativeQuery = true)
+    Optional<ChatRoomParticipant> findChatRoomParticipantIncludingDeleted(Long chatRoomIdx, Long userIdx);
 }

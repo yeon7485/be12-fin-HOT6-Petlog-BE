@@ -22,6 +22,9 @@ public class ChatRoomHashtag extends BaseEntity {
     private String cTag;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chat_room_idx")
+    @JoinColumn(
+            name = "chat_room_idx",
+            foreignKey = @ForeignKey(name = "fk_chatroomhashtag_chatroom", foreignKeyDefinition = "FOREIGN KEY (chat_room_idx) REFERENCES chat_room(idx) ON DELETE CASCADE")
+    )
     private ChatRoom chatRoom;
 }
