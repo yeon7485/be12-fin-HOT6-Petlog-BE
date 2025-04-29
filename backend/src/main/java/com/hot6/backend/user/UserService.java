@@ -257,7 +257,12 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
+    public Boolean checkEmailDuplicate(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        return user.isPresent();
+    }
+
     public void deleteUser(Long idx, UserDto.UserDeleteRequest request) {
         User user = userRepository.findByIdxAndIsDeletedFalse(idx)
                 .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));

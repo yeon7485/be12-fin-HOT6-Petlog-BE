@@ -4,7 +4,6 @@ import com.hot6.backend.common.BaseResponse;
 import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.common.exception.BaseException;
 import com.hot6.backend.pet.S3Service;
-import com.hot6.backend.pet.model.PetDto;
 import com.hot6.backend.user.model.User;
 import com.hot6.backend.user.model.UserDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -63,6 +62,13 @@ public class UserController {
     @GetMapping("/auth/check")
     public ResponseEntity<BaseResponse<UserDto.LoginCheckResponse>> checkLogin() {
         UserDto.LoginCheckResponse response = userService.checkLogin();
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, response));
+    }
+
+    @Operation(summary = "이메일 중복 확인", description = "이메일 받아와서 중복 이메일 있는지 확인")
+    @GetMapping("/email/check")
+    public ResponseEntity<BaseResponse<Boolean>> checkEmailDuplicate(@RequestParam String email) {
+        Boolean response = userService.checkEmailDuplicate(email);
         return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, response));
     }
 

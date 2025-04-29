@@ -99,4 +99,6 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Answer> answerList = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private EmailVerify emailVerify;
 }
