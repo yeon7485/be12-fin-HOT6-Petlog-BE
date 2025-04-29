@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AnswerService {
 
@@ -28,7 +27,7 @@ public class AnswerService {
     private final UserRepository userRepository;
     private final AnswerImageService answerImageService;
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void create(User user, AnswerDto.AnswerRequest request, List<MultipartFile> images) {
         if (user.getUserType() == UserType.AI) {
             throw new BaseException(BaseResponseStatus.AI_ANSWER_FORBIDDEN);
@@ -54,13 +53,13 @@ public class AnswerService {
             throw new BaseException(BaseResponseStatus.ANSWER_CREATE_FAILED);
         }
     }
-
+    @Transactional(readOnly = true)
     public List<AnswerDto.AnswerResponse> listByQuestion(Long questionIdx) {
         return answerRepository.findByQuestion_Idx(questionIdx).stream()
                 .map(AnswerDto.AnswerResponse::from)
                 .toList();
     }
-
+    @Transactional(readOnly = true)
     public void select(Long idx) {
         Answer answer = answerRepository.findById(idx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.ANSWER_NOT_FOUND));
@@ -81,7 +80,7 @@ public class AnswerService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void deleteByQuestionIdx(Long questionIdx) {
         List<Answer> answers = answerRepository.findByQuestion_Idx(questionIdx);
         for (Answer answer : answers) {
@@ -90,7 +89,7 @@ public class AnswerService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void update(Long idx, User currentUser, AnswerDto.AnswerRequest dto, List<MultipartFile> images) {
         Answer answer = answerRepository.findById(idx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.ANSWER_NOT_FOUND));
@@ -113,14 +112,14 @@ public class AnswerService {
             throw new BaseException(BaseResponseStatus.ANSWER_UPDATE_FAILED);
         }
     }
-
+    @Transactional(readOnly = true)
     public AnswerDto.AnswerResponse read(Long id) {
         Answer answer = answerRepository.findById(id)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.ANSWER_NOT_FOUND));
         return AnswerDto.AnswerResponse.from(answer);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void delete(Long idx, User user) {
         Answer answer = answerRepository.findById(idx)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.ANSWER_NOT_FOUND));
@@ -137,10 +136,11 @@ public class AnswerService {
         }
     }
 
+    @Transactional(readOnly = true)
     public int countByQuestionIdx(Long questionId) {
         return answerRepository.countByQuestionIdx(questionId);
     }
-
+    @Transactional(readOnly = true)
     public List<AnswerDto.AnswerResponse> readByAnswer(Long userId) {
         return answerRepository.findByUser_IdxOrderByCreatedAtDesc(userId)
                 .stream()
@@ -148,7 +148,7 @@ public class AnswerService {
                 .toList();
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void createAiAnswerForQuestion(Question question, String aiContent) {
         if (aiContent == null || aiContent.trim().isEmpty()) {
             return;
