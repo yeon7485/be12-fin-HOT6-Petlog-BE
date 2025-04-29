@@ -28,7 +28,7 @@ public class NotificationService {
     private final SimpMessagingTemplate messagingTemplate;
     private final PetRepository petRepository;
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void createNotification(NotificationDto.NotificationSendRequest request, Long userIdx) {
         // 1. 스케줄 조회
         Schedule schedule = scheduleRepository.findById(request.getScheduleId())
@@ -52,7 +52,7 @@ public class NotificationService {
 
         messagingTemplate.convertAndSend("/topic/alerts/" + userIdx, element);
     }
-
+    @Transactional(readOnly = true)
     public List<NotificationDto.NotificationElement> getNotificationsByUserId(Long userIdx) {
         List<NotificationDto.NotificationElement> list = new ArrayList<>();
 
@@ -78,7 +78,7 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void deleteById(Long idx) {
         if (!notificationRepository.existsById(idx)) {
             throw new BaseException(BaseResponseStatus.NOTIFICATION_NOT_FOUND);
