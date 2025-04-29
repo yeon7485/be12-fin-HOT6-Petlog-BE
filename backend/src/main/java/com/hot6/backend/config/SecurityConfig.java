@@ -23,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
     private final AuthenticationConfiguration configuration;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
 
     @Bean
@@ -66,7 +67,7 @@ public class SecurityConfig {
         );
 
         http.oauth2Login(config -> {
-            config.successHandler(new OAuth2SuccessHandler());
+            config.successHandler(oAuth2SuccessHandler);
             config.userInfoEndpoint(endpoint ->
                     endpoint.userService(customOAuth2UserService)
             );
