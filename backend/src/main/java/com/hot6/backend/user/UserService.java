@@ -145,6 +145,11 @@ public class UserService implements UserDetailsService {
 
         if (result.isPresent()) {
             User user = result.get();
+
+            if (Boolean.TRUE.equals(user.getIsDeleted())) {
+                throw new BaseException(BaseResponseStatus.USER_DELETED_LOGIN);
+            }
+
             return user;
         }
 
@@ -250,5 +255,26 @@ public class UserService implements UserDetailsService {
 
         user.setNickname(newNickname);
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void deleteUser(Long idx, UserDto.UserDeleteRequest request) {
+        User user = userRepository.findByIdxAndIsDeletedFalse(idx)
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+
+        if (user.getProvider() == null || user.getProvider().isEmpty()) {
+            // 일반 회원이라면 비밀번호 확인
+            if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+                throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            }
+        }
+
+        // Soft Delete 처리
+        user.setIsDeleted(true);
+    }
+    @Transactional(readOnly = true)
+    // 삭제된 사용자 목록을 반환하는 메서드
+    public List<User> getDeletedUsers() {
+        return userRepository.findByIsDeletedTrue();  // 'is_deleted'가 true인 사용자 목록 반환
     }
 }

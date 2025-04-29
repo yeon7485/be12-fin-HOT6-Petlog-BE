@@ -57,6 +57,7 @@ public class UserDto {
                     .userType(UserType.valueOf(role))
                     .userProfileImage(resolvedProfileImageUrl)
                     .enabled(enabled)
+                    .isDeleted(false)
                     .provider(provider)
                     .providerId(providerId)
                     .build();
