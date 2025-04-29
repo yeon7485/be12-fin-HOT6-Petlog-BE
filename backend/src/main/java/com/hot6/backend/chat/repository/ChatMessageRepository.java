@@ -17,5 +17,13 @@ public interface ChatMessageRepository extends JpaRepository<Chat,Long> {
     List<Chat> findByChatRoomIdAndIdxGreaterThanEqualOrderByTimestampAsc(Long roomId, Long startMessageId);
 
 
-    Optional<Chat> findTopByChatRoomParticipant_ChatRoomOrderByIdxDesc(ChatRoom chatRoom);
+    @Query(value = """
+    SELECT c.* 
+    FROM chat c
+    JOIN chat_room_participant crp ON c.chat_room_parti_idx = crp.idx
+    WHERE crp.chat_room_idx = :chatRoomIdx
+    ORDER BY c.idx DESC
+    LIMIT 1
+    """, nativeQuery = true)
+    Optional<Chat> findTopByChatRoomParticipant_ChatRoomOrderByIdxDesc(Long chatRoomIdx);
 }

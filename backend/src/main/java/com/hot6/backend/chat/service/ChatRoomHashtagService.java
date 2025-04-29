@@ -15,15 +15,17 @@ import java.util.List;
 public class ChatRoomHashtagService {
     private final ChatRoomHashtagRepository chatRoomHashtagRepository;
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void saveAll(List<ChatRoomHashtag> hashtags) {
         chatRoomHashtagRepository.saveAll(hashtags);
     }
 
+    @Transactional(readOnly = true)
     public List<ChatRoomHashtag> findByChatRoom(ChatRoom chatRoom) {
         return chatRoomHashtagRepository.findChatRoomHashtagByChatRoom(chatRoom);
     }
 
+    @Transactional(readOnly = false)
     public void deleteAll(List<ChatRoomHashtag> toRemove) {
         chatRoomHashtagRepository.deleteAllInBatch(toRemove);
     }

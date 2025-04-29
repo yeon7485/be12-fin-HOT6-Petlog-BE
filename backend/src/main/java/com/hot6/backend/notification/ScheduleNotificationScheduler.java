@@ -6,6 +6,7 @@ import com.hot6.backend.schedule.model.Schedule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +18,7 @@ public class ScheduleNotificationScheduler {
     private final NotificationService notificationService;
 
     @Scheduled(fixedRate = 60000) // 매 분마다 실행
+    @Transactional(readOnly = false)
     public void notifyOneHourBefore() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime targetTime = now.plusHours(1).withSecond(0).withNano(0);

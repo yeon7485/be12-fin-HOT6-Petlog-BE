@@ -11,6 +11,8 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -33,6 +35,11 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
                         new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 log.info("User: {},{}", user.getIdx(),command);
                 accessor.setUser(auth); // Principal 설정
+                // 🔥 추가: SecurityContext에 Authentication 저장
+
+                SecurityContext context = SecurityContextHolder.createEmptyContext();
+                context.setAuthentication(auth);
+                SecurityContextHolder.setContext(context);
             }
         }
 
