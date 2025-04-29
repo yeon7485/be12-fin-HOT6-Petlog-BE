@@ -39,6 +39,9 @@ public class User implements UserDetails {
     private String provider;
     private Long providerId;
 
+    @Column(nullable = false)
+    private Boolean isDeleted = false;
+
     @OneToMany(mappedBy = "user")
     private List<ChatRoomParticipant> chatParticipations = new ArrayList<>();
 

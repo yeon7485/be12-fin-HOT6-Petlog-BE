@@ -24,7 +24,8 @@ public enum BaseResponseStatus {
     INVALID_USER_INFO(false, 1201, "잘못된 사용자 정보입니다."),
     //-- 1300 : 유저 정보 조회
     USER_NOT_FOUND(false, 1300, "찾을 수 없는 사용자입니다."),
-
+    //-- 1400 : 탈퇴한 유저 로그인 에러
+    USER_DELETED_LOGIN(false,1400,"탈퇴한 유저 입니다."),
     /* 2000 ~ 2999 : 채팅 관련 에러 */
 
     //-- 2000 : 채팅방 접근 / 참여 관련

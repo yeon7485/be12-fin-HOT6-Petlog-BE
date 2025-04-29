@@ -5,6 +5,7 @@ import com.hot6.backend.user.model.User;
 import com.hot6.backend.user.model.UserType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -15,4 +16,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUserType(UserType userType);
 
     boolean existsByNickname(String nickname);
+
+    Optional<User>  findByIdxAndIsDeletedFalse(Long idx);
+
+    List<User> findByIsDeletedTrue();
 }

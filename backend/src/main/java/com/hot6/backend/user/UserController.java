@@ -2,6 +2,7 @@ package com.hot6.backend.user;
 
 import com.hot6.backend.common.BaseResponse;
 import com.hot6.backend.common.BaseResponseStatus;
+import com.hot6.backend.common.exception.BaseException;
 import com.hot6.backend.pet.S3Service;
 import com.hot6.backend.pet.model.PetDto;
 import com.hot6.backend.user.model.User;
@@ -98,7 +99,8 @@ public class UserController {
     @DeleteMapping("/{idx}")
     public ResponseEntity<String> delete(@PathVariable Long idx,
                                          @RequestBody UserDto.UserDeleteRequest request) {
-        return ResponseEntity.ok("ok");
+        userService.deleteUser(idx, request); // 실제 삭제 호출!
+        return ResponseEntity.ok("회원 탈퇴 완료");
     }
 
     @Operation(summary = "회원 로그아웃", description = "현재 로그인된 계정에서 로그아웃")
