@@ -55,7 +55,7 @@ public class AnswerService {
     }
     @Transactional(readOnly = true)
     public List<AnswerDto.AnswerResponse> listByQuestion(Long questionIdx) {
-        return answerRepository.findByQuestion_Idx(questionIdx).stream()
+        return answerRepository.findByQuestion_IdxOrderByCreatedAtDesc(questionIdx).stream()
                 .map(AnswerDto.AnswerResponse::from)
                 .toList();
     }
@@ -82,7 +82,7 @@ public class AnswerService {
 
     @Transactional(readOnly = false)
     public void deleteByQuestionIdx(Long questionIdx) {
-        List<Answer> answers = answerRepository.findByQuestion_Idx(questionIdx);
+        List<Answer> answers = answerRepository.findByQuestion_IdxOrderByCreatedAtDesc(questionIdx);
         for (Answer answer : answers) {
             answerImageService.deleteImagesByAnswer(answer.getIdx());
             answerRepository.delete(answer);

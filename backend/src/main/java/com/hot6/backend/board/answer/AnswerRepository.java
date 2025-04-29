@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
-    List<Answer> findByQuestion_Idx(Long questionIdx);
+    List<Answer> findByQuestion_IdxOrderByCreatedAtDesc(Long questionIdx);
 
     List<Answer> findByUser_IdxOrderByCreatedAtDesc(Long userId);
 
