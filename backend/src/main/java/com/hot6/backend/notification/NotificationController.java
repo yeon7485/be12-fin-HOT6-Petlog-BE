@@ -26,6 +26,7 @@ public class NotificationController {
     public ResponseEntity<String> createAndSendNotification(
             @RequestBody NotificationDto.NotificationSendRequest request,@AuthenticationPrincipal User user
     ) {
+        System.out.println("전송된 scheduleId: " + request.getScheduleId());
         notificationService.createNotification(request, user.getIdx());
         return ResponseEntity.ok("알림 생성 및 전송 완료");
     }

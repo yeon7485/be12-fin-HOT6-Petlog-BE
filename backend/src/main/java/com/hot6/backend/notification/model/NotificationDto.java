@@ -30,6 +30,9 @@ public class NotificationDto {
         @Schema(description = "펫 ID", example = "멍쟈")
         private String petName;
 
+        @Schema(description = "스케줄 ID", example = "101")
+        private Long scheduleId;
+
         // ✅ 엔티티 → DTO 변환 (정적 팩토리 메서드)
         public static NotificationElement from(Notification notification) {
             return NotificationElement.builder()
@@ -37,6 +40,7 @@ public class NotificationDto {
                     .message(notification.getMessage())
                     .sentAt(notification.getSentAt())
                     .petName(notification.getSchedule().getPet().getName())
+                    .scheduleId(notification.getSchedule().getIdx())
                     .build();
         }
 
