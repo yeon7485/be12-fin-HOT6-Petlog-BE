@@ -24,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.Duration;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
@@ -49,19 +50,16 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            FilterChain chain,
+                                            Authentication authResult) throws IOException, ServletException {
         User user = (User) authResult.getPrincipal();
 
-        // ✅ 이메일 인증 안 된 유저는 로그인 실패 처리
         if (!user.getEnabled()) {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-
-            PrintWriter out = response.getWriter();
-            out.print(new ObjectMapper().writeValueAsString(
-                    new BaseResponse<>(BaseResponseStatus.EMAIL_VERIFY_FAIL)
-            ));
-            out.flush();
+            new ObjectMapper().writeValue(response.getWriter(), new BaseResponse<>(BaseResponseStatus.EMAIL_VERIFY_FAIL));
             return;
         }
 
@@ -77,18 +75,19 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
+        // 응답 객체 통일 (BaseResponse 사용)
+        Map<String, Object> userData = Map.of(
+                "userId", user.getNickname(),
+                "email", user.getEmail(),
+                "userType", user.getUserType(),
+                "enabled", user.isEnabled()
+        );
+
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-
-        PrintWriter out = response.getWriter();
-        out.print("{");
-        out.print("\"userId\": \"" + user.getNickname() + "\",");
-        out.print("\"email\": \"" + user.getEmail() + "\",");
-        out.print("\"userType\": \"" + user.getUserType() + "\"");
-        out.print("\"enabled\": \"" + user.isEnabled() + "\"");
-        out.print("}");
-        out.flush();
+        new ObjectMapper().writeValue(response.getWriter(), new BaseResponse<>(userData));
     }
+
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request,
