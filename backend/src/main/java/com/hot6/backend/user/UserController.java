@@ -4,7 +4,6 @@ import com.hot6.backend.common.BaseResponse;
 import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.common.exception.BaseException;
 import com.hot6.backend.pet.S3Service;
-import com.hot6.backend.pet.model.PetDto;
 import com.hot6.backend.user.model.User;
 import com.hot6.backend.user.model.UserDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,18 +39,6 @@ public class UserController {
         return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, userService.signup(userCreateRequest)));
     }
 
-    @Operation(summary = "일반/관리자 로그인", description = "이메일, 비밀번호로 로그인")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그인 성공",
-                    content = @Content(schema = @Schema(implementation = UserDto.LoginResponse.class)))
-    })
-    @PostMapping("/login")
-    public UserDto.LoginResponse login(@RequestBody UserDto.LoginRequest loginRequest) {
-        return UserDto.LoginResponse.builder()
-                .accessToken("ok")
-                .build();
-    }
-
     @Operation(summary = "이메일 인증 완료", description = "UUID를 통해 이메일 인증 처리")
     @GetMapping("/verify-email")
     public ResponseEntity<BaseResponse<String>> verifyEmail(@RequestParam String uuid, HttpServletResponse response) {
@@ -63,6 +50,20 @@ public class UserController {
     @GetMapping("/auth/check")
     public ResponseEntity<BaseResponse<UserDto.LoginCheckResponse>> checkLogin() {
         UserDto.LoginCheckResponse response = userService.checkLogin();
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, response));
+    }
+
+    @Operation(summary = "이메일 중복 확인", description = "이메일 받아와서 중복 이메일 있는지 확인")
+    @GetMapping("/email/check")
+    public ResponseEntity<BaseResponse<Boolean>> checkEmailDuplicate(@RequestParam String email) {
+        Boolean response = userService.checkEmailDuplicate(email);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, response));
+    }
+
+    @Operation(summary = "소셜 로그인 확인", description = "OAuth2로 가입한 유저인지 확인")
+    @GetMapping("/oauth/check")
+    public ResponseEntity<BaseResponse<Boolean>> checkOAuthUser(@AuthenticationPrincipal User user) {
+        Boolean response = userService.checkOAuthUser(user);
         return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, response));
     }
 
@@ -103,6 +104,8 @@ public class UserController {
         return ResponseEntity.ok("회원 탈퇴 완료");
     }
 
+
+
     @Operation(summary = "회원 로그아웃", description = "현재 로그인된 계정에서 로그아웃")
     @PostMapping("/logout")
     public ResponseEntity<BaseResponse<String>> logout(HttpServletResponse response) {
@@ -110,6 +113,7 @@ public class UserController {
         return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS, "로그아웃"));
     }
 
+    @Operation(summary = "프로필 이미지 수정", description = "프로필 이미지를 수정합니다.")
     @PostMapping("/{userId}/profileImage")
     public ResponseEntity<Map<String, String>> uploadProfileImage(
             @PathVariable Long userId,
@@ -132,6 +136,7 @@ public class UserController {
                     .body(Map.of("message", "파일이 비어 있습니다."));
         }
     }
+
     @Operation(summary = "닉네임 수정", description = "회원의 닉네임을 수정합니다.")
     @PutMapping("/{idx}/nickname")
     public ResponseEntity<String> updateNickname(@PathVariable Long idx,

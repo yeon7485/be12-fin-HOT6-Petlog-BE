@@ -14,8 +14,7 @@ public class EmailVerify {
     private Long idx;
     private String uuid;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name="user_idx")
     private User user;
-
 }

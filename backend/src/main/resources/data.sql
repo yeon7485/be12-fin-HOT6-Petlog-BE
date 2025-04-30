@@ -30,6 +30,7 @@ SELECT '뱀', NULL, 'BOARD', '뱀 관련 게시글 카테고리'
     WHERE NOT EXISTS (SELECT 1 FROM category WHERE name = '뱀' AND type = 'BOARD');
 
 -- AI 유저 조건부 삽입
-INSERT INTO `user` (email, password, nickname, user_type, enabled)
-SELECT 'ai@chatgps.com', 'AI_PASSWORD_PLACEHOLDER', 'ChatGPS', 'AI', 1
+INSERT INTO `user` (email, password, nickname, user_type, enabled, is_deleted)
+SELECT 'ai@chatgps.com', 'AI_PASSWORD_PLACEHOLDER', 'ChatGPS', 'AI', 1, 0
     WHERE NOT EXISTS (SELECT 1 FROM `user` WHERE email = 'ai@chatgps.com');
+

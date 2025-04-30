@@ -109,8 +109,9 @@ logging:
 openai:
   api:
     key: ${OPENAI_API_KEY}
+
 profile-image: ${PROFILE_IMAGE}
 pet-image: ${PET_IMAGE}
 email-auth-url: ${EMAIL_URL}
 frontend-server: ${FE_SERVER}
-
+kakao-admin-key: ${KAKAO_ADMIN_KEY}
