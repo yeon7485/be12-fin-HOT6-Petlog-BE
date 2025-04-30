@@ -23,9 +23,12 @@ public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String title;
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String content;
-    private String image;
 
     @Builder.Default
     private Boolean isDeleted = false;
