@@ -36,7 +36,7 @@ public class PostController {
     public ResponseEntity<BaseResponse<Page<PostDto.PostResponse>>> list(
             @PathVariable String boardName,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) {
+            @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, postService.list(boardName, page, size)));
     }
 
@@ -51,7 +51,7 @@ public class PostController {
             @RequestParam String category,
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) {
+            @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS,
                 postService.search(boardName, category, keyword, page, size)));
     }

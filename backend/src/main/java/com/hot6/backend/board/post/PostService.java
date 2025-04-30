@@ -47,7 +47,6 @@ public class PostService {
                 .user(user)
                 .title(dto.getTitle())
                 .content(dto.getContent())
-                .image(dto.getImage())
                 .category(category)
                 .boardType(boardType)
                 .build();
@@ -145,7 +144,6 @@ public class PostService {
         try {
             post.setTitle(dto.getTitle());
             post.setContent(dto.getContent());
-            post.setImage(dto.getImage());
             post.setBoardType(boardType);
             post.setCategory(category);
             postRepository.save(post);

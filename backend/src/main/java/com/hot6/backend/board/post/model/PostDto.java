@@ -25,7 +25,6 @@ public class PostDto {
 
         @NotBlank(message = "내용은 필수 입력 항목입니다.")
         private String content;
-        private String image;
         private Long categoryIdx;
         private String boardType;
         private List<Long> petIdxList;
@@ -39,7 +38,6 @@ public class PostDto {
         private String writer;
         private String title;
         private String content;
-        private String image;
         private String category;
         private LocalDate createdAt;
         private String boardType;
@@ -53,7 +51,6 @@ public class PostDto {
                     .writer(post.getUser().getNickname())
                     .title(post.getTitle())
                     .content(post.getContent())
-                    .image(post.getImage())
                     .category(post.getCategory().getName())
                     .createdAt(LocalDate.from(post.getCreatedAt()))
                     .boardType(post.getBoardType().getBoardName())
