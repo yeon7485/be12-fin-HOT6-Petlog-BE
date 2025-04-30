@@ -28,6 +28,9 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /config
+          envFrom:
+            - configMapRef:
+                name: time-zone-config
       volumes:
         - name: config-volume
           configMap:
