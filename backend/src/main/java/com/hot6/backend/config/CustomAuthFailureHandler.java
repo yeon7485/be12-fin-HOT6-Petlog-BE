@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +37,7 @@ public class CustomAuthFailureHandler implements AuthenticationFailureHandler {
             status = baseEx.getStatus();
         } else if (exception instanceof BadCredentialsException) {
             status = BaseResponseStatus.INVALID_CREDENTIALS;
-        } else {
+        }  else {
             status = BaseResponseStatus.LOGIN_FAILED;
         }
 
@@ -52,7 +53,8 @@ public class CustomAuthFailureHandler implements AuthenticationFailureHandler {
         Map<String, Object> res = new HashMap<>();
         res.put("redirectUrl", redirectUrl);
         res.put("isSuccess", false);
-        res.put("message", "탈퇴한 유저입니다");
+        res.put("code", status.getCode());
+        res.put("message", status.getMessage());
 
         response.getWriter().write(new ObjectMapper().writeValueAsString(res));
 

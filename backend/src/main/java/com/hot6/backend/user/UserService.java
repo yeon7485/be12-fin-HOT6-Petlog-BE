@@ -149,7 +149,10 @@ public class UserService implements UserDetailsService {
                 User user = result.get();
 
                 if (user.getIsDeleted()) {
-                    throw new BaseException(BaseResponseStatus.USER_DELETED_LOGIN);
+                    throw new InternalAuthenticationServiceException(
+                            BaseResponseStatus.USER_DELETED_LOGIN.getMessage(),
+                            new BaseException(BaseResponseStatus.USER_DELETED_LOGIN)
+                    );
                 }
 
                 return user;
@@ -158,7 +161,7 @@ public class UserService implements UserDetailsService {
             return null;
 
         } catch (BaseException ex) {
-            throw new InternalAuthenticationServiceException(ex.getMessage(), ex);
+            throw new RuntimeException("알 수 없는 로그인 오류", ex);
         }
     }
 
