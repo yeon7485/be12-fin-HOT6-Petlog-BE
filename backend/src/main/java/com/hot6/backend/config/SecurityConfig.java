@@ -62,7 +62,8 @@ public class SecurityConfig {
                         "/post/list/**",
                         "/post/search",
                         "/category/list",
-                        "/place/**"
+                        "/place/**",
+                        "/actuator/health"
                 ).permitAll()
 
 
