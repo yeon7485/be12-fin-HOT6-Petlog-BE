@@ -29,7 +29,7 @@ public class UserDto {
         private String password;
 
         @Schema(description = "닉네임(자음/모음, 특수문자 불가)", example = "happyDogLover")
-        @Size(min = 4, max = 16, message = "닉네임은 최소 4자에서 16자까지 입력 가능합니다.")
+        @Size(min = 2, max = 16, message = "닉네임은 최소 2자에서 16자까지 입력 가능합니다.")
         @NotBlank(message = "닉네임은 필수 입력 사항입니다.")
         private String nickname;
 
@@ -181,9 +181,9 @@ public class UserDto {
         }
     }
 
-        @Getter
-        @Setter
-        public static class NicknameUpdateRequest {
-            private String newNickname;
-        }
+    @Getter
+    @Setter
+    public static class NicknameUpdateRequest {
+        private String newNickname;
     }
+}

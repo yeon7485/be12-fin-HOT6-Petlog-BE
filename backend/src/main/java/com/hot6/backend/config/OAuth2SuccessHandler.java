@@ -1,4 +1,4 @@
-package com.hot6.backend.user;
+package com.hot6.backend.config;
 
 import com.hot6.backend.user.model.User;
 import com.hot6.backend.user.model.UserType;
