@@ -1,5 +1,6 @@
 package com.hot6.backend.admin;
 
+import com.hot6.backend.common.BaseResponse;
 import com.hot6.backend.common.BaseResponseStatus;
 import com.hot6.backend.common.exception.BaseException;
 import com.hot6.backend.user.UserService;
@@ -23,9 +24,9 @@ public class AdminController {
 
     // 삭제된 사용자 목록 조회 API
     @GetMapping("/deletedUsers")
-    public ResponseEntity<List<User>> getDeletedUsers() {
+    public ResponseEntity<BaseResponse<List<User>>> getDeletedUsers() {
         List<User> deletedUsers = userService.getDeletedUsers();
-        return ResponseEntity.ok(deletedUsers);
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS,deletedUsers));
     }
 
     @PutMapping("/restoreUser/{userId}")
