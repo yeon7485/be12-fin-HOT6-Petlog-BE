@@ -103,11 +103,9 @@ public class PostService {
 
         if (keyword != null && !keyword.isBlank()) {
             if (categoryName == null || categoryName.isBlank()) {
-                result = postRepository.findByBoardTypeAndTitleContainingIgnoreCaseOrBoardTypeAndUser_NicknameContainingIgnoreCase(
-                        boardType, keyword, boardType, keyword, pageable);
+                result = postRepository.searchByKeywordOnly(boardType, keyword, pageable);
             } else {
-                result = postRepository.findByBoardTypeAndCategoryNameAndTitleContainingIgnoreCaseOrBoardTypeAndCategoryNameAndUser_NicknameContainingIgnoreCase(
-                        boardType, categoryName, keyword, boardType, categoryName, keyword, pageable);
+                result = postRepository.searchByCategoryAndKeyword(boardType, categoryName, keyword, pageable);
             }
         } else {
             if (categoryName == null || categoryName.isBlank()) {
@@ -126,11 +124,12 @@ public class PostService {
         int pageGroupEnd = Math.min(pageGroupStart + pageGroupSize - 1, totalPages);
 
         List<Integer> visiblePages = new java.util.ArrayList<>();
-        for (int i = pageGroupStart; i <= pageGroupEnd; i++) visiblePages.add(i);
+        for (int i = pageGroupStart; i <= pageGroupEnd; i++) {
+            visiblePages.add(i);
+        }
 
         return new PostListResponse(posts, currentPage, totalPages, pageGroupStart, pageGroupEnd, visiblePages);
     }
-
 
 
     @Transactional(readOnly = false)
