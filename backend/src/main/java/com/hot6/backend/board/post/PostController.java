@@ -53,10 +53,19 @@ public class PostController {
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
+        try {
+            System.out.println("[검색 요청] board=" + boardName + ", category=" + category + ", keyword=" + keyword + ", page=" + page);
 
-        PostListResponse response = postService.search(boardName, category, keyword, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, response));
+            PostListResponse response = postService.search(boardName, category, keyword, page, size);
+            return ResponseEntity.ok(new BaseResponse<>(BaseResponseStatus.SUCCESS, response));
+        } catch (Exception e) {
+            System.out.println("게시글 검색 중 예외 발생: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(new BaseResponse<>(BaseResponseStatus.POST_SEARCH_FAILED));
+        }
     }
+
+
 
     @DeleteMapping("/delete/{idx}")
     public ResponseEntity<BaseResponse<Void>> delete(@PathVariable Long idx) {
