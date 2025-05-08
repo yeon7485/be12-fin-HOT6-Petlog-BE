@@ -18,20 +18,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByBoardType(BoardType boardType, Pageable pageable);
 
-    Page<Post> findByBoardTypeAndCategoryNameAndTitleContainingIgnoreCase(
-            BoardType boardType, String categoryName, String keyword, Pageable pageable
-    );
-
-    Page<Post> findByBoardTypeAndCategoryNameAndUser_NicknameContainingIgnoreCase(
-            BoardType boardType, String categoryName, String keyword, Pageable pageable
-    );
-
-    Page<Post> findByBoardTypeAndCategoryNameAndTitleContainingIgnoreCaseOrBoardTypeAndCategoryNameAndUser_NicknameContainingIgnoreCase(
-            BoardType boardType1, String categoryName1, String titleKeyword,
-            BoardType boardType2, String categoryName2, String nicknameKeyword,
-            Pageable pageable
-    );
-
     @Query("""
             SELECT p FROM Post p
             WHERE p.boardType = :boardType AND p.category.name = :categoryName

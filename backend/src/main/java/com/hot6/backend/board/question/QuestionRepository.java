@@ -12,14 +12,17 @@ import java.util.List;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    Page<Question> findByqTitleContainingIgnoreCaseOrUserNicknameContainingIgnoreCaseOrContentContainingIgnoreCaseOrHashtagsListTagContainingIgnoreCase(
-            String title, String nickname, String content, String tag, Pageable pageable
-    );
-
     List<Question> findByUser_IdxOrderByCreatedAtDesc(Long userIdx);
 
     Page<Question> findAll(Pageable pageable);
 
-    @Query("SELECT q FROM Question q WHERE q.qTitle LIKE %:keyword% OR q.user.nickname LIKE %:keyword%")
+    @Query("""
+              SELECT DISTINCT q FROM Question q
+              LEFT JOIN q.hashtagsList h
+              WHERE q.qTitle LIKE %:keyword%
+                 OR q.content LIKE %:keyword%
+                 OR q.user.nickname LIKE %:keyword%
+                 OR h.tag LIKE %:keyword%
+            """)
     Page<Question> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
 }
