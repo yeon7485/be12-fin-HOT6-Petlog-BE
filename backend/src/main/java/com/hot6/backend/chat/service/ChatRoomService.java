@@ -82,9 +82,9 @@ public class ChatRoomService {
     }
 
     @Transactional(readOnly = true)
-    public List<ChatDto.ChatElement> getChatMessages(Long chatRoomIdx, Long userIdx) {
+    public Slice<ChatDto.ChatElement> getChatMessages(Long chatRoomIdx, Long userIdx, Long lastMessageId,int size) {
         ChatRoomParticipant chatRoomParticipant = chatRoomParticipantService.findChatRoomParticipantOrThrow(chatRoomIdx, userIdx);
-        return chatMessageService.findChatMessages(chatRoomParticipant);
+        return chatMessageService.findChatMessages(chatRoomParticipant,lastMessageId,size);
     }
 
     @Transactional(readOnly = true)
