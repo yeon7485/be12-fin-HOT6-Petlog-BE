@@ -31,16 +31,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: time-zone-config
-          env:
-            - name: JAVA_TOOL_OPTIONS
-              value: "-Xms1024m -Xmx4096m"
-          resources:
-            requests:
-              memory: "1024Mi"
-              cpu: "1000m"
-            limits:
-              memory: "6144Mi"
-              cpu: "2000m"
       volumes:
         - name: config-volume
           configMap:
