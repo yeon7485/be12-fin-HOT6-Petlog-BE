@@ -57,7 +57,7 @@ public class ChatController {
     public ResponseEntity<BaseResponse<String>> leaveChatRoom(
             @PathVariable Long chatRoomIdx,
             @AuthenticationPrincipal User user) {
-        chatRoomParticipantService.leaveChatRoom(chatRoomIdx,user.getIdx());
+        chatRoomService.leaveChatRoom(chatRoomIdx,user.getIdx());
         return ResponseEntity.ok(new BaseResponse(BaseResponseStatus.SUCCESS,"성공적으로 나가졌습니다."));
     }
 
