@@ -26,6 +26,8 @@ public class ChatRoom extends BaseEntity {
     private String cTitle;
     private int maxParticipants;
 
+    private int currentParticipants;
+
 
     @BatchSize(size = 50)
     @OneToMany(mappedBy = "chatRoom")
@@ -37,5 +39,13 @@ public class ChatRoom extends BaseEntity {
 
     public void updateInfo(String title){
         this.cTitle = title;
+    }
+
+    public void incrementCurrentParticipants() {
+        this.currentParticipants++;
+    }
+
+    public void decrementCurrentParticipants() {
+        this.currentParticipants--;
     }
 }

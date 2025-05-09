@@ -62,7 +62,7 @@ public class ChatDto {
             return ChatRoomListDto.builder()
                     .idx(chatRoom.getIdx())
                     .title(chatRoom.getCTitle())
-                    .participants(chatRoom.getParticipants().size())
+                    .participants(chatRoom.getCurrentParticipants())
                     .hashtags(chatRoom.getHashtags().stream().map(ChatRoomHashtag::getCTag).collect(Collectors.toList()))
                     .isParticipating(
                             userIdx != null && chatRoom.getParticipants().stream()
@@ -94,7 +94,7 @@ public class ChatDto {
             return MyChatRoomListDto.builder()
                     .idx(chatRoom.getIdx())
                     .title(chatRoom.getCTitle())
-                    .participants(chatRoom.getParticipants().size())
+                    .participants(chatRoom.getCurrentParticipants())
                     .hashtags(chatRoom.getHashtags().stream().map(ChatRoomHashtag::getCTag).collect(Collectors.toList()))
                     .isParticipating(true)
                     .build();
@@ -124,7 +124,7 @@ public class ChatDto {
             return ChatRoomDetailInfo.builder()
                     .idx(chatRoom.getIdx())
                     .title(chatRoom.getCTitle())
-                    .participants(chatRoom.getParticipants().size())
+                    .participants(chatRoom.getCurrentParticipants())
                     .hashtags(chatRoom.getHashtags().stream().map(ChatRoomHashtag::getCTag).collect(Collectors.toList()))
                     .isAdmin(
                             chatRoom.getParticipants().stream()

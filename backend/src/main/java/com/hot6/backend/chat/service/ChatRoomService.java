@@ -171,12 +171,27 @@ public class ChatRoomService {
 
     @Transactional(readOnly = false)
     public void join(User user, Long roomIdx) {
-        ChatRoom chatRoom = chatRoomRepository.findByIdx(roomIdx).orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
-        int curParticipants = chatRoomParticipantService.countByChatRoom(chatRoom);
-        if(chatRoom.getMaxParticipants() == curParticipants) {
+        ChatRoom chatRoom = chatRoomRepository.findByIdxForUpdate(roomIdx)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
+
+        if (chatRoom.getCurrentParticipants() >= chatRoom.getMaxParticipants()) {
             throw new BaseException(BaseResponseStatus.MAX_PARTICIPANT_LIMIT);
         }
+
+        chatRoom.incrementCurrentParticipants();
         chatRoomParticipantService.join(user, chatRoom);
+    }
+
+    @Transactional(readOnly = false)
+    public void leaveChatRoom(Long chatRoomIdx, Long idx) {
+        ChatRoom chatRoom = chatRoomRepository.findByIdxForUpdate(chatRoomIdx)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_NOT_FOUND));
+
+        ChatRoomParticipant chatRoomParticipant = chatRoomParticipantService.findByUserIdAndChatRoomIdSimple(idx, chatRoomIdx)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.CHAT_ROOM_ACCESS_DENIED));
+
+        chatRoom.decrementCurrentParticipants();
+        chatRoomParticipantService.delete(chatRoomParticipant);
     }
 
     @Transactional(readOnly = true)
@@ -240,5 +255,9 @@ public class ChatRoomService {
                 .collect(Collectors.toList());
 
         chatRoomHashtagService.saveAll(toAdd);
+    }
+
+    public Optional<ChatRoom> findByIdxForUpdate(Long chatRoomIdx) {
+        return chatRoomRepository.findByIdxForUpdate(chatRoomIdx);
     }
 }
