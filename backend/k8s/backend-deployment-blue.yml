@@ -38,7 +38,7 @@ spec:
             requests:
               memory: "512Mi"
             limits:
-              memory: "2048Mi"
+              memory: "3072Mi"
       volumes:
         - name: config-volume
           configMap:
