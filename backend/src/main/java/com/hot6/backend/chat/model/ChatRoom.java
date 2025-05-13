@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashSet;
@@ -24,8 +25,12 @@ public class ChatRoom extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
     private String cTitle;
-    private int maxParticipants;
 
+    @Enumerated(EnumType.STRING)
+    private ChatRoomType type;
+
+    private int maxParticipants;
+    private LocalDateTime startDateTime;
     private int currentParticipants;
 
 
