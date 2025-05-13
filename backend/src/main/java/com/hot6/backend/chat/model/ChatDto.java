@@ -27,6 +27,8 @@ public class ChatDto {
 
         @Schema(description = "채팅방 해시태그 목록", example = "[\"#햄스터\", \"#김포\", \"#친구\"]")
         private List<String> hashtags;
+
+        private String startDateTime;
     }
 
     @Getter
@@ -55,13 +57,20 @@ public class ChatDto {
         @Schema(description = "채팅방 참여 인원수", example = "6")
         public int participants;
 
+        public int maxParticipants;
+
         @Schema(description = "참여 여부", example = "true")
         public Boolean isParticipating;
+
+
+        public LocalDateTime startDateTime;
 
         public static ChatRoomListDto from(ChatRoom chatRoom, Long userIdx) {
             return ChatRoomListDto.builder()
                     .idx(chatRoom.getIdx())
                     .title(chatRoom.getCTitle())
+                    .startDateTime(chatRoom.getStartDateTime())
+                    .maxParticipants(chatRoom.getMaxParticipants())
                     .participants(chatRoom.getCurrentParticipants())
                     .hashtags(chatRoom.getHashtags().stream().map(ChatRoomHashtag::getCTag).collect(Collectors.toList()))
                     .isParticipating(
