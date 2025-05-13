@@ -58,10 +58,13 @@ public class ChatRoomService {
 
         LocalDateTime effectiveStartDateTime = (startDateTime != null) ? startDateTime : LocalDateTime.now();
 
+        // 이벤트 채팅방이면, 요청한 인원수로 설정하고 아니면 기본값 100명으로 설정
+        int maxParticipants = (request.getMaxParticipants() != null) ? request.getMaxParticipants() : 100;
+
         // 채팅방 생성
         ChatRoom chatRoom = ChatRoom.builder()
                 .cTitle(request.getTitle())
-                .maxParticipants(10)
+                .maxParticipants(maxParticipants)  // maxParticipants 설정
                 .type(chatRoomType)
                 .startDateTime(effectiveStartDateTime)  // startDateTime 설정
                 .build();

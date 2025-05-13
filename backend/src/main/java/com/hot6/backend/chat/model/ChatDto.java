@@ -28,7 +28,11 @@ public class ChatDto {
         @Schema(description = "채팅방 해시태그 목록", example = "[\"#햄스터\", \"#김포\", \"#친구\"]")
         private List<String> hashtags;
 
+        @Schema(description = "채팅방 시작 시간", example = "2025-05-13T13:21:00")
         private String startDateTime;
+
+        @Schema(description = "채팅방 최대 참여 인원", example = "50")
+        private Integer maxParticipants; // 최대 인원 추가
     }
 
     @Getter
