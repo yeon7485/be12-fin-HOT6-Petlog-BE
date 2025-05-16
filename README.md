@@ -10,7 +10,7 @@
 
 <div align="center">
 
-|      <img src="src/assets/images/나옹이.jpg" width="100" />      |     <img src="src/assets/images/로사.jpg" width="100" />     |    <img src="src/assets/images/로이.jpg" width="100" />    |   <img src="src/assets/images/마자용.jpg" width="100" />   |
+|      <img src="backend/images/냐옹이.jpg" width="100" />      |     <img src="backend/images/로사.jpg" width="100" />     |    <img src="backend/images/로이.jpg" width="100" />    |   <img src="backend/images/마자용.jpg" width="100" />   |
 | :--------------------------------------------------------------: | :----------------------------------------------------------: | :--------------------------------------------------------: | :--------------------------------------------------------: |
 | 🐳 **박동휘**<br/>[@parkdonghwi-git](https://github.com/donghwi) | 🐢 **유승호**<br/>[@seungho99](https://github.com/seungho99) | 🧶 **박세연**<br/>[@yeon7485](https://github.com/yeon7485) | ⚽ **안규호**<br/>[@Ahngyuho](https://github.com/Ahngyuho) |
 
@@ -78,7 +78,7 @@
 
 ## 🐹 펫로그 서비스 소개
 <div align="center">
-<img src="src/assets/images/logo_white.png" width="50%"/>
+<img src="backend/images/logo_white.png" width="50%"/>
 </div>
 
 #### 프로젝트 배경
@@ -118,8 +118,9 @@
 <br>
 
 ## 🐰 시스템 아키텍처
+<img src="backend/images/시스템아키텍처.png"><br><br>
 
-## 🐦 프론트엔드 프로젝트 목표
+## 🐦 백엔 프로젝트 목표
 
 - `사용자 인터페이스(UI) 개발` : 직관적이고 반응형 디자인 구현
 - `사용자 경험(UX) 향상` : 사용자의 편의성과 흐름을 고려한 화면 흐름 설계
