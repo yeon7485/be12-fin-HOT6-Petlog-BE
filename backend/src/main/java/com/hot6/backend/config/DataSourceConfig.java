@@ -3,15 +3,9 @@ package com.hot6.backend.config;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManagerFactory;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.*;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -20,12 +14,12 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @Configuration
-@EnableConfigurationProperties
 public class DataSourceConfig {
-    @ConfigurationProperties(prefix = "spring.datasource.master.hikari")
-    @Bean(name = "hikariConfigMaster")
+
+    // ✅ Master Hikari 설정 바인딩
+    @Bean
+    @ConfigurationProperties("spring.datasource.master.hikari")
     public HikariConfig hikariConfigMaster() {
         return new HikariConfig();
     }
@@ -35,48 +29,48 @@ public class DataSourceConfig {
         return new HikariDataSource(config);
     }
 
-    @ConfigurationProperties(prefix = "spring.datasource.master")
+    // ✅ Slave Hikari 설정 바인딩
     @Bean
-    public DataSource masterDataSource() {
-        return DataSourceBuilder.create().type(HikariDataSource.class).build();
+    @ConfigurationProperties("spring.datasource.slave.hikari")
+    public HikariConfig hikariConfigSlave() {
+        return new HikariConfig();
     }
 
-    @ConfigurationProperties(prefix = "spring.datasource.slave")
-    @Bean
-    public DataSource slaveDataSource() {
-        return DataSourceBuilder.create().type(HikariDataSource.class).build();
+    @Bean(name = "slaveDataSource")
+    public DataSource slaveDataSource(@Qualifier("hikariConfigSlave") HikariConfig config) {
+        return new HikariDataSource(config);
     }
 
+    // ✅ 라우팅 데이터소스 구성
+    @Bean
     @DependsOn({"masterDataSource", "slaveDataSource"})
-    @Bean
     public DataSource routingDataSource(
             @Qualifier("masterDataSource") DataSource master,
             @Qualifier("slaveDataSource") DataSource slave) {
+
         DynamicRoutingDataSource routingDataSource = new DynamicRoutingDataSource();
-
         Map<Object, Object> dataSourceMap = new HashMap<>();
-
         dataSourceMap.put("MASTER", master);
         dataSourceMap.put("SLAVE", slave);
 
         routingDataSource.setTargetDataSources(dataSourceMap);
         routingDataSource.setDefaultTargetDataSource(master);
-
         return routingDataSource;
     }
 
-    @DependsOn({"routingDataSource"})
+    // ✅ 최종 프록시용 데이터소스 (Lazy Proxy)
     @Primary
     @Bean
+    @DependsOn("routingDataSource")
     public DataSource dataSource(DataSource routingDataSource) {
         return new LazyConnectionDataSourceProxy(routingDataSource);
     }
 
+    // ✅ 트랜잭션 매니저
     @Bean
-    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory){
-        JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
-        jpaTransactionManager.setEntityManagerFactory(entityManagerFactory);
-        return jpaTransactionManager;
+    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+        JpaTransactionManager tm = new JpaTransactionManager();
+        tm.setEntityManagerFactory(emf);
+        return tm;
     }
 }
-
