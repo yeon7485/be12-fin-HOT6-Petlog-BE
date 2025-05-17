@@ -23,8 +23,8 @@
 - [🐶 기술 스택](#-기술-스택)
 - [🐱 펫로그 데모 사이트 링크](#-펫로그-데모-사이트-바로가기)
 - [🐹 펫로그 서비스 소개](#-펫로그-서비스-소개)
-- [🐰 시스템 아키텍처](#-시스템-아키텍처)
-- [🐦 프론트엔드 프로젝트 목표](#-프론트엔드-프로젝트-목표)
+- [🐦 백엔드 프로젝트 목표](#-백엔드-프로젝트-목표)
+- [🐰 프로젝트 기획](#-프로젝트-기획)
 - [🐟 프로젝트 설계](#-프로젝트-설계)
 - [🐢 핵심 로직 상세 설명](#-핵심-로직-상세-설명)
 - [🦎 프로젝트 폴더 바로가기](#-프로젝트-폴더-바로가기)
@@ -117,32 +117,54 @@
 
 <br>
 
-## 🐰 시스템 아키텍처
-<img src="backend/images/시스템아키텍처.png"><br><br>
-
-## 🐦 백엔 프로젝트 목표
+---
+## 🐦 백엔드 프로젝트 목표
 
 - `사용자 인터페이스(UI) 개발` : 직관적이고 반응형 디자인 구현
 - `사용자 경험(UX) 향상` : 사용자의 편의성과 흐름을 고려한 화면 흐름 설계
 - `프론트엔드 기술 활용` : HTML, CSS, JavaScript, 프레임워크(Vue)를 사용할 때 확장성을 고려하여 프로젝트를 진행
 - `API 연동` : 백엔드와의 데이터 통신 (axios)
 
-## 🐟 프로젝트 설계
+---
+# 🐰 프로젝트 기획 
 
-#### [1. 기획서 바로가기](https://docs.google.com/document/d/1VGoL4hW_HWG3-ZIIZwwbtjm14G55dLhh8RdMGFEjTf4/edit?usp=sharing)
+<br>
 
-#### [2. 요구사항 정의서](https://docs.google.com/spreadsheets/d/1-6Z2yJZRFkM0Ix6biRMdWBmkby0E4XW_g9UfPiDfsH4/edit?usp=sharing)
+▶ [**🕙 WBS 바로가기**](https://docs.google.com/spreadsheets/d/10GJK2OFHPAkFplNyjtBtaEh8kxCxARNC_aAOHAJr77M/edit?usp=sharing)
 
-#### [3. WBS](https://docs.google.com/spreadsheets/d/10GJK2OFHPAkFplNyjtBtaEh8kxCxARNC_aAOHAJr77M/edit?usp=sharing)
+▶ [**📑 요구사항 정의서 바로가기**](https://docs.google.com/spreadsheets/d/1-6Z2yJZRFkM0Ix6biRMdWBmkby0E4XW_g9UfPiDfsH4/edit?usp=sharing)
 
-#### [4. 화면설계서 바로가기](https://www.figma.com/design/7sBqcCVXnFPHhrHAJN9N9l/Petlog?node-id=0-1&t=6T5v5WcuWWnwHpGS-1)
+<br>
+
+---
+# 🐟 프로젝트 설계
+
+<br>
+  <details>
+    <summary><b>📝 ERD</b></summary></br>
+        <img src="backend/images/Petlog_erd.png" alt="E-R-D" width="75%">
+  </details>
+
+  <details>
+    <summary><b>⚙️ 시스템아키텍처</b></summary></br>
+        <img src="backend/images/시스템아키텍처.png" alt="시스템 아키텍처" width="75%">
+  </details>
+
+▶ [**🎨 화면설계서 바로가기**](https://www.figma.com/design/7sBqcCVXnFPHhrHAJN9N9l/Petlog?node-id=0-1&t=6T5v5WcuWWnwHpGS-1)
+
+▶ [**📃 API 명세서 바로가기**]()
 
 <br>
 
 ## 🐢 핵심 로직 상세 설명
 
-### [📃 프로젝트 Wiki](https://github.com/beyond-sw-camp/be12-fin-HOT6-Petlog-FE/wiki) <br>
+### [📃 프로젝트 Wiki](https://github.com/beyond-sw-camp/be12-fin-HOT6-Petlog-BE/wiki) <br>
 
 <br>
 
+## 📂 프로젝트 폴더 바로가기
 
+### [📃 frontend](https://github.com/beyond-sw-camp/be12-fin-HOT6-Petlog-FE) <br>
+### [📃 Devops](https://github.com/ddarahakit2025/be12-fin-template/tree/main/devops)
+
+<br>
