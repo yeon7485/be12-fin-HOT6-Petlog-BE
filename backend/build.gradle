@@ -25,6 +25,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-json'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
+    implementation 'com.zaxxer:HikariCP:5.0.1' // 또는 최신 버전
+
     // smtp
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 

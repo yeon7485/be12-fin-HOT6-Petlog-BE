@@ -1,5 +1,6 @@
 package com.hot6.backend.config;
 
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,16 @@ import java.util.Map;
 @Configuration
 @EnableConfigurationProperties
 public class DataSourceConfig {
+    @ConfigurationProperties(prefix = "spring.datasource.master.hikari")
+    @Bean(name = "hikariConfigMaster")
+    public HikariConfig hikariConfigMaster() {
+        return new HikariConfig();
+    }
+
+    @Bean(name = "masterDataSource")
+    public DataSource masterDataSource(@Qualifier("hikariConfigMaster") HikariConfig config) {
+        return new HikariDataSource(config);
+    }
 
     @ConfigurationProperties(prefix = "spring.datasource.master")
     @Bean
