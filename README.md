@@ -155,9 +155,7 @@
         <img src="backend/images/시스템아키텍처.png" alt="시스템 아키텍처" width="75%">
   </details>
 
-▶ [**🎨 화면설계서 바로가기**](https://www.figma.com/design/7sBqcCVXnFPHhrHAJN9N9l/Petlog?node-id=0-1&t=6T5v5WcuWWnwHpGS-1)
-
-▶ [**📃 API 명세서 바로가기**]()
+▶ [**📃 API 명세서 바로가기**](http://3.36.75.118:8080/swagger-ui/index.html)
 
 <br>
 
@@ -170,6 +168,5 @@
 ## 📂 프로젝트 폴더 바로가기
 
 ### [📃 frontend](https://github.com/beyond-sw-camp/be12-fin-HOT6-Petlog-FE) <br>
-### [📃 Devops](https://github.com/ddarahakit2025/be12-fin-template/tree/main/devops)
 
 <br>
