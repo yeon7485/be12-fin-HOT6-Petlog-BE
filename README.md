@@ -168,5 +168,6 @@
 ## 📂 프로젝트 폴더 바로가기
 
 ### [📃 frontend](https://github.com/beyond-sw-camp/be12-fin-HOT6-Petlog-FE) <br>
+### [📃 devops](https://github.com/beyond-sw-camp/be12-fin-HOT6-Petlog-BE/tree/main/backend/devops) <br>
 
 <br>
