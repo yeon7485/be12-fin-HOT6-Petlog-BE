@@ -136,16 +136,21 @@
 <details>
 <summary>무중단 배포</summary>
 
-![image](https://private-user-images.githubusercontent.com/64758888/380391055-a84781dd-68e2-409b-bd11-30d2be10c55c.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDcxMDM5NTgsIm5iZiI6MTc0NzEwMzY1OCwicGF0aCI6Ii82NDc1ODg4OC8zODAzOTEwNTUtYTg0NzgxZGQtNjhlMi00MDliLWJkMTEtMzBkMmJlMTBjNTVjLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTA1MTMlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwNTEzVDAyMzQxOFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTE1OTgzMGY1ZDAxNWE2NmYxMWQ3ZGM2NDNhYmUwMTIwZTBhMzE3ZGUxZTFiNzJiZWI0ZWMyMjYyYTdkOGYxY2QmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.iO_a7f3UQDM-triRwGcVu9R3tXtEdzWUchz2GZGsGUc)
-> 다운 타임이 없는 무중단 배포 방식 중 Blue/Green 배포 방식을 적용하였다.  블루그린 배포 방식은 지속적 배포 방식 중 하나로 신 버전을 배포가 완료되면 구 버전을 바라보던 서비스가 신 버전으로 일제히 전환하도록 하는 방식이다.
-신속한 업데이트와 동시에 서버 안정성이 좋기 때문에 이 방식을 선택했다.
+![백엔드](../gif/백엔드%20배포.gif)<br>
+**🔧 백엔드 무중단 배포**
+
+
+
+> 다운 타임이 없는 무중단 배포 방식 중 Blue/Green 배포 방식을 적용하였다.  블루그린 배포 방식은 지속적 배포 방식 중 하나로 신 버전을 배포가 완료되면 구 버전을 바라보던 서비스가 신 버전으로 일제히 전환하도록 하는 방식이다.  
+> 신속한 업데이트와 동시에 서버 안정성이 좋기 때문에 이 방식을 선택했다.
 </details>
 
 
 <details>
 <summary>CI/CD 파이프라인</summary>
 
-![image](https://private-user-images.githubusercontent.com/64758888/380391946-e486d25f-95e0-47cc-917f-84b03b9ebac0.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDcxMDM5NTgsIm5iZiI6MTc0NzEwMzY1OCwicGF0aCI6Ii82NDc1ODg4OC8zODAzOTE5NDYtZTQ4NmQyNWYtOTVlMC00N2NjLTkxN2YtODRiMDNiOWViYWMwLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTA1MTMlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwNTEzVDAyMzQxOFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWNiZmQ4OWE2MWJhNmQ5M2FkMGIzNzhkNDA5YTUwZTA4ZjY2ODFjMTE5YzAyNzE4ZTAxZmMxNTM1NDk4OGEyNDImWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.xyYmi5KDgu1aHk2Hku_4VEiw9dmOZiMsNauT0k4v-1k)
+![프론트](../gif/프론트%20엔드%20배포.gif)<br>
+**🎨 프론트엔드 무중단 배포**
 1. github에 be-dev 최신 버전 프로젝트를 머지
 2. github는 젠킨스에게 webhook을 통해서 젠킨스에게 이벤트 전달
 3. 젠킨스는 파이프라인에 저장된 절차 실행
