@@ -97,7 +97,6 @@
 - `AI 기반 Q&A 지원` : Q&A 게시판에서는 질문에 대해 사용자와 **AI**가 함께 답변을 제공함으로써 빠르고 정확한 정보 획득이 가능하다.<br>
 
 
-
 #### 세부 기능
 
 - **`📇 반려동물 카드`**<br>
@@ -119,22 +118,33 @@
 
 ---
 ## 🐦 백엔드 프로젝트 목표
-- `RESTful API 설계 및 구현`: 클라이언트와의 명확한 데이터 통신을 위한 표준화된 API 제공
 
-- `비즈니스 로직 처리`: 일정, 게시판, 채팅 등 핵심 기능의 안정적 처리와 예외 상황 대응 로직 구현
+- `RESTful API 설계 및 구현`  
+  클라이언트와의 명확한 데이터 통신을 위한 표준화된 API 설계를 통해 요청-응답 간 일관성과 확장성을 확보함
 
-- `데이터베이스 설계 및 최적화`: 정규화된 구조 설계와 Index 활용 등을 통해 데이터 저장 효율 및 조회 성능 향상
+  - `외부 서비스 연동`  
+  AWS S3를 통한 이미지 업로드 기능 구현과 WebSocket 기반의 실시간 채팅 시스템 구성, Redis 및 MongoDB와의 연계를 통해 분산 시스템 내 효율적인 통신 처리 구현
 
-- `보안 및 인증 처리`: JWT 및 Redis 기반 Refresh Token 관리로 안전한 인증 체계 구성
+- `보안 및 인증 처리`  
+  JWT 토큰 기반 인증 체계를 구성하고, Redis에 Refresh Token을 저장하여 만료/갱신 검증의 무결성과 보안성 강화
 
-- `확장성과 유지보수성 고려`: 도메인 기반 계층 분리 및 서비스 객체 구조를 통해 유연한 기능 확장과 유지보수 가능하게 설계
+- `실시간 채팅 성능 개선 및 동시성 제어`  
+  - **Redis 기반 처리**  
+    - Redisson 분산 락을 통해 채팅방 입장 요청의 Race Condition 제어  
+    - Redis Set을 활용한 유저 입장 목록 관리  
+    - Redis Queue로 입장 대기열 구성  
+  - **MongoDB 기반 처리**  
+    - Document 구조를 활용한 유연한 채팅 데이터 저장  
+    - Kubernetes 환경에서 Replica Set을 구성하여 고가용성 및 장애 복구 자동화  
+    - 실시간성이 요구되는 채팅에서 높은 읽기/쓰기 처리 성능 확보
 
-- `외부 서비스 연동`: AWS S3 이미지 업로드, WebSocket 기반 실시간 채팅, MongoDB 및 Redis 활용 기능 구현
 ---
 # 🐰 프로젝트 기획 
 
 <br>
 
+▶ [**📝 기획서 바로가기**](https://docs.google.com/document/d/1VGoL4hW_HWG3-ZIIZwwbtjm14G55dLhh8RdMGFEjTf4/edit?usp=sharing)
+    
 ▶ [**🕙 WBS 바로가기**](https://docs.google.com/spreadsheets/d/10GJK2OFHPAkFplNyjtBtaEh8kxCxARNC_aAOHAJr77M/edit?usp=sharing)
 
 ▶ [**📑 요구사항 정의서 바로가기**](https://docs.google.com/spreadsheets/d/1-6Z2yJZRFkM0Ix6biRMdWBmkby0E4XW_g9UfPiDfsH4/edit?usp=sharing)
@@ -147,12 +157,12 @@
 <br>
   <details>
     <summary><b>📝 ERD</b></summary></br>
-        <img src="backend/images/Petlog_erd.png" alt="E-R-D" width="75%">
+        <img src="backend/images/Petlog_erd.png" alt="E-R-D" width="100%">
   </details>
 
   <details>
     <summary><b>⚙️ 시스템아키텍처</b></summary></br>
-        <img src="backend/images/시스템아키텍처.png" alt="시스템 아키텍처" width="75%">
+        <img src="backend/images/시스템아키텍처.png" alt="시스템 아키텍처" width="100%">
   </details>
 
 ▶ [**📃 API 명세서 바로가기**](http://3.36.75.118:8080/swagger-ui/index.html)
