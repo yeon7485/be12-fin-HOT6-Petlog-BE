@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: __NAME__
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: __NAME__
+  template:
+    metadata:
+      labels:
+        app: __NAME__
+    spec:
+      containers:
+        - name: frontend
+          image: petlog/frontend:__IMAGE_TAG__
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nginx/conf.d/
+            - name: env-volume
+              mountPath: /usr/share/nginx/html/env.js
+              subPath: env.js
+      volumes:
+        - name: config
+          configMap:
+            name: nginx-config
+        - name: env-volume
+          configMap:
+            name: frontend-env

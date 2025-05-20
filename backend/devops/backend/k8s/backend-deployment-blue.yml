@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-blue
+  labels:
+    type: backend-app
+    deployment: blue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: backend-app
+      deployment: blue
+  strategy:
+    type: RollingUpdate
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        type: backend-app
+        deployment: blue
+    spec:
+      containers:
+        - name: backend-api-blue
+          image: petlog/backend:latest
+          resources:
+            requests:
+              ephemeral-storage: "100Mi"
+            limits:
+              ephemeral-storage: "500Mi"
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+          envFrom:
+            - configMapRef:
+                name: time-zone-config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: backend-api-config

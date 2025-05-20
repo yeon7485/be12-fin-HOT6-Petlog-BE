@@ -1,0 +1,97 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = 'petlog/backend'
+        IMAGE_TAG = "${BUILD_NUMBER}"
+        TAG = "0.1.${BUILD_NUMBER}"
+        
+        // 🔧 추가 환경 변수들
+    DEPLOY_TARGET = 'test@192.0.60.11'
+    SERVICE_NAME = 'backend-service'
+    LOCAL_K8S_PATH = 'backend/k8s'
+    K8S_PATH = '/home/test/k8s/backend'
+    }
+
+    stages {
+        stage('Git Clone') {
+            steps {
+                echo "✅ Cloning Backend Repository"
+                git branch: 'main', url: 'https://github.com/beyond-sw-camp/be12-fin-HOT6-Petlog-BE'
+            }
+        }
+
+        stage('Build JAR') {
+    steps {
+        dir('backend') {
+            echo "🔧 Giving gradlew permission"
+            sh 'chmod +x gradlew'
+
+            echo "🔧 Building Spring Boot Application"
+            sh './gradlew clean build -x test'
+        }
+    }
+}
+
+        stage('Docker Build & Push') {
+            steps {
+                withCredentials([
+                    usernamePassword(credentialsId: 'DOCKER_USER', usernameVariable: 'DOCKER_ID', passwordVariable: 'DOCKER_PW')
+                ]) {
+                    script {
+                        echo "🐳 Docker Build"
+                        sh "docker build -t ${IMAGE_NAME}:${TAG} ./backend"
+
+                        echo "🔐 Docker Login"
+                        sh "echo $DOCKER_PW | docker login -u $DOCKER_ID --password-stdin"
+
+                        echo "📦 Docker Push"
+                        sh "docker push ${IMAGE_NAME}:${TAG}"
+                    }
+                }
+            }
+        }
+        
+        stage('Blue/Green Backend Deploy') {
+      steps {
+        script {
+          def tag = "0.1.${BUILD_ID}"
+          def isGreen = (BUILD_ID.toInteger() % 2 == 0)
+          def deployColor = isGreen ? "green" : "blue"
+          def oldColor = isGreen ? "blue" : "green"
+
+          echo "🚀 BUILD_ID: ${BUILD_ID} → Deploying: ${deployColor.toUpperCase()}"
+
+          // 1. YAML 파일 복사 및 태그 치환
+          sh """
+            ssh -o StrictHostKeyChecking=no ${DEPLOY_TARGET} "mkdir -p ${K8S_PATH}"
+
+            scp -o StrictHostKeyChecking=no ${LOCAL_K8S_PATH}/backend-deployment-${deployColor}.yml ${DEPLOY_TARGET}:${K8S_PATH}/
+            scp -o StrictHostKeyChecking=no ${LOCAL_K8S_PATH}/backend-service.yml ${DEPLOY_TARGET}:${K8S_PATH}/
+
+            ssh ${DEPLOY_TARGET} "sed -i 's/latest/${tag}/g' ${K8S_PATH}/backend-deployment-${deployColor}.yml"
+          """
+
+          // 2. 신규 배포 반영 및 안정화 확인
+          sh """
+            ssh ${DEPLOY_TARGET} kubectl apply -f ${K8S_PATH}/backend-deployment-${deployColor}.yml
+            ssh ${DEPLOY_TARGET} kubectl rollout status deployment/backend-${deployColor} -n default
+            ssh ${DEPLOY_TARGET} kubectl wait --for=condition=available deployment/backend-${deployColor} --timeout=120s -n default
+          """
+
+          // 3. Service의 selector를 새 버전으로 전환
+sh """
+  echo "🔁 Switching service to: ${deployColor}"
+  ssh ${env.DEPLOY_TARGET} \\
+    "kubectl patch service ${env.SERVICE_NAME} -n default -p '{\\\"spec\\\": {\\\"selector\\\": {\\\"type\\\": \\\"backend-app\\\", \\\"deployment\\\": \\\"${deployColor}\\\"}}}'"
+"""
+          // 4. 이전 버전 replica 수 줄이기
+          sh """
+            echo "🧹 Scaling down old deployment: ${oldColor}"
+            ssh ${DEPLOY_TARGET} kubectl scale deployment/backend-${oldColor} --replicas=0 -n default || true
+          """
+        }
+      }
+    }
+    }
+}
