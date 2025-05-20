@@ -175,7 +175,7 @@
 
 ---
 ## 🚀 핵심 로직 상세 설명
-### [📃 프로젝트 Wiki](https://백엔드_레포지토리_주소/wiki) <br>
+### [📃 프로젝트 Wiki](https://github.com/beyond-sw-camp/be12-fin-HOT6-Petlog-BE/wiki) <br>
 
 
 ---
