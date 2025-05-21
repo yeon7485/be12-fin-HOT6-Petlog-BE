@@ -165,7 +165,7 @@
         <img src="backend/images/시스템아키텍처.png" alt="시스템 아키텍처" width="100%">
   </details>
 
-▶ [**📃 API 명세서 바로가기**](http://3.36.75.118:8080/swagger-ui/index.html)
+▶ [**📃 API 명세서 바로가기**](http://13.124.131.7:8080/swagger-ui/index.html)
 
 <br>
 
