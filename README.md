@@ -68,12 +68,6 @@
 ![Notion](https://img.shields.io/badge/Notion-%23000000.svg?style=for-the-badge&logo=notion&logoColor=white)
 ![Discord](https://img.shields.io/badge/discord-326CE5?style=for-the-badge&logo=discord&logoColor=white)
 
-<br><br>
-
-## 🐱 펫로그 데모 사이트 바로가기
-
-### [펫로그 사이트](https://www.petlog.kro.kr)</a>
-
 <br>
 
 ## 🐹 펫로그 서비스 소개
